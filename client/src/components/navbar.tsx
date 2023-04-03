@@ -1,6 +1,7 @@
 import React from 'react';
 import { TfiThemifyFaviconAlt } from 'react-icons/tfi';
 import { BsSearch, BsSun, BsMoon } from 'react-icons/bs';
+import { Link } from 'react-router-dom';
 
 interface Props {}
 
@@ -8,10 +9,12 @@ const Navbar = () => {
   return (
     <header className='w-full flex items-center justify-between py-3'>
       <div className='w-full flex items-center gap-10'>
-        <span className='inline-flex items-center'>
-          <TfiThemifyFaviconAlt className='text-green-400 text-3xl' />{' '}
-          <span className='font-extrabold'>MetaDisplay</span>
-        </span>
+        <Link to='/'>
+          <span className='inline-flex items-center'>
+            <TfiThemifyFaviconAlt className='text-green-400 text-3xl' />{' '}
+            <span className='font-extrabold'>MetaDisplay</span>
+          </span>
+        </Link>
 
         <div className='flex-1 border-[1px] hidden border-gray-50/60 md:flex items-center gap-3 px-3 py-1.5 rounded-3xl max-w-sm lg:max-w-lg'>
           <BsSearch />
@@ -76,3 +79,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+// . . .  - Share, save, view, appreciate
