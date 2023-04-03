@@ -9,7 +9,7 @@ interface Props {}
 const Card = () => {
   return (
     <li className='w-full sm:w-[288px]'>
-      <header className='flex items-center rounded-t-3xl px-4 py-2 bg-gray-600 justify-between'>
+      <header className='flex items-center rounded-t-3xl px-4 py-2 bg-[#141414] justify-between'>
         <div className='flex mb-3 -space-x-3'>
           <ProfileImage />
           <ProfileImage />
@@ -29,7 +29,7 @@ const Card = () => {
         />
       </main>
 
-      <footer className='w-full flex flex-col gap-2 bg-gray-600 rounded-b-3xl px-4 py-2'>
+      <footer className='w-full flex flex-col gap-2 bg-[#141414] rounded-b-3xl px-4 py-2'>
         <div className='w-full inline-flex items-center justify-between'>
           <span>TheHappiness</span>
           <span className='inline-flex items-center gap-1'>
