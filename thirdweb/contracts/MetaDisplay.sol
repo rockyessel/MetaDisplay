@@ -34,6 +34,15 @@ contract MetaDisplay {
         address _address;
     }
 
+    struct CollectionsDisplay {
+        string name;
+        string category;
+        string created_on;
+        uint256 total_items;
+        User[] owners;
+        AssetsDisplay[] assets;
+    }
+
     mapping(uint256 => User) public users;
     mapping(uint256 => AssetsDisplay) public assets_display;
 
