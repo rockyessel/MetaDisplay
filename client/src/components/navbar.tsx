@@ -57,9 +57,11 @@ const Navbar = () => {
 
       <nav className='w-full hidden md:flex items-center gap-6 justify-end'>
         <ul className='flex items-center gap-2'>
-          <li>Home</li>
+          <Link to='/'>
+            <li>Home</li>
+          </Link>
+
           <li>Collections</li>
-          <li>Categories</li>
         </ul>
 
         <ul className='flex items-center gap-2'>

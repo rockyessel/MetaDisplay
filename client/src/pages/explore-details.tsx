@@ -3,7 +3,9 @@ import { AiOutlineHeart } from 'react-icons/ai';
 import { RxExternalLink } from 'react-icons/rx';
 import { FaEthereum } from 'react-icons/fa';
 import { VscListFlat, VscCopy } from 'react-icons/vsc';
-import { Facebook, Instagram, Twitter } from '../assets';
+import Instagram from '../assets/instagram.png';
+import Twitter from '../assets/twitter.png';
+import Facebook from '../assets/facebook.png';
 import { ProfileImage } from '../components';
 
 interface Props {}

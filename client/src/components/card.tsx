@@ -11,7 +11,7 @@ const Card = () => {
   return (
     <Link to={`/explore/fkldkf`}>
       <li className='w-full sm:w-[288px]'>
-        <header className='flex items-center rounded-t-3xl px-4 py-2 bg-[#141414] justify-between'>
+        <header className='flex items-center rounded-t-lg px-4 py-2 bg-[#141414] justify-between'>
           <div className='flex mb-3 -space-x-3'>
             <ProfileImage />
             <ProfileImage />

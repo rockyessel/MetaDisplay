@@ -1,7 +1,8 @@
 import React from 'react';
 
 interface Props {
-  value: string;
+  value?: string;
+  name: string;
   onChange: () => void;
   placeholder?: string;
   styles?: string;
@@ -17,6 +18,7 @@ const Input = (props: Props) => {
 
       {props.elementType === 'input' && (
         <input
+          name={props.name}
           type={props.type}
           value={props.value}
           onChange={props.onChange}
@@ -27,6 +29,7 @@ const Input = (props: Props) => {
 
       {props.elementType === 'textarea' && (
         <textarea
+          name={props.name}
           value={props.value}
           onChange={props.onChange}
           placeholder={props.placeholder}
@@ -36,6 +39,7 @@ const Input = (props: Props) => {
 
       {props.elementType === 'file' && (
         <input
+          name={props.name}
           type={'file'}
           value={props.value}
           onChange={props.onChange}

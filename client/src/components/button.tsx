@@ -12,7 +12,7 @@ interface Props {
 const Button = (props: Props) => {
   return (
     <button
-      className={`${props.styles}`}
+      className={`${props.styles} px-4 py-3.5 rounded-lg hover:bg-violet-700 font-medium`}
       type={props?.type}
       title={props.title}
       onClick={props?.handleClick}
