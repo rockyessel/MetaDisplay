@@ -22,7 +22,7 @@ const AssetPost = async (request, response) => {
   const params = {
     Bucket: bucket_name,
     Key: request.file.originalname,
-    Body: request.buffer,
+    Body: request.file.buffer,
     ContentType: request.file?.mimetype,
   };
 
