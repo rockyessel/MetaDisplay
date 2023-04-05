@@ -1,9 +1,6 @@
 import React from 'react';
-import { Button, CircleProgressbar, Input } from '../../components';
-import {
-  UploadAssetRequest,
-  UploadAssetRequestDelete,
-} from '../../utils/api-request';
+import { Button, Input } from '../components';
+import { UploadAssetRequest, UploadAssetRequestDelete } from '../utils/api-request';
 import { VscListFlat } from 'react-icons/vsc';
 import { BiCategoryAlt } from 'react-icons/bi';
 import { CgSpinnerTwo } from 'react-icons/cg';
