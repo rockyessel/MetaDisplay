@@ -3,7 +3,7 @@ import React from 'react';
 interface Props {}
 
 const Sidebar = () => {
-  return <div>Sidebar</div>;
+  return <div className='bg-slate-600'>Sidebar</div>;
 };
 
 export default Sidebar;

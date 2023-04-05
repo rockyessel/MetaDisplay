@@ -6,3 +6,4 @@ export { default as UserTooltip } from './user-tooltip';
 export { default as DropMenu } from './drop-menu';
 export { default as Footer } from './footer';
 export { default as Input } from './input';
+export { default as CircleProgressbar } from './circle-progressbar';

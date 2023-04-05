@@ -12,11 +12,15 @@ export const UploadAssetRequest = async (asset: any) => {
   const response = await axios({
     method: 'POST',
     baseURL: `${baseURL}/v1/assets`,
-    data: asset,
+    data: asset.data,
     xsrfCookieName: 'XSRF-TOKEN',
     xsrfHeaderName: 'X-XSRF-TOKEN',
     headers: {
       'Content-Type': 'multipart/form-data',
+    },
+    onUploadProgress: (data) => {
+      const total: number = data?.total || 0;
+      asset.setAssetUploadPercent(Math.round((100 * data?.loaded) / total));
     },
   });
 

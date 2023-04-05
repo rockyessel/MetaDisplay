@@ -6,12 +6,11 @@ interface Props {}
 
 const Dashboard = () => {
   return (
-    <div className='relative sm:p-8 p-4 min-h-screen flex flex-row'>
+    <div className='w-full relative sm:p-8 p-4 min-h-[83.9vh] flex flex-row'>
       <div className='sm:flex hidden mr-10 relative'>
         <Sidebar />
       </div>
-      <div>
-        <Navbar />
+      <div className='w-full h-full'>
         <Outlet />
       </div>
     </div>

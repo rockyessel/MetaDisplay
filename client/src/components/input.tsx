@@ -3,7 +3,11 @@ import React from 'react';
 interface Props {
   value?: string;
   name: string;
-  onChange: () => void;
+  onChange: (
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => void;
   placeholder?: string;
   styles?: string;
   type?: string;
@@ -23,7 +27,7 @@ const Input = (props: Props) => {
           value={props.value}
           onChange={props.onChange}
           placeholder={props.placeholder}
-          className={`${props.styles} py-[15px] sm:px-[25px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[14px] placeholder:text-[#4b5264] rounded-[10px] sm:min-w-[300px]`}
+          className={`${props.styles} py-[15px] sm:px-[25px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[14px] placeholder:text-[#4b5264] rounded-[10px] sm:min-w-[500px]`}
         />
       )}
 
@@ -33,7 +37,7 @@ const Input = (props: Props) => {
           value={props.value}
           onChange={props.onChange}
           placeholder={props.placeholder}
-          className={`${props.styles} py-[15px] sm:px-[25px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[14px] placeholder:text-[#4b5264] rounded-[10px] sm:min-w-[300px]`}
+          className={`${props.styles} py-[15px] sm:px-[25px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[14px] placeholder:text-[#4b5264] rounded-[10px] sm:min-w-[500px]`}
         />
       )}
 

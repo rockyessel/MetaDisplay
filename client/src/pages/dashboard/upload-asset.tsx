@@ -1,11 +1,19 @@
 import React from 'react';
-import { Button, Input } from '../../components';
-import { UploadAssetRequest } from '../../utils/api-request';
+import { Button, CircleProgressbar, Input } from '../../components';
+import {
+  UploadAssetRequest,
+  UploadAssetRequestDelete,
+} from '../../utils/api-request';
+import { VscListFlat } from 'react-icons/vsc';
+import { BiCategoryAlt } from 'react-icons/bi';
+import { CgSpinnerTwo } from 'react-icons/cg';
 
 interface Props {}
 
 const UploadAsset = () => {
-  const [getImageURL, setGetImageURl] = React.useState<string>();
+  const [getImageURL, setGetImageURl] = React.useState<string>('');
+  const [imageDisplayState, setImageDisplay] = React.useState<boolean>(false);
+  const [assetUploadPercent, setAssetUploadPercent] = React.useState<number>(0);
   const [inputFile, setInputFile] = React.useState<string | Blob>('');
   const [form, setForm] = React.useState({
     title: '',
@@ -16,19 +24,31 @@ const UploadAsset = () => {
     category: '',
   });
 
-  console.log('getImageURL', getImageURL);
-
-  const handleImageUpload = async () => {
-    if (inputFile) {
-      const data = new FormData();
-      data.append('file', inputFile);
-      const imageURL: string = await UploadAssetRequest(data);
-      setGetImageURl(imageURL);
-    }
+  const handleAssetDelete = async (assetName: string) => {
+    const getFileNameFromURL = !assetName ? '' : assetName.split('/').pop();
+    console.log('getFileNameFromURL', getFileNameFromURL);
+    await UploadAssetRequestDelete(getFileNameFromURL);
+    setInputFile('');
+    setAssetUploadPercent(0);
+    setGetImageURl('');
   };
 
-  console.log('form', form);
-  console.log('inputFile', inputFile);
+  const handleImageUpload = React.useMemo(
+    () => async () => {
+      if (inputFile) {
+        setImageDisplay(true);
+        const data = new FormData();
+        data.append('file', inputFile);
+        const imageURL: string = await UploadAssetRequest({
+          data,
+          setAssetUploadPercent,
+        });
+        setGetImageURl(imageURL);
+        setImageDisplay(false);
+      }
+    },
+    [inputFile]
+  );
 
   const handleUpdates = (
     event:
@@ -42,6 +62,11 @@ const UploadAsset = () => {
     setForm(formState);
   };
 
+  const inputFileState =
+    inputFile === undefined ? false : inputFile === '' ? true : false;
+
+  const isLoading = assetUploadPercent > 98 && imageDisplayState === true;
+
   const handleFileChange = (event: any) => {
     const file = event.target.files[0];
     setInputFile(file);
@@ -53,10 +78,10 @@ const UploadAsset = () => {
 
   React.useEffect(() => {
     handleImageUpload();
-  }, [inputFile]);
+  }, [handleImageUpload]);
 
   return (
-    <section className='w-full h-full flex md:flex-col gap-5'>
+    <section className='w-full h-full flex-col lg:flex-row flex lg:justify-between gap-5'>
       <section>
         <h1 className='font-bold text-4xl text-white'>Upload Assets</h1>
 
@@ -66,11 +91,7 @@ const UploadAsset = () => {
         >
           <Input
             value={form.title}
-            onChange={(
-              event:
-                | React.ChangeEvent<HTMLInputElement>
-                | React.ChangeEvent<HTMLTextAreaElement>
-            ) => handleUpdates(event)}
+            onChange={handleUpdates}
             placeholder={'Onchain: Inspiration'}
             label={'Title'}
             elementType={'input'}
@@ -79,11 +100,7 @@ const UploadAsset = () => {
           />
           <Input
             value={form.description}
-            onChange={(
-              event:
-                | React.ChangeEvent<HTMLInputElement>
-                | React.ChangeEvent<HTMLTextAreaElement>
-            ) => handleUpdates}
+            onChange={handleUpdates}
             placeholder={'Write asset description...'}
             label={'Description'}
             elementType={'textarea'}
@@ -91,11 +108,7 @@ const UploadAsset = () => {
           />
           <Input
             value={form.category}
-            onChange={(
-              event:
-                | React.ChangeEvent<HTMLInputElement>
-                | React.ChangeEvent<HTMLTextAreaElement>
-            ) => handleUpdates(event)}
+            onChange={handleUpdates}
             placeholder={'Music...'}
             label={'Category'}
             elementType={'input'}
@@ -115,17 +128,51 @@ const UploadAsset = () => {
           </Button>
         </form>
       </section>
-      <section className='flex-1 w-full h-auto relative'>
-        {getImageURL && (
-          <React.Fragment>
-          <img
-            className='lg:w-[35rem] xl:w-full h-[35rem] object-cover'
-            src={getImageURL}
-            alt='UploadAssetRequest'
-            />
-            <span>Delete</span>
-            </React.Fragment>
-        )}
+
+      <section className='w-full h-auto relative'>
+        <div className='w-full border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
+          <div className='h-[29rem] flex justify-center items-center overflow-hidden'>
+            {inputFileState && (
+              <p>
+                <BiCategoryAlt className='text-7xl text-white' />
+              </p>
+            )}
+
+            {getImageURL !== '' ? (
+              <img
+                className='w-full  h-full object-cover'
+                src={getImageURL}
+                alt='UploadAssetRequest'
+              />
+            ) : (
+              <React.Fragment>
+                {isLoading && (
+                  <p className='inline-flex items-center gap-2 px-4 py-2 text-lg'>
+                    <CgSpinnerTwo className='text-3xl flex-shrink-0 animate-spin text-violet-600' />{' '}
+                    Loading Asset
+                  </p>
+                )}
+              </React.Fragment>
+            )}
+          </div>
+
+          <div className='w-full flex items-center justify-between px-4 py-2 bg-[#141414]'>
+            <p className='inline-flex items-center gap-2 px-4 py-2 text-lg'>
+              <VscListFlat className='text-3xl flex-shrink-0' /> Uploaded asset
+              will show here.
+            </p>
+            {getImageURL && (
+              <Button
+                type='submit'
+                styles={'bg-rose-800 text-white'}
+                title={'Upload Asset'}
+                handleClick={() => handleAssetDelete(getImageURL)}
+              >
+                Delete
+              </Button>
+            )}
+          </div>
+        </div>
       </section>
     </section>
   );

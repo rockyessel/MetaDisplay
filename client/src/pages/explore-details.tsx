@@ -3,9 +3,6 @@ import { AiOutlineHeart } from 'react-icons/ai';
 import { RxExternalLink } from 'react-icons/rx';
 import { FaEthereum } from 'react-icons/fa';
 import { VscListFlat, VscCopy } from 'react-icons/vsc';
-import Instagram from '../assets/instagram.png';
-import Twitter from '../assets/twitter.png';
-import Facebook from '../assets/facebook.png';
 import { ProfileImage } from '../components';
 
 interface Props {}
@@ -89,7 +86,7 @@ const ExploreDetails = () => {
                 >
                   <img
                     className='w-[3.3rem] h-[3.3rem]'
-                    src={Instagram}
+                    src='/instagram.png'
                     alt=''
                   />
                   {/* <p className='text-sm'>Instagram</p> */}
@@ -103,7 +100,7 @@ const ExploreDetails = () => {
                 >
                   <img
                     className='w-[3.3rem] h-[3.3rem]'
-                    src={Facebook}
+                    src='/facebook.png'
                     alt=''
                   />
                   {/* <p className='text-sm'>Facebook</p> */}
@@ -115,7 +112,7 @@ const ExploreDetails = () => {
                   rel='noopener'
                   href='#'
                 >
-                  <img className='w-[3.3rem] h-[3.3rem]' src={Twitter} alt='' />
+                  <img className='w-[3.3rem] h-[3.3rem]' src='/twitter.png' alt='' />
                   {/* <p className='text-sm'>Twitter</p> */}
                 </a>
               </div>
