@@ -26,7 +26,6 @@ const UploadAsset = () => {
 
   const handleAssetDelete = async (assetName: string) => {
     const getFileNameFromURL = !assetName ? '' : assetName.split('/').pop();
-    console.log('getFileNameFromURL', getFileNameFromURL);
     await UploadAssetRequestDelete(getFileNameFromURL);
     setInputFile('');
     setAssetUploadPercent(0);
@@ -82,7 +81,7 @@ const UploadAsset = () => {
 
   return (
     <section className='w-full h-full flex-col lg:flex-row flex lg:justify-between gap-5'>
-      <section>
+      <section className='flex flex-col gap-5'>
         <h1 className='font-bold text-4xl text-white'>Upload Assets</h1>
 
         <form

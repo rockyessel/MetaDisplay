@@ -12,8 +12,6 @@ interface Props {
 const DropMenu = (props: Props) => {
   const state = props?.links?.length! < 0 || props?.links === undefined;
 
-  console.log('state', state);
-
   return (
     <div
       className={`flex flex-col z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-full ${props?.styles}`}

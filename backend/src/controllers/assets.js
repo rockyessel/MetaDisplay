@@ -21,8 +21,6 @@ const AssetPost = async (request, response) => {
 
 const AssetDelete = async (request, response) => {
   try {
-    console.log('Params', request.params);
-
     const params = {
       Bucket: bucket_name,
       Key: request.params.assetName,
