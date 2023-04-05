@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Sidebar } from '../../components/dashboard';
+import { Navbar, Sidebar } from '../../components';
 import { Outlet } from 'react-router-dom';
 
 interface Props {}
