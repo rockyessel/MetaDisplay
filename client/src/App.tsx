@@ -1,6 +1,13 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { ExploreDetails, Explore, Home } from './pages';
+import {
+  ExploreDetails,
+  Explore,
+  Home,
+  Dashboard,
+  User,
+  UploadAsset,
+} from './pages';
 import { Footer, Navbar } from './components';
 
 const App = () => {
@@ -11,6 +18,10 @@ const App = () => {
         <Route path='/' element={<Explore />} />
         <Route path='/explore/:title' element={<ExploreDetails />} />
         <Route path='/home' element={<Home />} />
+        <Route path='/dashboard' element={<Dashboard />}>
+          <Route path='user' element={<User />} />
+          <Route path='upload-asset' element={<UploadAsset />} />
+        </Route>
       </Routes>
       <Footer />
     </main>

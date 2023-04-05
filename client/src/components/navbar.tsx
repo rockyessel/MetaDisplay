@@ -57,8 +57,9 @@ const Navbar = () => {
 
       <nav className='w-full hidden md:flex items-center gap-6 justify-end'>
         <ul className='flex items-center gap-2'>
-          <li>Activity</li>
-          <li>Explore by</li>
+          <li>Home</li>
+          <li>Collections</li>
+          <li>Categories</li>
         </ul>
 
         <ul className='flex items-center gap-2'>
@@ -80,5 +81,5 @@ const Navbar = () => {
 
 export default Navbar;
 
-
-// . . .  - Share, save, view, appreciate
+// . . .  - Share, save, view, appreciate, follow user
+// . . . - wallet connected - add to collection, create collection, delete asset
