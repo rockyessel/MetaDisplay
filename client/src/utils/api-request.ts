@@ -22,3 +22,17 @@ export const UploadAssetRequest = async (asset: any) => {
 
   return response.data?.asset;
 };
+
+export const UploadAssetRequestDelete = async (assetName: any) => {
+  const response = await axios({
+    method: 'DELETE',
+    baseURL: `${baseURL}/v1/assets/delete/${assetName}`,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.data?.asset;
+};
