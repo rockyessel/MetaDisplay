@@ -9,4 +9,9 @@ export default defineConfig({
       VITE_BACKEND_API_BASE_URL: 'http://localhost:4000',
     },
   },
+  root: './',
+  build: {
+    outDir: 'dist',
+  },
+  publicDir: 'assets',
 });
