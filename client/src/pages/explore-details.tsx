@@ -86,7 +86,7 @@ const ExploreDetails = () => {
                 >
                   <img
                     className='w-[3.3rem] h-[3.3rem]'
-                    src='/instagram.png'
+                    src='/src/instagram.png'
                     alt=''
                   />
                   {/* <p className='text-sm'>Instagram</p> */}
@@ -100,7 +100,7 @@ const ExploreDetails = () => {
                 >
                   <img
                     className='w-[3.3rem] h-[3.3rem]'
-                    src='/facebook.png'
+                    src='/src/facebook.png'
                     alt=''
                   />
                   {/* <p className='text-sm'>Facebook</p> */}
@@ -112,7 +112,7 @@ const ExploreDetails = () => {
                   rel='noopener'
                   href='#'
                 >
-                  <img className='w-[3.3rem] h-[3.3rem]' src='/twitter.png' alt='' />
+                  <img className='w-[3.3rem] h-[3.3rem]' src='/src/twitter.png' alt='' />
                   {/* <p className='text-sm'>Twitter</p> */}
                 </a>
               </div>
