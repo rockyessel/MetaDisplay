@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && npx thirdweb@latest upload dist"
+    "deploy": "yarn build && npx thirdweb@latest upload dist"
   },
   "dependencies": {
     "@thirdweb-dev/react": "^3.11.1",
