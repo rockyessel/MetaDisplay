@@ -3,14 +3,23 @@ import { IoMdGrid } from 'react-icons/io';
 import { MdOutlineArrowDropDown } from 'react-icons/md';
 import { BsDatabase, BsCurrencyDollar } from 'react-icons/bs';
 import { Button, Card, DropMenu } from '../components';
+import { useThirdWebContext } from '../contexts/thirdweb';
 
 interface Props {}
 
 const data = ['Anime', 'Games', 'Music', 'Movies'];
-const collections = ['iamthobi', 'thebftguy', 'metaboys', 'nft_collector']
-const price = ['$1 to $5', '$5 to $10', '$10 to $15', '$15 to $30', 'More than $30']
+const collections = ['iamthobi', 'thebftguy', 'metaboys', 'nft_collector'];
+const price = [
+  '$1 to $5',
+  '$5 to $10',
+  '$10 to $15',
+  '$15 to $30',
+  'More than $30',
+];
 
 const Explore = () => {
+  const { getAssets } = useThirdWebContext();
+
   return (
     <section className='mt-10 flex flex-col gap-10'>
       <h1 className='font-bold text-4xl text-white'>Explore gallery</h1>
@@ -85,14 +94,9 @@ const Explore = () => {
         </div>
 
         <ul className='flex flex-wrap gap-10'>
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          {getAssets.map((asset) => (
+            <Card key={asset._id} asset={asset} />
+          ))}
         </ul>
       </div>
     </section>

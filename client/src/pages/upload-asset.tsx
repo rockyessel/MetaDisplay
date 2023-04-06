@@ -10,6 +10,7 @@ import { CgSpinnerTwo } from 'react-icons/cg';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import { ethers } from 'ethers';
 import { FormProps } from '../interface';
+import { formInitialValue } from '../utils/constant';
 
 interface Props {}
 
@@ -20,14 +21,7 @@ const UploadAsset = () => {
 
   const { uploadAsset } = useThirdWebContext();
 
-  const [form, setForm] = React.useState<FormProps>({
-    title: '',
-    description: '',
-    image: `${!getImageURL ? '' : getImageURL}`,
-    category: '',
-    dates: ``,
-    target: ethers.BigNumber.from(0),
-  });
+  const [form, setForm] = React.useState<FormProps>(formInitialValue);
 
   const handleAssetDelete = async (assetName: string) => {
     const getFileNameFromURL = !assetName ? '' : assetName.split('/').pop();
@@ -74,7 +68,6 @@ const UploadAsset = () => {
 
   const handleSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-
     form.image = getImageURL ? getImageURL : '';
     form.dates = new Date().toISOString();
     form.target = form.target = ethers.utils.parseUnits(
@@ -82,11 +75,12 @@ const UploadAsset = () => {
       18
     );
     const { title, description, image } = form;
-
-    console.log('form', form);
-
-    // if (!title || !description || !image) return;
+    if (!title || !description || !image) return;
     await uploadAsset(form);
+    setGetImageURl('');
+    setAssetUploadPercent(0);
+    setInputFile('');
+    setForm(formInitialValue);
   };
 
   React.useEffect(() => {

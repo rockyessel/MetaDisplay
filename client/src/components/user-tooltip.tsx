@@ -26,12 +26,12 @@ const UserTooltip = (props: Props) => {
           </div>
         </div>
         <p className='text-base truncate font-semibold leading-none text-gray-900 dark:text-white'>
-          <a href='#'>J0x60D0A1B4cD08f7A66C13ac30ABC568c98B79A2cd</a>
+          <span>J0x60D0A1B4cD08f7A66C13ac30ABC568c98B79A2cd</span>
         </p>
         <p className='mb-3 text-sm font-normal'>
-          <a href='#' className='hover:underline'>
+          <span className='hover:underline'>
             @jeseleos
-          </a>
+          </span>
         </p>
         <p className='mb-4 text-sm truncate'>
           To fix the error, you should update the type property in the Props

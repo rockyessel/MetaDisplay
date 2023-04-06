@@ -19,7 +19,6 @@ contract MetaDisplay {
         string image;
         string category;
         string dates;
-        uint256 target;
         uint256 amountAppreciated;
         Appreciator[] appreciators;
         uint256[] apprecation;
@@ -75,8 +74,7 @@ contract MetaDisplay {
         string memory _description,
         string memory _image,
         string memory _category,
-        string memory _dates,
-        uint256 _target
+        string memory _dates
     ) public returns (uint256) {
         AssetsDisplay storage asset_display = assets_display[no_of_assets];
 
@@ -86,7 +84,6 @@ contract MetaDisplay {
         asset_display.image = _image;
         asset_display.category = _category;
         asset_display.dates = _dates;
-        asset_display.target = _target;
         asset_display.amountAppreciated = 0;
 
         no_of_assets++;
