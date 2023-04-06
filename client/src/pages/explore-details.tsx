@@ -4,10 +4,14 @@ import { RxExternalLink } from 'react-icons/rx';
 import { FaEthereum } from 'react-icons/fa';
 import { VscListFlat, VscCopy } from 'react-icons/vsc';
 import { ProfileImage } from '../components';
+import { useParams } from 'react-router-dom';
 
 interface Props {}
 
 const ExploreDetails = () => {
+  const { title } = useParams();
+
+  console.log('title', title);
   return (
     <section className='w-full flex flex-col gap-10'>
       <div className='w-full flex flex-col lg:flex-row items-center gap-5'>

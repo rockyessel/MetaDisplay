@@ -6,6 +6,8 @@ interface ImportMeta {
 
 const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
 
+console.log('baseURL',baseURL)
+
 export const UploadAssetRequest = async (asset: any) => {
   const response = await axios({
     method: 'POST',
