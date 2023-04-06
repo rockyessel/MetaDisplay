@@ -61,10 +61,7 @@ const UploadAsset = () => {
     setForm(formState);
   };
 
-  const inputFileState =
-    inputFile === undefined ? false : inputFile === '' ? true : false;
-
-  const isLoading = assetUploadPercent > 0 && imageDisplayState === true;
+  const inputFileState = inputFile === undefined ? false : inputFile === '' ? true : false;
 
   const handleFileChange = (event: any) => {
     const file = event.target.files[0];
@@ -186,12 +183,7 @@ const UploadAsset = () => {
                 </div>
               )}
 
-              {/* {isLoading && (
-                <p className='inline-flex items-center gap-2 px-4 py-2 text-lg'>
-                  <CgSpinnerTwo className='text-3xl flex-shrink-0 animate-spin text-violet-600' />{' '}
-                  Loading Asset
-                </p>
-              )} */}
+          
             </div>
 
             <div className='w-full flex items-center justify-between px-4 py-2 bg-[#141414]'>
