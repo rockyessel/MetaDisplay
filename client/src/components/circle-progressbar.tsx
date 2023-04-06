@@ -1,6 +1,12 @@
 import React from 'react';
 
-const CircleProgressbar = ({ percent }: { percent: number }) => {
+interface Props {
+  percent: number;
+  circle_styles: string;
+  text_styles: string;
+}
+
+const CircleProgressbar = (props: Props) => {
   const circumference = 60 * 2 * Math.PI;
 
   return (
@@ -16,10 +22,14 @@ const CircleProgressbar = ({ percent }: { percent: number }) => {
           cy='80'
         />
         <circle
-          className='text-blue-600'
+          className={`${
+            !props.circle_styles ? 'text-blue-600' : props.circle_styles
+          }`}
           strokeWidth='10'
           strokeDasharray={circumference}
-          strokeDashoffset={circumference - (percent / 100) * circumference}
+          strokeDashoffset={
+            circumference - (props.percent / 100) * circumference
+          }
           strokeLinecap='round'
           stroke='currentColor'
           fill='transparent'
@@ -28,7 +38,9 @@ const CircleProgressbar = ({ percent }: { percent: number }) => {
           cy='80'
         />
       </svg>
-      <span className='absolute text-xl text-blue-700'>{percent}%</span>
+      <span className={`absolute text-xl ${!props.text_styles ? 'text-blue-700' : props.text_styles}`}>
+        {props.percent}%
+      </span>
     </div>
   );
 };

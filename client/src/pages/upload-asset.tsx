@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Input } from '../components';
+import { Button, CircleProgressbar, Input } from '../components';
 import {
   UploadAssetRequest,
   UploadAssetRequestDelete,
@@ -141,22 +141,57 @@ const UploadAsset = () => {
                 </p>
               )}
 
-              {getImageURL !== '' ? (
+              {getImageURL !== '' && (
                 <img
                   className='w-full  h-full object-cover'
                   src={getImageURL}
                   alt='UploadAssetRequest'
                 />
-              ) : (
-                <React.Fragment>
-                  {isLoading && (
-                    <p className='inline-flex items-center gap-2 px-4 py-2 text-lg'>
-                      <CgSpinnerTwo className='text-3xl flex-shrink-0 animate-spin text-violet-600' />{' '}
-                      Loading Asset
-                    </p>
-                  )}
-                </React.Fragment>
               )}
+
+              {assetUploadPercent === 100 ? (
+                <div className='flex flex-col'>
+                  {getImageURL ? null : (
+                    <>
+                      <CircleProgressbar
+                        circle_styles='text-green-500'
+                        text_styles='text-green-300'
+                        percent={assetUploadPercent}
+                      />
+                      <p className='inline-flex items-center flex-shrink-0 gap-2 px-4 py-2 text-lg'>
+                        Upload completed
+                      </p>
+                    </>
+                  )}
+                </div>
+              ) : assetUploadPercent === 0 && inputFile ? (
+                <p className='inline-flex items-center gap-2 px-4 py-2 text-lg'>
+                  <CgSpinnerTwo className='text-3xl flex-shrink-0 animate-spin text-violet-600' />{' '}
+                  Starting...
+                </p>
+              ) : (
+                <div
+                  className={`${
+                    assetUploadPercent > 0 ? null : 'hidden'
+                  } flex flex-col`}
+                >
+                  <CircleProgressbar
+                    circle_styles=''
+                    text_styles=''
+                    percent={assetUploadPercent}
+                  />
+                  <p className='inline-flex items-center gap-2 px-4 py-2 text-lg'>
+                    Upload in progress...
+                  </p>
+                </div>
+              )}
+
+              {/* {isLoading && (
+                <p className='inline-flex items-center gap-2 px-4 py-2 text-lg'>
+                  <CgSpinnerTwo className='text-3xl flex-shrink-0 animate-spin text-violet-600' />{' '}
+                  Loading Asset
+                </p>
+              )} */}
             </div>
 
             <div className='w-full flex items-center justify-between px-4 py-2 bg-[#141414]'>
