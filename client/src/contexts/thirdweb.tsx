@@ -6,44 +6,49 @@ import {
   useContractWrite,
 } from '@thirdweb-dev/react';
 import { ethers } from 'ethers';
+import { FormProps } from '../interface';
 
 interface ContextProps {
   address?: string | undefined;
   connect?: (
     connectOptions?: { chainId?: number | undefined } | undefined
   ) => Promise<void>;
-  createAssetDisplay: (form: any) => Promise<void>;
+  uploadAsset: (form: FormProps) => Promise<void>;
 }
 
 const ThirdWebContext = React.createContext<ContextProps>({
   address: undefined,
-  connect: (connectOptions: { chainId: 0 | undefined } | undefined) =>
+  connect: (connectOptions: { chainId?: number | undefined } | undefined) =>
     Promise.resolve(),
-  createAssetDisplay: (form: any) => Promise.resolve(),
+  uploadAsset: (form: FormProps) => Promise.resolve(),
 });
 
 export const ThirdWebContextProvider = (props: any) => {
   const { contract } = useContract(`${process.env.VITE_META_DISPLAY_WALLET}`);
-  const { mutateAsync } = useContractWrite(contract, 'createAssetDisplay');
+  const { mutateAsync: createAssetDisplay } = useContractWrite(
+    contract,
+    'createAssetDisplay'
+  );
 
   const address = useAddress();
   const connect = useMetamask();
 
   console.log('address', address);
 
-  const createAssetDisplay = async (form: any) => {
-    console.log('createAssetDisplay', form);
+  const uploadAsset = async (form: FormProps) => {
+    console.log('uploadAsset', form);
     try {
-      const data = await mutateAsync([
-        address,
-        form.title,
-        form.description,
-        form.image,
-        form.category,
-        form.dates,
-        form.target,
-      ]);
-
+      const data = await createAssetDisplay({
+        args: [
+          address,
+          form.title,
+          form.description,
+          form.image,
+          form.category,
+          form.dates,
+          form.target.toHexString(),
+        ],
+      });
       console.log('contract call success', data);
     } catch (error) {
       console.log(error);
@@ -53,7 +58,7 @@ export const ThirdWebContextProvider = (props: any) => {
   const value = {
     address,
     connect,
-    createAssetDisplay,
+    uploadAsset,
   };
   return (
     <ThirdWebContext.Provider value={value}>

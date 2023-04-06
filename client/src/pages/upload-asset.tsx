@@ -9,6 +9,7 @@ import { BiCategoryAlt } from 'react-icons/bi';
 import { CgSpinnerTwo } from 'react-icons/cg';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import { ethers } from 'ethers';
+import { FormProps } from '../interface';
 
 interface Props {}
 
@@ -17,15 +18,15 @@ const UploadAsset = () => {
   const [assetUploadPercent, setAssetUploadPercent] = React.useState<number>(0);
   const [inputFile, setInputFile] = React.useState<string | Blob>('');
 
-  const { createAssetDisplay } = useThirdWebContext();
+  const { uploadAsset } = useThirdWebContext();
 
-  const [form, setForm] = React.useState({
+  const [form, setForm] = React.useState<FormProps>({
     title: '',
     description: '',
     image: `${!getImageURL ? '' : getImageURL}`,
     category: '',
     dates: ``,
-    target: '0.01',
+    target: ethers.BigNumber.from(0),
   });
 
   const handleAssetDelete = async (assetName: string) => {
@@ -76,15 +77,16 @@ const UploadAsset = () => {
 
     form.image = getImageURL ? getImageURL : '';
     form.dates = new Date().toISOString();
+    form.target = form.target = ethers.utils.parseUnits(
+      form.target.toString(),
+      18
+    );
     const { title, description, image } = form;
 
     console.log('form', form);
 
     // if (!title || !description || !image) return;
-    await createAssetDisplay({
-      ...form,
-      target: ethers.utils.parseUnits(form.target, 18),
-    });
+    await uploadAsset(form);
   };
 
   React.useEffect(() => {
