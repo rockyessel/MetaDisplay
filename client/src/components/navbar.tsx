@@ -11,9 +11,10 @@ const Navbar = () => {
 
   const navigate = useNavigate();
 
-  const handleConnection = () => {
+  const handleConnection = async () => {
     if (address) navigate('/dashboard/upload-asset');
-    if (connect) connect();
+    if (connect) await connect();
+    else console.log('No connection was made');
   };
 
   return (
