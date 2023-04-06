@@ -7,21 +7,25 @@ import {
 import { VscListFlat } from 'react-icons/vsc';
 import { BiCategoryAlt } from 'react-icons/bi';
 import { CgSpinnerTwo } from 'react-icons/cg';
+import { useThirdWebContext } from '../contexts/thirdweb';
+import { ethers } from 'ethers';
 
 interface Props {}
 
 const UploadAsset = () => {
   const [getImageURL, setGetImageURl] = React.useState<string>('');
-  const [imageDisplayState, setImageDisplay] = React.useState<boolean>(false);
   const [assetUploadPercent, setAssetUploadPercent] = React.useState<number>(0);
   const [inputFile, setInputFile] = React.useState<string | Blob>('');
+
+  const { createAssetDisplay } = useThirdWebContext();
+
   const [form, setForm] = React.useState({
     title: '',
     description: '',
-    target: '',
-    dates: `${new Date().toISOString()}`,
     image: `${!getImageURL ? '' : getImageURL}`,
     category: '',
+    dates: ``,
+    target: '0.01',
   });
 
   const handleAssetDelete = async (assetName: string) => {
@@ -35,7 +39,6 @@ const UploadAsset = () => {
   const handleImageUpload = React.useMemo(
     () => async () => {
       if (inputFile) {
-        setImageDisplay(true);
         const data = new FormData();
         data.append('file', inputFile);
         const imageURL: string = await UploadAssetRequest({
@@ -43,7 +46,6 @@ const UploadAsset = () => {
           setAssetUploadPercent,
         });
         setGetImageURl(imageURL);
-        setImageDisplay(false);
       }
     },
     [inputFile]
@@ -61,7 +63,8 @@ const UploadAsset = () => {
     setForm(formState);
   };
 
-  const inputFileState = inputFile === undefined ? false : inputFile === '' ? true : false;
+  const inputFileState =
+    inputFile === undefined ? false : inputFile === '' ? true : false;
 
   const handleFileChange = (event: any) => {
     const file = event.target.files[0];
@@ -70,6 +73,18 @@ const UploadAsset = () => {
 
   const handleSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
+
+    form.image = getImageURL ? getImageURL : '';
+    form.dates = new Date().toISOString();
+    const { title, description, image } = form;
+
+    console.log('form', form);
+
+    // if (!title || !description || !image) return;
+    await createAssetDisplay({
+      ...form,
+      target: ethers.utils.parseUnits(form.target, 18),
+    });
   };
 
   React.useEffect(() => {
@@ -182,8 +197,6 @@ const UploadAsset = () => {
                   </p>
                 </div>
               )}
-
-          
             </div>
 
             <div className='w-full flex items-center justify-between px-4 py-2 bg-[#141414]'>

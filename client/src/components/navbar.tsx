@@ -1,11 +1,21 @@
 import React from 'react';
 import { TfiThemifyFaviconAlt } from 'react-icons/tfi';
 import { BsSearch, BsSun, BsMoon } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useThirdWebContext } from '../contexts/thirdweb';
 
 interface Props {}
 
 const Navbar = () => {
+  const { address, connect } = useThirdWebContext();
+
+  const navigate = useNavigate();
+
+  const handleConnection = () => {
+    if (address) navigate('/dashboard/upload-asset');
+    else connect();
+  };
+
   return (
     <header className='w-full flex items-center justify-between py-3'>
       <div className='w-full flex items-center gap-10'>
@@ -65,8 +75,12 @@ const Navbar = () => {
         </ul>
 
         <ul className='flex items-center gap-2'>
-          <li className='bg-violet-600 hover:bg-violet-700 text-white font-light rounded-2xl w-fit px-4 py-2'>
-            Connect your wallet
+          <li
+            onClick={handleConnection}
+            title={`${address ? 'Dashboard' : 'Connect your wallet'}`}
+            className='bg-violet-600 hover:bg-violet-700 text-white font-light rounded-2xl w-fit px-4 py-2'
+          >
+            {address ? 'Dashboard' : 'Connect your wallet'}
           </li>
           <li>
             <label className='swap swap-rotate border-[1px] border-gray-50/60 rounded-full p-2'>

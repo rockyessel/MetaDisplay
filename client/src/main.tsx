@@ -1,9 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
-import { ThirdwebProvider } from '@thirdweb-dev/react';
+import { ChainId, ThirdwebProvider } from '@thirdweb-dev/react';
 import './styles/globals.css';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { ThirdWebContextProvider } from './contexts/thirdweb';
 
 // This is the chain your dApp will work on.
 // Change this to the chain your app is built for.
@@ -14,10 +15,12 @@ const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
   <React.StrictMode>
-    <ThirdwebProvider activeChain={activeChain}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+    <ThirdwebProvider activeChain={ChainId.Goerli}>
+      <ThirdWebContextProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThirdWebContextProvider>
     </ThirdwebProvider>
   </React.StrictMode>
 );
