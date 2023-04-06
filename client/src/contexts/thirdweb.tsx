@@ -11,14 +11,17 @@ import { AssetsDisplayProps, FormProps } from '../interface';
 
 interface ContextProps {
   address?: string | undefined;
-  connect?: (connectOptions?: { chainId?: number | undefined } | undefined) => Promise<void>;
+  connect?: (
+    connectOptions?: { chainId?: number | undefined } | undefined
+  ) => Promise<void>;
   uploadAsset: (form: FormProps) => Promise<void>;
   getAssets: AssetsDisplayProps[];
 }
 
 const ThirdWebContext = React.createContext<ContextProps>({
   address: undefined,
-  connect: (connectOptions: { chainId?: number | undefined } | undefined) => Promise.resolve(),
+  connect: (connectOptions: { chainId?: number | undefined } | undefined) =>
+    Promise.resolve(),
   uploadAsset: (form: FormProps) => Promise.resolve(),
   getAssets: [],
 });
@@ -34,7 +37,6 @@ export const ThirdWebContextProvider = (props: any) => {
 
   const address = useAddress();
   const connect = useMetamask();
-
 
   const uploadAsset = async (form: FormProps) => {
     try {
@@ -57,7 +59,7 @@ export const ThirdWebContextProvider = (props: any) => {
 
   React.useEffect(() => {
     const getAssetsDisplay = async (): Promise<void> => {
-      console.log('assetsDisplay',assetsDisplay);
+      console.log('assetsDisplay', assetsDisplay);
       const allAssetsDisplay: AssetsDisplayProps[] = assetsDisplay.map(
         (asset: AssetsDisplayProps, index: number) => ({
           owner: asset.owner,

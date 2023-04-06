@@ -12,7 +12,7 @@ import { Footer, Navbar } from './components';
 
 const App = () => {
   return (
-    <main className='px-4 lg:px-20 pb-20'>
+    <main className='px-4 lg:px-20'>
       <Navbar />
       <Routes>
         <Route path='/' element={<Explore />} />

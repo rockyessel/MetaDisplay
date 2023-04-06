@@ -13,7 +13,7 @@ const Navbar = () => {
 
   const handleConnection = () => {
     if (address) navigate('/dashboard/upload-asset');
-    else connect();
+    if (connect) connect();
   };
 
   return (

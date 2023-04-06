@@ -7,3 +7,4 @@ export { default as DropMenu } from './drop-menu';
 export { default as Footer } from './footer';
 export { default as Input } from './input';
 export { default as CircleProgressbar } from './circle-progressbar';
+export { default as Loader } from './loader';
