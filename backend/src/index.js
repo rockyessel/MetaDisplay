@@ -13,10 +13,23 @@ app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+
+const a = () => {
+  console.log(
+    process.env.BUCKET_NAME,
+    process.env.BUCKET_REGION_NAME,
+    process.env.AWS_IAM_META_DISPLAY_ACCESS_KEY,
+    process.env.AWS_IAM_META_DISPLAY_ACCESS_SECRET_KEY,
+    process.env.META_DISPLAY_S3_BASE_URL
+  );
+};
+
 // @desc Routes
 app.use('/v1/assets', require('./routes/assets'));
-
+app.use('/v1/users', require('./routes/users'));
 // @desc Server Port
 app.listen(PORT, () => {
   console.log('Listening on port');
 });
+
+module.exports = a

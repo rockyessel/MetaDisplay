@@ -1,8 +1,7 @@
 const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const { s3, bucket_name, url } = require('../utils/index.js');
-const a = require('../index.js');
 
-const AssetPost = async (request, response) => {
+const UserPost = async (request, response) => {
   try {
     const params = {
       Bucket: bucket_name,
@@ -11,9 +10,7 @@ const AssetPost = async (request, response) => {
       ContentType: request.file?.mimetype,
     };
 
-    a();
-
-    await createFolder('Assets');
+    createFolder('User');
 
     const command = new PutObjectCommand(params);
     await s3.send(command);
@@ -24,7 +21,7 @@ const AssetPost = async (request, response) => {
   }
 };
 
-const AssetDelete = async (request, response) => {
+const UserDelete = async (request, response) => {
   try {
     const params = {
       Bucket: bucket_name,
@@ -47,6 +44,8 @@ async function createFolder(folder_name) {
     Body: 0,
   };
 
+  console.log('s3', s3);
+
   try {
     const command = new PutObjectCommand(params);
     const result = await s3.send(command);
@@ -56,4 +55,4 @@ async function createFolder(folder_name) {
   }
 }
 
-module.exports = { AssetPost, AssetDelete };
+module.exports = { UserPost, UserDelete };

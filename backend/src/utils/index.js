@@ -1,5 +1,5 @@
 const multer = require('multer');
-const { S3Client } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const url = process.env.META_DISPLAY_S3_BASE_URL;
 const bucket_name = process.env.BUCKET_NAME;
@@ -19,5 +19,6 @@ const s3 = new S3Client({
 
 const storageFileEngine = multer.memoryStorage();
 const asset_upload = multer({ storage: storageFileEngine });
+
 
 module.exports = { asset_upload, s3, bucket_name, url };
