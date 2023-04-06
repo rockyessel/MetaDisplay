@@ -64,7 +64,7 @@ const UploadAsset = () => {
   const inputFileState =
     inputFile === undefined ? false : inputFile === '' ? true : false;
 
-  const isLoading = assetUploadPercent > 98 && imageDisplayState === true;
+  const isLoading = assetUploadPercent > 0 && imageDisplayState === true;
 
   const handleFileChange = (event: any) => {
     const file = event.target.files[0];

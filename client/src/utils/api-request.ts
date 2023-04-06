@@ -6,12 +6,12 @@ interface ImportMeta {
 
 const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
 
-console.log('baseURL',baseURL)
+console.log('baseURL', baseURL);
 
 export const UploadAssetRequest = async (asset: any) => {
   const response = await axios({
     method: 'POST',
-    baseURL: `${baseURL}/v1/assets`,
+    baseURL: `${baseURL}v1/assets`,
     data: asset.data,
     xsrfCookieName: 'XSRF-TOKEN',
     xsrfHeaderName: 'X-XSRF-TOKEN',
@@ -30,7 +30,7 @@ export const UploadAssetRequest = async (asset: any) => {
 export const UploadAssetRequestDelete = async (assetName: any) => {
   const response = await axios({
     method: 'DELETE',
-    baseURL: `${baseURL}/v1/assets/delete/${assetName}`,
+    baseURL: `${baseURL}v1/assets/delete/${assetName}`,
     xsrfCookieName: 'XSRF-TOKEN',
     xsrfHeaderName: 'X-XSRF-TOKEN',
     headers: {
