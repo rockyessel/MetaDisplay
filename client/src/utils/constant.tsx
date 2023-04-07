@@ -15,4 +15,10 @@ export const formDataInitialValue = {
   username: '',
   email: '',
   password: '',
-}
+};
+
+export const loginDefaultValue = {
+  address: '',
+  username: '',
+  password: '',
+};

@@ -12,6 +12,8 @@ export const UserContextProvider = ({ children }: { children: any }) => {
   const [userData, setUserData] = React.useState({});
   const address = useAddress();
 
+    const LoginUserWithAddress = async (form:any) => {}
+
   const RegisterUser = async (formData: any) => {
     const response = await axios({
       method: 'POST',
@@ -61,8 +63,6 @@ export const UserContextProvider = ({ children }: { children: any }) => {
     }
   };
 
-  console.log('address in user context', address);
-
   React.useEffect(() => {
     CheckingUserState();
   }, [address]);
@@ -71,6 +71,7 @@ export const UserContextProvider = ({ children }: { children: any }) => {
     RegisterUser,
     showRegisterModal,
     showLoginModal,
+    address,
   };
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

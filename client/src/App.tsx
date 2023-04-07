@@ -9,20 +9,13 @@ import {
   UploadAsset,
 } from './pages';
 import { Footer, Navbar, RegisterModal } from './components';
+import { useUserContext } from './contexts/user-context';
 
 const App = () => {
-  const [isUser, setIsUser] = React.useState(true)
-
-
-  React.useEffect(() => {
-    const user = localStorage.getItem('user')
-    if(user !== null) {
-      setIsUser(false)
-    }
-  },[])
+const {showRegisterModal,showLoginModal} = useUserContext()
   return (
     <>
-    {isUser &&  <RegisterModal />}
+    {showRegisterModal &&  <RegisterModal />}
       <main className='px-4 lg:px-20 relative'>
         <Navbar />
         <Routes>

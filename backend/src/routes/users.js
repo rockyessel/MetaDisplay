@@ -1,5 +1,5 @@
 const express = require('express');
-const { RegisterUser,LoginUser, UserDelete,FindUserAddress} = require('../controllers/users.js');
+const { RegisterUser, LoginUser, UserDelete, FindUserAddress} = require('../controllers/users.js');
 const { asset_upload } = require('../utils');
 
 const router = express.Router();

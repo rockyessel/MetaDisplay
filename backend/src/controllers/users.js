@@ -95,48 +95,71 @@ const RegisterUser = async (request, response) => {
 
 const LoginUser = async (request, response) => {
   try {
-    const { email, password } = request.body;
+    console.log('body', request.body);
+    const { address, username, password } = request.body;
 
-    const empty =
-      email === '' ||
-      email === null ||
-      email === undefined ||
+    const missingFields =
+      username === '' ||
+      username === null ||
+      username === undefined ||
       password === '' ||
       password === undefined ||
-      password === null;
+      password === null ||
+      address === '' ||
+      address === undefined ||
+      address === null;
 
-    if (empty) {
+    if (missingFields) {
       response.status(404).json({ msg: 'Email/Password cannot be blank' });
     }
 
-    const isEmailAvailable = await User.findOne({ email });
+    const foundUserWithAddress = await User.findOne({ address });
 
-    if (!isEmailAvailable || isEmailAvailable === null) {
+    if (!foundUserWithAddress || foundUserWithAddress === null) {
+      response.status(404).json({
+        error: true,
+        msg: `No user was found with this address: ${address}`,
+      });
+    }
+
+    if (foundUserWithAddress.username !== username) {
       response
         .status(404)
-        .json({ error: true, msg: `User exist with this email:${email}` });
+        .json({ error: true, msg: `Your username is incorrect.` });
     }
 
     const compare = await bcrypt.compare(
       password,
-      `${isEmailAvailable?.password}`
+      foundUserWithAddress.password
     );
 
     if (!compare) {
       response.status(404).json({ error: true, msg: `Password is incorrect` });
     }
 
-    const token = GenToken(isEmailAvailable?._id);
+    const token = GenToken(foundUserWithAddress?._id);
 
     response.status(201).json({
       success: true,
-      name: isEmailAvailable.name,
-      username: isEmailAvailable.username,
-      email: isEmailAvailable.email,
-      profile: isEmailAvailable.profile,
-      _id: isEmailAvailable._id,
+      name: foundUserWithAddress.name,
+      username: foundUserWithAddress.username,
+      email: foundUserWithAddress.email,
+      profile: foundUserWithAddress.profile,
+      _id: foundUserWithAddress._id,
       token,
     });
+
+    if (!response.headersSent) {
+      response.status(201).json({
+        success: true,
+        name: foundUserWithAddress.name,
+        username: foundUserWithAddress.username,
+        email: foundUserWithAddress.email,
+        profile: foundUserWithAddress.profile,
+        _id: foundUserWithAddress._id,
+        token,
+      });
+    }
   } catch (error) {
     console.log(error);
     response.status(500).json({ msg: 'Internal error', location: 'login' });
