@@ -8,3 +8,11 @@ export const formInitialValue = {
   dates: ``,
   target: ethers.BigNumber.from(0),
 };
+
+export const formDataInitialValue = {
+  address: '',
+  name: '',
+  username: '',
+  email: '',
+  password: '',
+}

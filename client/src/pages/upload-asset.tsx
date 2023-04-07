@@ -63,9 +63,12 @@ const UploadAsset = () => {
   const inputFileState =
     inputFile === undefined ? false : inputFile === '' ? true : false;
 
-  const handleFileChange = (event: any) => {
-    const file = event.target.files[0];
-    setInputFile(file);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { target } = event;
+    if (target.files) {
+      const file = target.files[0];
+      setInputFile(file);
+    }
   };
 
   const handleSubmission = async (event: React.SyntheticEvent) => {

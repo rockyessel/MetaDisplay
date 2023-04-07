@@ -1,9 +1,14 @@
- interface FormErrorProps {
+interface FormErrorProps {
   state: boolean;
   msg: string;
 }
 
-export default function FormValidation( formType: string, formData: string, formErr: FormErrorProps, setFormErr: React.Dispatch<React.SetStateAction<FormErrorProps>>): boolean {
+export default function FormValidation(
+  formType: string,
+  formData: string,
+  formErr: FormErrorProps,
+  setFormErr: React.Dispatch<React.SetStateAction<FormErrorProps>>
+): boolean {
   let currentState: boolean = true;
 
   switch (formType) {
@@ -173,7 +178,7 @@ export default function FormValidation( formType: string, formData: string, form
         console.error(new Error('sth went wrong in ph number'));
       }
 
-    case `${'message' || 'comment'}`:
+    case `${'message' || 'comment' || 'description'}`:
       try {
         const messageValidation = (formValue: string): boolean => {
           currentState = false;
@@ -184,7 +189,7 @@ export default function FormValidation( formType: string, formData: string, form
               msg: 'Message is required',
             };
             setFormErr(formState);
-          } else if (formValue.length < 25) {
+          } else if (formValue.length < 10) {
             const formState = {
               ...formErr,
               state: true,
@@ -214,38 +219,26 @@ export default function FormValidation( formType: string, formData: string, form
         console.error(new Error('sth went wrong in message'));
       }
 
-    // case 'password':
-    //   const passwordValidation = (formValue: {
-    //     password: string;
-    //     confirmPassword: string;
-    //   }):boolean => {
-    //     let currentState = false;
-    //     const { password, confirmPassword } = formValue;
+    case 'password':
+      const passwordValidation = (formValue: string): boolean => {
+        let currentState = false;
 
-    //     if (!password) {
-    //       //    do something
-    //     } else if (!confirmPassword) {
-    //       //    do something
-    //     } else if (
-    //       !new RegExp('^(?=[^\\d_].*?\\d)\\w(\\w|[!@#$%]){7,20}').test(password)
-    //     ) {
-    //       //    do something
-    //     } else if (
-    //       !new RegExp('^(?=[^\\d_].*?\\d)\\w(\\w|[!@#$%]){7,20}').test(
-    //         confirmPassword
-    //       )
-    //     ) {
-    //       //    do something
-    //     } else if (password !== confirmPassword) {
-    //       //    do something
-    //     } else {
-    //       return (currentState = true);
-    //       //    do something
-    //     }
+        if (!formValue) {
+          //    do something
+        } else if (
+          !new RegExp('^(?=[^\\d_].*?\\d)\\w(\\w|[!@#$%]){7,20}').test(
+            formValue
+          )
+        ) {
+          //    do something
+        } else {
+          return (currentState = true);
+          //    do something
+        }
 
-    //     return currentState;
-    //   };
-    //   return passwordValidation(formData);
+        return currentState;
+      };
+      return passwordValidation(formData);
 
     default:
       break;
