@@ -4,6 +4,7 @@ import { useThirdWebContext } from '../contexts/thirdweb';
 import { formDataInitialValue } from '../utils/constant';
 import Button from './button';
 import { RegisterUser } from '../utils/api-request';
+import Loader from './loader';
 
 interface Props extends HTMLInputElement {}
 
@@ -11,6 +12,7 @@ const RegisterModal = () => {
   const [formData, setFormData] =
     React.useState<typeof formDataInitialValue>(formDataInitialValue);
   const [inputFile, setInputFile] = React.useState<string | Blob>('');
+  const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const { address } = useThirdWebContext();
 
   const handleFormChange = (
@@ -35,21 +37,28 @@ const RegisterModal = () => {
 
   const handleSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-    const { name, username, email, password } = formData;
-    const formData_ = new FormData();
-    formData_.append('file', inputFile);
-    formData_.append('name', name);
-    formData_.append('username', username);
-    formData_.append('email', email);
-    formData_.append('password', password);
-    await RegisterUser(formData_);
+      if (address) {
+        setIsLoading(true)
+      const { name, username, email, password } = formData;
+      const formData_ = new FormData();
+      formData_.append('file', inputFile);
+      formData_.append('name', name);
+      formData_.append('username', username);
+      formData_.append('email', email);
+      formData_.append('password', password);
+      formData_.append('address', address);
+      await RegisterUser(formData_);
+        setFormData(formDataInitialValue);
+        setInputFile('')
+        setIsLoading(false)
+    }
   };
 
   return (
     <React.Fragment>
       {address && address.length > 0 && (
         <main className='tx_modal fixed top- left-0 overflow-hidden backdrop-blur-lg bg-black/40 z-[3] flex justify-center items-center'>
-          <section className='bg-black w-full sm:w-[40rem] h-screen sm:h-auto px-4 py-2 rounded-xl flex flex-col gap-5 shadow-lg shadow-violet-600 overflow-y-auto'>
+        {isLoading ? <Loader stateValue={`Registering to address:${address && address}`} /> :  <section className='bg-black w-full sm:w-[40rem] h-screen sm:h-auto px-4 py-2 rounded-xl flex flex-col gap-5 shadow-lg shadow-violet-600 overflow-y-auto'>
             <p>Register Account After Connecting Wallet</p>
             <form onSubmit={handleSubmission} className='flex flex-col gap-5'>
               <Input
@@ -59,7 +68,9 @@ const RegisterModal = () => {
                 label={'Address'}
                 elementType={'input'}
                 type='text'
+                styles='cursor-not-allowed'
                 name={'address'}
+                disabled={true}
               />
               <Input
                 value={formData.name}
@@ -113,7 +124,7 @@ const RegisterModal = () => {
                 Upload
               </Button>
             </form>
-          </section>
+          </section>}
         </main>
       )}
     </React.Fragment>

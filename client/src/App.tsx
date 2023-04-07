@@ -11,9 +11,18 @@ import {
 import { Footer, Navbar, RegisterModal } from './components';
 
 const App = () => {
+  const [isUser, setIsUser] = React.useState(true)
+
+
+  React.useEffect(() => {
+    const user = localStorage.getItem('user')
+    if(user !== null) {
+      setIsUser(false)
+    }
+  },[])
   return (
     <>
-      <RegisterModal />
+    {isUser &&  <RegisterModal />}
       <main className='px-4 lg:px-20 relative'>
         <Navbar />
         <Routes>

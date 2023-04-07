@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { BsWindowSidebar } from 'react-icons/bs';
 
 const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
 
@@ -47,5 +48,8 @@ export const RegisterUser = async (formData: any) => {
     },
   });
 
+  if (response.data) {
+    localStorage.setItem('user', JSON.stringify(response.data))
+  }
   return response.data;
 };
