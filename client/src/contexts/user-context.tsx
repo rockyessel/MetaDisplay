@@ -1,13 +1,16 @@
 import axios from 'axios';
 import React from 'react';
 import { useAddress } from '@thirdweb-dev/react';
-import { formDataInitialValue, loginDefaultValue } from '../utils/constant';
+import { formDataInitialValue, loginDefaultValue, userDataDefault } from '../utils/constant';
+import { UserDataProps } from '../interface';
 
 interface UserContextProviderProps {
   RegisterUser: (formData: any) => Promise<void>;
   showRegisterModal: boolean;
   showLoginModal: boolean;
   LoginUserWithAddress: (form: any) => Promise<void>;
+  userData: UserDataProps;
+  setShowRegisterModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type Props = {
@@ -18,12 +21,14 @@ const UserContext = React.createContext({
   showRegisterModal: false,
   showLoginModal: false,
   LoginUserWithAddress: (form: any) => Promise.resolve(),
+  userData: userDataDefault,
+  setShowRegisterModal: () => {},
 });
 
 export const UserContextProvider = (props: Props) => {
   const [showRegisterModal, setShowRegisterModal] = React.useState(false);
   const [showLoginModal, setShowLoginModal] = React.useState(false);
-  const [userData, setUserData] = React.useState({});
+  const [userData, setUserData] = React.useState<UserDataProps>(userDataDefault);
   const address = useAddress();
 
   const LoginUserWithAddress = async (form: typeof loginDefaultValue) => {
@@ -83,18 +88,20 @@ export const UserContextProvider = (props: Props) => {
     if (address) {
       const foundUser = await FindUserWithAddress(address);
       console.log('foundUser', foundUser);
-      if (foundUser.address === address) {
+      if (foundUser !== null) {
         user ? null : setShowLoginModal(true);
         setShowRegisterModal(false);
       } else {
         setShowLoginModal(false);
-        setShowRegisterModal(true);
+        user ? null : setShowRegisterModal(true);
       }
     }
   };
 
   React.useEffect(() => {
     CheckingUserState();
+    const user = localStorage.getItem('user');
+    user ? setUserData(JSON.parse(user)) : null;
   }, [address]);
 
   const value = {
@@ -102,6 +109,8 @@ export const UserContextProvider = (props: Props) => {
     showRegisterModal,
     showLoginModal,
     LoginUserWithAddress,
+    userData,
+    setShowRegisterModal,
   };
   return (
     <UserContext.Provider value={value}>{props.children}</UserContext.Provider>

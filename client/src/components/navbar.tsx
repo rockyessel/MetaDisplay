@@ -3,18 +3,25 @@ import { TfiThemifyFaviconAlt } from 'react-icons/tfi';
 import { BsSearch, BsSun, BsMoon } from 'react-icons/bs';
 import { Link, useNavigate } from 'react-router-dom';
 import { useThirdWebContext } from '../contexts/thirdweb';
+import Loader from './loader';
 
 interface Props {}
 
 const Navbar = () => {
   const { address, connect } = useThirdWebContext();
+  const [isConnecting, setIsConnecting] = React.useState(false);
 
   const navigate = useNavigate();
 
   const handleConnection = async () => {
     if (address) navigate('/dashboard/upload-asset');
-    if (connect) await connect();
-    else console.log('No connection was made');
+    setIsConnecting(true);
+    if (connect) {
+      await connect();
+      setIsConnecting(false);
+    } else {
+      console.log('No connection was made');
+    }
   };
 
   return (
@@ -79,9 +86,19 @@ const Navbar = () => {
           <li
             onClick={handleConnection}
             title={`${address ? 'Dashboard' : 'Connect your wallet'}`}
-            className='bg-violet-600 hover:bg-violet-700 text-white font-light rounded-2xl w-fit px-4 py-2'
+            className='cursor-pointer bg-violet-600 hover:bg-violet-700 text-white font-light rounded-2xl w-fit px-4 py-2'
           >
-            {address ? 'Dashboard' : 'Connect your wallet'}
+            {address ? (
+              'Dashboard'
+            ) : isConnecting ? (
+              <Loader
+                iconStyles='text-2xl'
+                styles='w-full justify-center items-center'
+                stateValue='Connecting'
+              />
+            ) : (
+              'Connect your wallet'
+            )}
           </li>
           <li>
             <label className='swap swap-rotate border-[1px] border-gray-50/60 rounded-full p-2'>

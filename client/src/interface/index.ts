@@ -22,3 +22,12 @@ export interface AssetsDisplayProps {
   target: BigNumber;
   _id: number;
 }
+
+export interface UserDataProps {
+  address:string;
+  username:string,
+  name:string;
+  token:string;
+  email:string;
+  profile:string;
+}

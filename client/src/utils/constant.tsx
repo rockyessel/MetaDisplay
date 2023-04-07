@@ -22,3 +22,12 @@ export const loginDefaultValue = {
   username: '',
   password: '',
 };
+
+export const userDataDefault = {
+  address: '',
+  username: '',
+  name: '',
+  token: '',
+  email: '',
+  profile: '',
+};

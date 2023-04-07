@@ -12,7 +12,7 @@ import { Footer, LoginModal, Navbar, RegisterModal } from './components';
 import { useUserContext } from './contexts/user-context';
 
 const App = () => {
-const {showRegisterModal,showLoginModal} = useUserContext()
+  const { showRegisterModal, showLoginModal } = useUserContext();
   return (
     <>
       {showRegisterModal && <RegisterModal />}
