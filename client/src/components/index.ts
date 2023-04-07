@@ -9,3 +9,4 @@ export { default as Input } from './input';
 export { default as CircleProgressbar } from './circle-progressbar';
 export { default as Loader } from './loader';
 export { default as RegisterModal } from './register-modal';
+export { default as LoginModal } from './login-modal';

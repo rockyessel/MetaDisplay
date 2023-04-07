@@ -8,14 +8,15 @@ import {
   User,
   UploadAsset,
 } from './pages';
-import { Footer, Navbar, RegisterModal } from './components';
+import { Footer, LoginModal, Navbar, RegisterModal } from './components';
 import { useUserContext } from './contexts/user-context';
 
 const App = () => {
 const {showRegisterModal,showLoginModal} = useUserContext()
   return (
     <>
-    {showRegisterModal &&  <RegisterModal />}
+      {showRegisterModal && <RegisterModal />}
+      {showLoginModal && <LoginModal />}
       <main className='px-4 lg:px-20 relative'>
         <Navbar />
         <Routes>

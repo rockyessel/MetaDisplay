@@ -1,20 +1,50 @@
 import axios from 'axios';
 import React from 'react';
 import { useAddress } from '@thirdweb-dev/react';
+import { formDataInitialValue, loginDefaultValue } from '../utils/constant';
 
-interface Props {}
+interface UserContextProviderProps {
+  RegisterUser: (formData: any) => Promise<void>;
+  showRegisterModal: boolean;
+  showLoginModal: boolean;
+  LoginUserWithAddress: (form: any) => Promise<void>;
+}
 
-const UserContext = React.createContext({});
+type Props = {
+  children: React.ReactNode;
+};
+const UserContext = React.createContext({
+  RegisterUser: (formData: any) => Promise.resolve(),
+  showRegisterModal: false,
+  showLoginModal: false,
+  LoginUserWithAddress: (form: any) => Promise.resolve(),
+});
 
-export const UserContextProvider = ({ children }: { children: any }) => {
+export const UserContextProvider = (props: Props) => {
   const [showRegisterModal, setShowRegisterModal] = React.useState(false);
   const [showLoginModal, setShowLoginModal] = React.useState(false);
   const [userData, setUserData] = React.useState({});
   const address = useAddress();
 
-    const LoginUserWithAddress = async (form:any) => {}
+  const LoginUserWithAddress = async (form: typeof loginDefaultValue) => {
+    const response = await axios({
+      method: 'POST',
+      baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/users/login`,
+      data: form,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.data) {
+      localStorage.setItem('user', JSON.stringify(response.data));
+    }
+    const user = localStorage.getItem('user');
+    user ? setUserData(JSON.parse(user)) : null;
+  };
 
-  const RegisterUser = async (formData: any) => {
+  const RegisterUser = async (formData: typeof formDataInitialValue) => {
     const response = await axios({
       method: 'POST',
       baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/users/register`,
@@ -25,11 +55,11 @@ export const UserContextProvider = ({ children }: { children: any }) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-
     if (response.data) {
       localStorage.setItem('user', JSON.stringify(response.data));
     }
-    return response.data;
+    const user = localStorage.getItem('user');
+    user ? setUserData(JSON.parse(user)) : null;
   };
 
   const FindUserWithAddress = async (address: string) => {
@@ -71,9 +101,11 @@ export const UserContextProvider = ({ children }: { children: any }) => {
     RegisterUser,
     showRegisterModal,
     showLoginModal,
-    address,
+    LoginUserWithAddress,
   };
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={value}>{props.children}</UserContext.Provider>
+  );
 };
 
 export default UserContextProvider;

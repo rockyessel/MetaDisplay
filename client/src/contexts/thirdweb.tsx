@@ -5,6 +5,7 @@ import {
   useMetamask,
   useContractWrite,
   useContractRead,
+  useDisconnect,
 } from '@thirdweb-dev/react';
 import { ethers } from 'ethers';
 import { AssetsDisplayProps, FormProps } from '../interface';
@@ -14,6 +15,7 @@ interface ContextProps {
   connect?: (
     connectOptions?: { chainId?: number | undefined } | undefined
   ) => Promise<void>;
+  disconnect: () => Promise<void>;
   uploadAsset: (form: FormProps) => Promise<void>;
   getAssets: AssetsDisplayProps[];
 }
@@ -22,6 +24,7 @@ const ThirdWebContext = React.createContext<ContextProps>({
   address: undefined,
   connect: (connectOptions: { chainId?: number | undefined } | undefined) =>
     Promise.resolve(),
+  disconnect: () => Promise.resolve(),
   uploadAsset: (form: FormProps) => Promise.resolve(),
   getAssets: [],
 });
@@ -29,11 +32,15 @@ const ThirdWebContext = React.createContext<ContextProps>({
 export const ThirdWebContextProvider = (props: any) => {
   const { contract } = useContract(`${process.env.VITE_META_DISPLAY_WALLET}`);
   const { data: assetsDisplay } = useContractRead(contract, 'getAssetsDisplay');
-  const { mutateAsync: createAssetDisplay } = useContractWrite(contract, 'createAssetDisplay');
+  const { mutateAsync: createAssetDisplay } = useContractWrite(
+    contract,
+    'createAssetDisplay'
+  );
   const [getAssets, setGetAsset] = React.useState<AssetsDisplayProps[]>([]);
 
   const address = useAddress();
   const connect = useMetamask();
+  const disconnect = useDisconnect();
 
   const uploadAsset = async (form: FormProps) => {
     try {
@@ -83,6 +90,7 @@ export const ThirdWebContextProvider = (props: any) => {
     connect,
     uploadAsset,
     getAssets,
+    disconnect,
   };
   return (
     <ThirdWebContext.Provider value={value}>

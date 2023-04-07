@@ -3,8 +3,8 @@ import Input from './input';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import { loginDefaultValue } from '../utils/constant';
 import Button from './button';
-import { RegisterUser } from '../utils/api-request';
 import Loader from './loader';
+import { useUserContext } from '../contexts/user-context';
 
 interface Props extends HTMLInputElement {}
 
@@ -12,7 +12,9 @@ const LoginModal = () => {
   const [formData, setFormData] =
     React.useState<typeof loginDefaultValue>(loginDefaultValue);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const { address } = useThirdWebContext();
+  const [isDisconnected, setIsDisconnected] = React.useState<boolean>(false);
+  const { address, disconnect } = useThirdWebContext();
+  const { LoginUserWithAddress } = useUserContext();
 
   const handleFormChange = (
     event:
@@ -26,16 +28,24 @@ const LoginModal = () => {
     }));
   };
 
-
   const handleSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     if (address) {
       setIsLoading(true);
-      const {  username, password } = formData;
-      await RegisterUser(formData);
+      formData.address = address;
+      console.log('Login', formData);
+      await LoginUserWithAddress(formData);
       setFormData(loginDefaultValue);
       setIsLoading(false);
     }
+  };
+
+  const handleDisconnect = () => {
+    setIsDisconnected(true);
+    setTimeout(() => {
+      disconnect();
+      setIsDisconnected(false);
+    }, 2000);
   };
 
   return (
@@ -48,7 +58,9 @@ const LoginModal = () => {
             />
           ) : (
             <section className='bg-black w-full sm:w-[40rem] h-screen sm:h-auto px-4 py-2 rounded-xl flex flex-col gap-5 shadow-lg shadow-violet-600 overflow-y-auto'>
-              <p>Register Account After Connecting Wallet</p>
+              <p className='inline-flex items-center flex-shrink-0 gap-2 px-4 py-2 text-lg'>
+                Verify Address
+              </p>
               <form onSubmit={handleSubmission} className='flex flex-col gap-5'>
                 <Input
                   value={address && address}
@@ -61,7 +73,7 @@ const LoginModal = () => {
                   name={'address'}
                   disabled={true}
                 />
-    
+
                 <Input
                   value={formData.username}
                   onChange={handleFormChange}
@@ -85,7 +97,23 @@ const LoginModal = () => {
                   styles={'bg-[#141414]'}
                   title={'Register'}
                 >
-                  Upload
+                  Verify
+                </Button>
+                <Button
+                  type='button'
+                  styles={'bg-violet-600'}
+                  title={'Register'}
+                  handleClick={handleDisconnect}
+                >
+                  {isDisconnected ? (
+                    <Loader
+                      styles='w-full flex-row justify-center items-center'
+                      stateValue={`Disconnecting`}
+                      iconStyles='text-2xl'
+                    />
+                  ) : (
+                    'Disconnect Wallet'
+                  )}
                 </Button>
               </form>
             </section>

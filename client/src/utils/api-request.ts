@@ -35,21 +35,3 @@ export const UploadAssetRequestDelete = async (assetName: any) => {
 
   return response.data?.asset;
 };
-
-export const RegisterUser = async (formData: any) => {
-  const response = await axios({
-    method: 'POST',
-    baseURL: `${baseURL}v1/users/register`,
-    data: formData,
-    xsrfCookieName: 'XSRF-TOKEN',
-    xsrfHeaderName: 'X-XSRF-TOKEN',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-
-  if (response.data) {
-    localStorage.setItem('user', JSON.stringify(response.data))
-  }
-  return response.data;
-};
