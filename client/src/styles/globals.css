@@ -43,6 +43,12 @@ body {
   background: #370263;
 }
 
+.tx_modal {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden !important;
+}
+
 .gallery {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
