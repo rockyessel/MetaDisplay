@@ -13,7 +13,7 @@ const RegisterUser = async (request, response) => {
   try {
     console.log('body', request.body);
     console.log('file', request.file);
-    const { name, username, email, password } = request.body;
+    const { address, name, username, email, password } = request.body;
 
     const empty =
       email === '' ||
@@ -21,9 +21,16 @@ const RegisterUser = async (request, response) => {
       email === undefined ||
       password === '' ||
       password === undefined ||
-      password === null;
-    name === '' || name === undefined || name === null;
-    username === '' || username === undefined || username === null;
+      password === null ||
+      name === '' ||
+      name === undefined ||
+      name === null ||
+      username === '' ||
+      username === undefined ||
+      username === null ||
+      address === '' ||
+      address === undefined ||
+      address === null;
     //Todo Will use a validator lib to validate later
 
     if (empty)
@@ -48,7 +55,8 @@ const RegisterUser = async (request, response) => {
     const command = new PutObjectCommand(params);
     await s3.send(command);
 
-    const createdUser = await User.create({
+      const createdUser = await User.create({
+        address,
       name,
       username,
       email,
@@ -57,7 +65,8 @@ const RegisterUser = async (request, response) => {
     });
     const token = GenToken(createdUser._id);
     response.status(201).json({
-      success: true,
+        success: true,
+        address,
       name,
       username,
       email,
@@ -108,7 +117,10 @@ const LoginUser = async (request, response) => {
         .json({ error: true, msg: `User exist with this email:${email}` });
     }
 
-    const compare = await bcrypt.compare(password, `${isEmailAvailable?.password}`);
+    const compare = await bcrypt.compare(
+      password,
+      `${isEmailAvailable?.password}`
+    );
 
     if (!compare) {
       response.status(404).json({ error: true, msg: `Password is incorrect` });

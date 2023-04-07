@@ -29,10 +29,7 @@ const ThirdWebContext = React.createContext<ContextProps>({
 export const ThirdWebContextProvider = (props: any) => {
   const { contract } = useContract(`${process.env.VITE_META_DISPLAY_WALLET}`);
   const { data: assetsDisplay } = useContractRead(contract, 'getAssetsDisplay');
-  const { mutateAsync: createAssetDisplay } = useContractWrite(
-    contract,
-    'createAssetDisplay'
-  );
+  const { mutateAsync: createAssetDisplay } = useContractWrite(contract, 'createAssetDisplay');
   const [getAssets, setGetAsset] = React.useState<AssetsDisplayProps[]>([]);
 
   const address = useAddress();
