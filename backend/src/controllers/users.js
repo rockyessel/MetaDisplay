@@ -84,6 +84,53 @@ const RegisterUser = async (request, response) => {
   }
 };
 
+const LoginUser = async (request, response) => {
+  try {
+    const { email, password } = request.body;
+
+    const empty =
+      email === '' ||
+      email === null ||
+      email === undefined ||
+      password === '' ||
+      password === undefined ||
+      password === null;
+
+    if (empty) {
+      response.status(404).json({ msg: 'Email/Password cannot be blank' });
+    }
+
+    const isEmailAvailable = await User.findOne({ email });
+
+    if (!isEmailAvailable || isEmailAvailable === null) {
+      response
+        .status(404)
+        .json({ error: true, msg: `User exist with this email:${email}` });
+    }
+
+    const compare = await bcrypt.compare(password, `${isEmailAvailable?.password}`);
+
+    if (!compare) {
+      response.status(404).json({ error: true, msg: `Password is incorrect` });
+    }
+
+    const token = GenToken(isEmailAvailable?._id);
+
+    response.status(201).json({
+      success: true,
+      name: isEmailAvailable.name,
+      username: isEmailAvailable.username,
+      email: isEmailAvailable.email,
+      profile: isEmailAvailable.profile,
+      _id: isEmailAvailable._id,
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    response.status(500).json({ msg: 'Internal error', location: 'login' });
+  }
+};
+
 const UserDelete = async (request, response) => {
   try {
     const params = {
@@ -100,4 +147,4 @@ const UserDelete = async (request, response) => {
   }
 };
 
-module.exports = { RegisterUser, UserDelete };
+module.exports = { RegisterUser, LoginUser, UserDelete };
