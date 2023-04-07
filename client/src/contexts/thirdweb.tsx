@@ -56,7 +56,6 @@ export const ThirdWebContextProvider = (props: any) => {
 
   React.useEffect(() => {
     const getAssetsDisplay = async (): Promise<void> => {
-      console.log('assetsDisplay', assetsDisplay);
       const allAssetsDisplay: AssetsDisplayProps[] = assetsDisplay.map(
         (asset: AssetsDisplayProps, index: number) => ({
           owner: asset.owner,

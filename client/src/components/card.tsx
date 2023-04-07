@@ -11,7 +11,6 @@ interface Props {
 }
 
 const Card = (props: Props) => {
-  console.log('asset', props.asset);
   return (
     <Link
       to={`/explore/${props?.asset?.owner}/${props?.asset?.title

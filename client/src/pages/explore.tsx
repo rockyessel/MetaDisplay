@@ -19,9 +19,6 @@ const price = [
 
 const Explore = () => {
   const { getAssets } = useThirdWebContext();
-
-  console.log('getAssets', getAssets);
-
   return (
     <section className='flex flex-col gap-10 min-h-screen'>
       <h1 className='font-bold text-4xl text-white'>Explore gallery</h1>

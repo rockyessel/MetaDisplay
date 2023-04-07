@@ -4,8 +4,8 @@ const bcrypt = require('bcrypt');
 const { s3, bucket_name, url, createFolder } = require('../utils/index.js');
 const User = require('../model/users.js');
 
-const GenToken = (_id) => {
-  return jwt.sign({ _id }, `${process.env.JWT_SECRET_TOKEN}`, {
+const GenToken = (address) => {
+  return jwt.sign({ address }, `${process.env.JWT_SECRET_TOKEN}`, {
     expiresIn: '3d',
   });
 };
@@ -55,18 +55,18 @@ const RegisterUser = async (request, response) => {
     const command = new PutObjectCommand(params);
     await s3.send(command);
 
-      const createdUser = await User.create({
-        address,
+    const createdUser = await User.create({
+      address,
       name,
       username,
       email,
       profile: `${url}Users/${username}/${request.file.originalname}`,
       password: hashed_password,
     });
-    const token = GenToken(createdUser._id);
+    const token = GenToken(createdUser.address);
     response.status(201).json({
-        success: true,
-        address,
+      success: true,
+      address,
       name,
       username,
       email,
@@ -159,4 +159,14 @@ const UserDelete = async (request, response) => {
   }
 };
 
-module.exports = { RegisterUser, LoginUser, UserDelete };
+const FindUserAddress = async (request, response) => {
+  try {
+    const { address } = request.params;
+    const findUserWithAddress = await User.findOne({ address });
+    response.json(findUserWithAddress);
+  } catch (error) {
+    response.status(500).json({ error: 'Could not find user.' });
+  }
+};
+
+module.exports = { RegisterUser, LoginUser, UserDelete, FindUserAddress };

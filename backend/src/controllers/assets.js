@@ -3,6 +3,7 @@ const { s3, bucket_name, url } = require('../utils/index.js');
 
 const AssetPost = async (request, response) => {
   try {
+    console.log('user',request?.user)
     const params = {
       Bucket: bucket_name,
       Key: request.file.originalname,

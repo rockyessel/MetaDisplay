@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema(
   {
     address: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
+      unique: true,
       required: true,
     },
     name: {

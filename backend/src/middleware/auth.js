@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require('../model/users.js');
+const User = require('../model/users');
+
 
 const protect = async (request, response, next) => {
   try {
@@ -11,12 +12,13 @@ const protect = async (request, response, next) => {
     ) {
       try {
         token = request.headers.authorization.split(' ')[1];
-
+        console.log('token',token)
+        
         const user = jwt.verify(token, `${process.env.JWT_SECRET_TOKEN}`);
-
+        console.log('user',user)
+        
         if (user) {
-          request.user = await User.findById(user?._id).select('-password');
-
+          request.user = await User.findOne({address:user?.address}).select('-password');
           console.log(user);
         }
 
