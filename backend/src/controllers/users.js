@@ -1,23 +1,86 @@
 const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
-const { s3, bucket_name, url } = require('../utils/index.js');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const { s3, bucket_name, url, createFolder } = require('../utils/index.js');
+const User = require('../model/users.js');
 
-const UserPost = async (request, response) => {
+const GenToken = (_id) => {
+  return jwt.sign({ _id }, `${process.env.JWT_SECRET_TOKEN}`, {
+    expiresIn: '3d',
+  });
+};
+const RegisterUser = async (request, response) => {
   try {
+    console.log('body', request.body);
+    console.log('file', request.file);
+    const { name, username, email, password } = request.body;
+
+    const empty =
+      email === '' ||
+      email === null ||
+      email === undefined ||
+      password === '' ||
+      password === undefined ||
+      password === null;
+    name === '' || name === undefined || name === null;
+    username === '' || username === undefined || username === null;
+    //Todo Will use a validator lib to validate later
+
+    if (empty)
+      response.status(404).json({ msg: 'Check if any field is empty' });
+    const isEmailAvailable = await User.findOne({ email });
+    if (isEmailAvailable)
+      response
+        .status(404)
+        .json({ error: true, msg: `User exist with this email:${email}` });
+    const salt = await bcrypt.genSalt(10);
+    const hashed_password = await bcrypt.hash(password, salt);
+
     const params = {
       Bucket: bucket_name,
-      Key: request.file.originalname,
+      Key: `Users/${username}/${request.file.originalname}`,
       Body: request.file.buffer,
       ContentType: request.file?.mimetype,
     };
 
-    createFolder('User');
+    await createFolder(`Users/${username}/`);
 
     const command = new PutObjectCommand(params);
     await s3.send(command);
 
-    response.status(201).json({ asset: `${url}${request.file.originalname}` });
+    const createdUser = await User.create({
+      name,
+      username,
+      email,
+      profile: `${url}Users/${username}/${request.file.originalname}`,
+      password: hashed_password,
+    });
+    const token = GenToken(createdUser._id);
+    response.status(201).json({
+      success: true,
+      name,
+      username,
+      email,
+      profile: `${url}Users/${username}/${request.file.originalname}`,
+      _id: createdUser._id,
+      token,
+    });
+
+    if (!response.headersSent) {
+      response.status(200).json({
+        success: true,
+        success: true,
+        name,
+        username,
+        email,
+        profile: `${url}User/${username}/${request.file.originalname}`,
+        _id: createdUser._id,
+        token,
+      });
+    }
   } catch (error) {
-    response.status(404).json({ error: 'Could not upload asset.' });
+    console.log(error);
+    response.status(500).json({ error: 'Interval problem' });
   }
 };
 
@@ -33,26 +96,8 @@ const UserDelete = async (request, response) => {
 
     response.status(200).json({ success: true });
   } catch (error) {
-    response.status(404).json({ error: 'Could not delete asset.' });
+    response.status(500).json({ error: 'Could not delete asset.' });
   }
 };
 
-async function createFolder(folder_name) {
-  const params = {
-    Bucket: bucket_name,
-    Key: `${folder_name}/`,
-    Body: 0,
-  };
-
-  console.log('s3', s3);
-
-  try {
-    const command = new PutObjectCommand(params);
-    const result = await s3.send(command);
-    console.log(`Folder created successfully: ${result.Location}`);
-  } catch (error) {
-    console.error(`Error creating folder: ${error.message}`);
-  }
-}
-
-module.exports = { UserPost, UserDelete };
+module.exports = { RegisterUser, UserDelete };

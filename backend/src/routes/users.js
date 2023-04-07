@@ -1,10 +1,10 @@
 const express = require('express');
-const { UserPost, UserDelete } = require('../controllers/users.js');
+const { RegisterUser, UserDelete } = require('../controllers/users.js');
 const { asset_upload } = require('../utils');
 
 const router = express.Router();
 
-router.post('/', asset_upload.single('file'), UserPost);
+router.post('/register', asset_upload.single('file'), RegisterUser);
 router.delete('/delete/:username', UserDelete);
 
 module.exports = router;
