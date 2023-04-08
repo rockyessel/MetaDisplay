@@ -9,6 +9,17 @@ const GenToken = (address) => {
     expiresIn: '3d',
   });
 };
+
+
+const AllUsers = async (request, response) => {
+  try {
+    const users = await User.find({})
+    response.status(200).json(users)
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 const RegisterUser = async (request, response) => {
   try {
     console.log('body', request.body);
@@ -193,4 +204,10 @@ const FindUserAddress = async (request, response) => {
   }
 };
 
-module.exports = { RegisterUser, LoginUser, UserDelete, FindUserAddress };
+module.exports = {
+  RegisterUser,
+  LoginUser,
+  UserDelete,
+  FindUserAddress,
+  AllUsers,
+};
