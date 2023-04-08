@@ -4,6 +4,9 @@ import { BsWindowSidebar } from 'react-icons/bs';
 const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
 
 export const UploadAssetRequest = async (asset: any) => {
+  const data = localStorage.getItem('user');
+  const user = data && JSON.parse(data);
+  const token = user?.token;
   const response = await axios({
     method: 'POST',
     baseURL: `${baseURL}v1/assets`,
@@ -12,6 +15,7 @@ export const UploadAssetRequest = async (asset: any) => {
     xsrfHeaderName: 'X-XSRF-TOKEN',
     headers: {
       'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
     },
     onUploadProgress: (data) => {
       const total: number = data?.total || 0;
