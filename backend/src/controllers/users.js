@@ -137,9 +137,10 @@ const LoginUser = async (request, response) => {
       response.status(404).json({ error: true, msg: `Password is incorrect` });
     }
 
-    const token = GenToken(foundUserWithAddress?._id);
+    const token = GenToken(foundUserWithAddress?.address);
 
     response.status(201).json({
+      address: foundUserWithAddress.address,
       success: true,
       name: foundUserWithAddress.name,
       username: foundUserWithAddress.username,

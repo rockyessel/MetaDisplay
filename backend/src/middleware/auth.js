@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/users');
 
-
 const protect = async (request, response, next) => {
   try {
     let token;
@@ -12,22 +11,18 @@ const protect = async (request, response, next) => {
     ) {
       try {
         token = request.headers.authorization.split(' ')[1];
-        console.log('token',token)
-        
-        const user = jwt.verify(token, `${process.env.JWT_SECRET_TOKEN}`);
-        console.log('user',user)
-        
-        if (user) {
-          request.user = await User.findOne({address:user?.address}).select('-password');
-          console.log(user);
-        }
 
+        const user = jwt.verify(token, `${process.env.JWT_SECRET_TOKEN}`);
+        if (user) {
+          request.user = await User.findOne({ address: user?.address }).select(
+            '-password'
+          );
+        }
         next();
       } catch (error) {
         response.status(401).json({ msg: 'Not Authorized' });
       }
     }
-
     if (!token) {
       response.status(401);
       throw new Error('Not Authorized, And Token Not Found');

@@ -1,20 +1,20 @@
 const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
-const { s3, bucket_name, url } = require('../utils/index.js');
+const { s3, bucket_name, url, createFolder } = require('../utils/index.js');
+const User = require('../model/users.js');
 
 const AssetPost = async (request, response) => {
   try {
-    console.log('user',request?.user)
+    const user = request.user
+    await createFolder(`Assets/${user.username}/`);
     const params = {
       Bucket: bucket_name,
-      Key: request.file.originalname,
+      Key: `Assets/${user.username}/${request.file.originalname}`,
       Body: request.file.buffer,
       ContentType: request.file?.mimetype,
     };
-
     const command = new PutObjectCommand(params);
     await s3.send(command);
-
-    response.status(201).json({ asset: `${url}${request.file.originalname}` });
+    response.status(201).json({ asset: `${url}Assets/${user.username}/${request.file.originalname}` });
   } catch (error) {
     response.status(500).json({ error: 'Could not upload asset.' });
   }
