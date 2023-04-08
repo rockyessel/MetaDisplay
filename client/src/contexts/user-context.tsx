@@ -1,7 +1,11 @@
 import axios from 'axios';
 import React from 'react';
 import { useAddress } from '@thirdweb-dev/react';
-import { formDataInitialValue, loginDefaultValue, userDataDefault } from '../utils/constant';
+import {
+  formDataInitialValue,
+  loginDefaultValue,
+  userDataDefault,
+} from '../utils/constant';
 import { UserDataProps } from '../interface';
 
 interface UserContextProviderProps {
@@ -10,7 +14,9 @@ interface UserContextProviderProps {
   showLoginModal: boolean;
   LoginUserWithAddress: (form: any) => Promise<void>;
   userData: UserDataProps;
-  setShowRegisterModal: React.Dispatch<React.SetStateAction<boolean>>;
+  handleRegisterToggle: () => void;
+  handleLoginToggle: () => void;
+  userLogState: boolean;
 }
 
 type Props = {
@@ -22,14 +28,20 @@ const UserContext = React.createContext({
   showLoginModal: false,
   LoginUserWithAddress: (form: any) => Promise.resolve(),
   userData: userDataDefault,
-  setShowRegisterModal: () => {},
+  handleRegisterToggle: () => {},
+  handleLoginToggle: () => {},
+  userLogState: false,
 });
 
 export const UserContextProvider = (props: Props) => {
   const [showRegisterModal, setShowRegisterModal] = React.useState(false);
   const [showLoginModal, setShowLoginModal] = React.useState(false);
-  const [userData, setUserData] = React.useState<UserDataProps>(userDataDefault);
+  const [userLogState, setUserLogState] = React.useState(false);
+  const [userData, setUserData] =
+    React.useState<UserDataProps>(userDataDefault);
   const address = useAddress();
+
+  console.log('userData', userData);
 
   const LoginUserWithAddress = async (form: typeof loginDefaultValue) => {
     const response = await axios({
@@ -44,9 +56,8 @@ export const UserContextProvider = (props: Props) => {
     });
     if (response.data) {
       localStorage.setItem('user', JSON.stringify(response.data));
+      setUserLogState(true);
     }
-    const user = localStorage.getItem('user');
-    user ? setUserData(JSON.parse(user)) : null;
   };
 
   const RegisterUser = async (formData: typeof formDataInitialValue) => {
@@ -62,9 +73,8 @@ export const UserContextProvider = (props: Props) => {
     });
     if (response.data) {
       localStorage.setItem('user', JSON.stringify(response.data));
+      setUserLogState(true);
     }
-    const user = localStorage.getItem('user');
-    user ? setUserData(JSON.parse(user)) : null;
   };
 
   const FindUserWithAddress = async (address: string) => {
@@ -77,23 +87,19 @@ export const UserContextProvider = (props: Props) => {
         'Content-Type': 'application/json',
       },
     });
-
-    //   if (response.data) {
-    //     localStorage.setItem('user', JSON.stringify(response.data))
-    //   }
     return response.data;
   };
+
   const CheckingUserState = async () => {
     const user = localStorage.getItem('user');
     if (address) {
       const foundUser = await FindUserWithAddress(address);
-      console.log('foundUser', foundUser);
       if (foundUser !== null) {
         user ? null : setShowLoginModal(true);
         setShowRegisterModal(false);
       } else {
-        setShowLoginModal(false);
         user ? null : setShowRegisterModal(true);
+        setShowLoginModal(false);
       }
     }
   };
@@ -102,7 +108,16 @@ export const UserContextProvider = (props: Props) => {
     CheckingUserState();
     const user = localStorage.getItem('user');
     user ? setUserData(JSON.parse(user)) : null;
-  }, [address]);
+    if (user) setUserLogState(true);
+  }, [address, userLogState]);
+
+  const handleRegisterToggle = () => {
+    setShowRegisterModal((prev) => !prev);
+  };
+
+  const handleLoginToggle = () => {
+    setShowLoginModal((prev) => !prev);
+  };
 
   const value = {
     RegisterUser,
@@ -110,7 +125,9 @@ export const UserContextProvider = (props: Props) => {
     showLoginModal,
     LoginUserWithAddress,
     userData,
-    setShowRegisterModal,
+    handleRegisterToggle,
+    handleLoginToggle,
+    userLogState,
   };
   return (
     <UserContext.Provider value={value}>{props.children}</UserContext.Provider>

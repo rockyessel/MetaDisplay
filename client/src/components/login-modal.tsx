@@ -9,12 +9,12 @@ import { useUserContext } from '../contexts/user-context';
 interface Props extends HTMLInputElement {}
 
 const LoginModal = () => {
-  const [formData, setFormData] =
-    React.useState<typeof loginDefaultValue>(loginDefaultValue);
+  const [formData, setFormData] = React.useState<typeof loginDefaultValue>(loginDefaultValue);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isDisconnected, setIsDisconnected] = React.useState<boolean>(false);
   const { address, disconnect } = useThirdWebContext();
-  const { LoginUserWithAddress } = useUserContext();
+  const { LoginUserWithAddress, userData,userLogState, handleLoginToggle } =
+    useUserContext();
 
   const handleFormChange = (
     event:
@@ -33,7 +33,6 @@ const LoginModal = () => {
     if (address) {
       setIsLoading(true);
       formData.address = address;
-      console.log('Login', formData);
       await LoginUserWithAddress(formData);
       setFormData(loginDefaultValue);
       setIsLoading(false);
@@ -53,9 +52,33 @@ const LoginModal = () => {
       {address && address.length > 0 && (
         <main className='tx_modal fixed top- left-0 overflow-hidden backdrop-blur-lg bg-black/40 z-[3] flex justify-center items-center'>
           {isLoading ? (
-            <Loader
-              stateValue={`Registering to address:${address && address}`}
-            />
+            <section className='bg-black w-full sm:w-[40rem] h-screen sm:h-auto px-4 py-2 rounded-xl flex flex-col gap-5 shadow-lg shadow-violet-600'>
+              <Loader
+                stateValue={`Fetching account with address: ${
+                  address && address.slice(0, 10)
+                }...`}
+              />
+            </section>
+          ) : userLogState ? (
+            <section className='bg-black  w-[40rem] h-auto  px-4 py-2 rounded-xl flex flex-col gap-5 shadow-lg shadow-violet-600 overflow-hidden'>
+              <p className='border-b-[1px] border-gray-600/60 text-xl text-green-500'>
+                Account Verified
+              </p>
+              <p className='w-full'>
+                You are the own of the account with address:{' '}
+                <span className='w-full text-violet-500 font-bold underline truncate'>
+                  {address && address.slice(0, 5)}...
+                </span>
+              </p>
+              <Button
+                handleClick={handleLoginToggle}
+                type='submit'
+                styles={'bg-violet-600'}
+                title={'Close'}
+              >
+                Close
+              </Button>
+            </section>
           ) : (
             <section className='bg-black w-full sm:w-[40rem] h-screen sm:h-auto px-4 py-2 rounded-xl flex flex-col gap-5 shadow-lg shadow-violet-600 overflow-y-auto'>
               <p className='inline-flex items-center flex-shrink-0 gap-2 px-4 py-2 text-lg'>

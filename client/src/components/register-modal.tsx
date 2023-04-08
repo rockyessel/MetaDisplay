@@ -15,7 +15,8 @@ const RegisterModal = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { address } = useThirdWebContext();
 
-  const { RegisterUser, userData } = useUserContext();
+  const { RegisterUser, userData, userLogState, handleRegisterToggle } =
+    useUserContext();
 
   const handleFormChange = (
     event:
@@ -59,13 +60,37 @@ const RegisterModal = () => {
   return (
     <React.Fragment>
       {address && address.length > 0 && (
-        <main className='tx_modal fixed top- left-0 overflow-hidden backdrop-blur-lg bg-black/40 z-[3] flex justify-center items-center'>
+        <main className='tx_modal fixed top- left-0 overflow-hidden px-10 backdrop-blur-lg bg-black/40 z-[3] flex justify-center items-center'>
           {isLoading ? (
-            <Loader
-              stateValue={`Registering to address:${address && address}`}
-            />
-          ) : userData.address ? (
-            <p>nfsdfsdfsdfsdfsdfsdfsdfsdfsdf</p>
+            <section className='bg-black  w-[40rem] h-auto  px-4 py-2 rounded-xl flex flex-col gap-5 shadow-lg shadow-violet-600 overflow-hidden'>
+              <Loader
+                iconStyles='text-2xl'
+                styles='justify-center items-center flex-row'
+                stateValue={`Registering to address:${
+                  address && address.slice(0, 10)
+                }...`}
+              />
+            </section>
+          ) : userLogState ? (
+            <section className='bg-black  w-[40rem] h-auto  px-4 py-2 rounded-xl flex flex-col gap-5 shadow-lg shadow-violet-600 overflow-hidden'>
+              <p className='border-b-[1px] border-gray-600/60 text-xl text-green-500'>
+                Account associated successfully
+              </p>
+              <p className='w-full'>
+                Account has been created with association your address:{' '}
+                <span className='w-full text-violet-500 font-bold underline truncate'>
+                  {userData.address.slice(0, 5)}...
+                </span>
+              </p>
+              <Button
+                handleClick={handleRegisterToggle}
+                type='submit'
+                styles={'bg-violet-600'}
+                title={'Close'}
+              >
+                Close
+              </Button>
+            </section>
           ) : (
             <section className='bg-black w-full sm:w-[40rem] h-screen sm:h-auto px-4 py-2 rounded-xl flex flex-col gap-5 shadow-lg shadow-violet-600 overflow-y-auto'>
               <p className='inline-flex items-center flex-shrink-0 gap-2 px-4 py-2 text-lg'>
