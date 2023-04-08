@@ -8,12 +8,13 @@ contract MetaDisplay {
         uint256 appreciationQuantity;
     }
     struct AssetsDisplay {
+        bytes32 _id;
         address owner;
         string title;
         string description;
         string image;
         string category;
-        string dates;
+        string date;
         uint256 amountAppreciated;
         AssetAppreciator[] appreciators;
         uint256[] apprecation;
@@ -34,28 +35,32 @@ contract MetaDisplay {
     mapping(uint256 => AssetsDisplay) public assets_display;
     uint256 public no_of_assets = 0;
 
-    function createAssetDisplay(
-        address _user,
-        string memory _title,
-        string memory _description,
-        string memory _image,
-        string memory _category,
-        string memory _dates
-    ) public returns (uint256) {
-        AssetsDisplay storage asset_display = assets_display[no_of_assets];
+function createAssetDisplay(
+    address _owner,
+    string memory _title,
+    string memory _description,
+    string memory _image,
+    string memory _category,
+    string memory _date
+) public returns (uint256)  {
+    bytes32 _id = keccak256(abi.encodePacked(msg.sender, block.number, block.timestamp));
 
-        asset_display.owner = _user;
-        asset_display.title = _title;
-        asset_display.description = _description;
-        asset_display.image = _image;
-        asset_display.category = _category;
-        asset_display.dates = _dates;
-        asset_display.amountAppreciated = 0;
+    AssetsDisplay storage asset_display = assets_display[no_of_assets];
 
+    asset_display._id = _id;
+    asset_display.owner = _owner;
+    asset_display.title = _title;
+    asset_display.description = _description;
+    asset_display.image = _image;
+    asset_display.category = _category;
+    asset_display.date = _date;
+    asset_display.amountAppreciated = 0;
+
+    
         no_of_assets++;
 
         return no_of_assets - 1;
-    }
+}
 
     function appreciateAsset(
         uint256 _id,

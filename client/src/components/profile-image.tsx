@@ -3,7 +3,7 @@ import { UserDataProps } from '../interface';
 
 interface Props {
   styles?: string;
-  data?: UserDataProps;
+  data?: UserDataProps
 }
 
 const ProfileImage = (props: Props) => {

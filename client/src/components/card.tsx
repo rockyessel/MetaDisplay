@@ -4,18 +4,19 @@ import { AiOutlineHeart } from 'react-icons/ai';
 import ProfileImage from './profile-image';
 import UserTooltip from './user-tooltip';
 import { Link } from 'react-router-dom';
-import { AssetsDisplayProps } from '../interface';
+import { AssetsDisplayProps, UserDataProps } from '../interface';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import { FaEthereum } from 'react-icons/fa';
 import { useUserContext } from '../contexts/user-context';
 import { SiHiveBlockchain } from 'react-icons/si';
+import { userDataDefault } from '../utils/constant';
 
 interface Props {
   asset: AssetsDisplayProps;
 }
 
 const Card = (props: Props) => {
-  const [assetOwner, setAssetOwner] = React.useState<AssetsDisplayProps | void>();
+  const [assetOwner, setAssetOwner] = React.useState<UserDataProps>(userDataDefault);
   const { handleAddAsset } = useThirdWebContext();
   const { getAllUsers, FindUserWithAddress } = useUserContext();
 
@@ -32,7 +33,7 @@ const Card = (props: Props) => {
 
   React.useEffect(() => {
     const getUser = async () => {
-      const data = await FindUserWithAddress(props?.asset?.owner);
+      const data = await FindUserWithAddress(props?.asset?.owner) as unknown as UserDataProps;
       setAssetOwner(data);
     };
     getUser()

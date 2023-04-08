@@ -18,7 +18,7 @@ interface UserContextProviderProps {
   handleLoginToggle: () => void;
   userLogState: boolean;
   getAllUsers: UserDataProps[];
-  FindUserWithAddress: (address: string) => Promise<any>;
+  FindUserWithAddress: (address: string) => Promise<UserDataProps>;
 }
 
 type Props = {
@@ -97,7 +97,7 @@ export const UserContextProvider = (props: Props) => {
     }
   };
 
-  const FindUserWithAddress = async (address: string) => {
+  const FindUserWithAddress = async (address: string): Promise<UserDataProps> => {
     const response = await axios({
       method: 'GET',
       baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/users/find/${address}`,
