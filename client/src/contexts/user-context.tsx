@@ -17,6 +17,7 @@ interface UserContextProviderProps {
   handleRegisterToggle: () => void;
   handleLoginToggle: () => void;
   userLogState: boolean;
+  getAllUsers: UserDataProps[];
 }
 
 type Props = {
@@ -31,16 +32,18 @@ const UserContext = React.createContext({
   handleRegisterToggle: () => {},
   handleLoginToggle: () => {},
   userLogState: false,
+  getAllUsers: [userDataDefault],
 });
 
 export const UserContextProvider = (props: Props) => {
   const [showRegisterModal, setShowRegisterModal] = React.useState(false);
   const [showLoginModal, setShowLoginModal] = React.useState(false);
   const [userLogState, setUserLogState] = React.useState(false);
+  const [hasAllUsersLoaded, setHasAllUsersLoaded] = React.useState(false);
   const [userData, setUserData] =
     React.useState<UserDataProps>(userDataDefault);
   const address = useAddress();
-
+  const [getAllUsers, setGetAllUsers] = React.useState<UserDataProps[]>([]);
 
   const LoginUserWithAddress = async (form: typeof loginDefaultValue) => {
     const response = await axios({
@@ -56,6 +59,22 @@ export const UserContextProvider = (props: Props) => {
     if (response.data) {
       localStorage.setItem('user', JSON.stringify(response.data));
       setUserLogState(true);
+    }
+  };
+
+  const AllUsers = async () => {
+    const response = await axios({
+      method: 'GET',
+      baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/users`,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.data) {
+      setGetAllUsers(response.data);
+      setHasAllUsersLoaded(true);
     }
   };
 
@@ -104,11 +123,12 @@ export const UserContextProvider = (props: Props) => {
   };
 
   React.useEffect(() => {
+    AllUsers();
     CheckingUserState();
     const user = localStorage.getItem('user');
     user ? setUserData(JSON.parse(user)) : null;
     if (user) setUserLogState(true);
-  }, [address, userLogState]);
+  }, [address, userLogState, hasAllUsersLoaded]);
 
   const handleRegisterToggle = () => {
     setShowRegisterModal((prev) => !prev);
@@ -127,6 +147,7 @@ export const UserContextProvider = (props: Props) => {
     handleRegisterToggle,
     handleLoginToggle,
     userLogState,
+    getAllUsers,
   };
   return (
     <UserContext.Provider value={value}>{props.children}</UserContext.Provider>

@@ -8,6 +8,7 @@ import { AssetsDisplayProps } from '../interface';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import { FaEthereum } from 'react-icons/fa';
 import { useUserContext } from '../contexts/user-context';
+import { SiHiveBlockchain } from 'react-icons/si';
 
 interface Props {
   asset: AssetsDisplayProps;
@@ -15,22 +16,33 @@ interface Props {
 
 const Card = (props: Props) => {
   const { handleAddAsset } = useThirdWebContext();
-  const {} = useUserContext()
+  const { getAllUsers } = useUserContext();
 
-  const get = [...props?.asset?.appreciators];
+  console.log('getAllUsers', getAllUsers);
 
-  console.log(
-    'get',
-    get.map((address) => address.appreciator)
+  const allAppreciators = [...props?.asset?.appreciators];
+  const addressesOfAllAppreciators = allAppreciators.map(
+    (address) => address.appreciator
   );
+
+  const matchingUsers = getAllUsers.filter((user) =>
+    addressesOfAllAppreciators.includes(user.address)
+  );
+  console.log('matchingUsers', matchingUsers);
 
   return (
     <li className='w-full sm:w-[288px]'>
       <header className='w-full flex items-center rounded-t-lg bg-[#141414] px-4 py-2 justify-between'>
         <div className='flex mb-3 -space-x-3'>
-          <ProfileImage />
-          <ProfileImage />
-          <ProfileImage />
+          {matchingUsers.length > 0 ? (
+            matchingUsers?.map((appreciator, index) => (
+              <ProfileImage key={index} data={appreciator} />
+            ))
+          ) : (
+            <div className='w-10 h-10 bg-white rounded-full text-black text-xl inline-flex justify-center items-center'>
+              <SiHiveBlockchain />
+            </div>
+          )}
         </div>
 
         <div className='inline-flex items-center gap-2 '>

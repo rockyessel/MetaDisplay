@@ -146,3 +146,5 @@ export const ThirdWebContextProvider = (props: any) => {
 export default ThirdWebContextProvider;
 
 export const useThirdWebContext = () => React.useContext(ThirdWebContext);
+// https://thirdweb.com/sepolia/0x08b84eF132dB542802CE2c80C8051FF7Fdf1B668/explorer
+// https://thirdweb.com/sepolia
