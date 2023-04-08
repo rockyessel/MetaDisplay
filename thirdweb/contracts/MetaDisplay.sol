@@ -57,14 +57,15 @@ contract MetaDisplay {
         return no_of_assets - 1;
     }
 
-    function appreciateAsset(uint256 _id) public payable {
-        uint256 amount = msg.value;
-
+    function appreciateAsset(
+        uint256 _id,
+        uint256 _appreciationAmount
+    ) public payable {
         AssetsDisplay storage asset_display = assets_display[_id];
 
         AssetAppreciator memory appreciator = AssetAppreciator(
             msg.sender,
-            amount,
+            _appreciationAmount,
             1
         );
 
@@ -86,12 +87,14 @@ contract MetaDisplay {
             asset_display.appreciators.push(appreciator);
         }
 
-        asset_display.apprecation.push(amount);
+        asset_display.apprecation.push(_appreciationAmount);
 
-        (bool sent, ) = payable(asset_display.owner).call{value: amount}("");
+        (bool sent, ) = payable(asset_display.owner).call{
+            value: _appreciationAmount
+        }("");
 
         if (sent) {
-            asset_display.amountAppreciated += amount;
+            asset_display.amountAppreciated += _appreciationAmount;
         }
     }
 

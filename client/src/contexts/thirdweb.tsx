@@ -117,7 +117,7 @@ export const ThirdWebContextProvider = (props: any) => {
   const getAppreciator = async () => {
     const data = await contract?.call('getAppreciators', ['0']);
 
-    console.log('appreciators', data);
+    // console.log('appreciators', data);
   };
 
   React.useEffect(() => {

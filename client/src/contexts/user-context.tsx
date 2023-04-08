@@ -18,6 +18,7 @@ interface UserContextProviderProps {
   handleLoginToggle: () => void;
   userLogState: boolean;
   getAllUsers: UserDataProps[];
+  FindUserWithAddress: (address: string) => Promise<any>;
 }
 
 type Props = {
@@ -33,6 +34,7 @@ const UserContext = React.createContext({
   handleLoginToggle: () => {},
   userLogState: false,
   getAllUsers: [userDataDefault],
+  FindUserWithAddress: (address: string) => Promise.resolve(),
 });
 
 export const UserContextProvider = (props: Props) => {
@@ -123,12 +125,15 @@ export const UserContextProvider = (props: Props) => {
   };
 
   React.useEffect(() => {
-    AllUsers();
     CheckingUserState();
     const user = localStorage.getItem('user');
     user ? setUserData(JSON.parse(user)) : null;
     if (user) setUserLogState(true);
-  }, [address, userLogState, hasAllUsersLoaded]);
+  }, [address, userLogState]);
+
+  React.useEffect(() => {
+    AllUsers();
+  }, [hasAllUsersLoaded]);
 
   const handleRegisterToggle = () => {
     setShowRegisterModal((prev) => !prev);
@@ -148,6 +153,7 @@ export const UserContextProvider = (props: Props) => {
     handleLoginToggle,
     userLogState,
     getAllUsers,
+    FindUserWithAddress,
   };
   return (
     <UserContext.Provider value={value}>{props.children}</UserContext.Provider>

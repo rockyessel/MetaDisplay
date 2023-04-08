@@ -4,6 +4,7 @@ import Button from './button';
 
 interface Props {
   styles?: string;
+  data: any
 }
 
 const UserTooltip = (props: Props) => {
@@ -13,7 +14,7 @@ const UserTooltip = (props: Props) => {
     >
       <div className='p-3'>
         <div className='flex items-center justify-between mb-2'>
-          <ProfileImage />
+          <ProfileImage data={props?.data} />
 
           <div>
             <Button
@@ -26,11 +27,11 @@ const UserTooltip = (props: Props) => {
           </div>
         </div>
         <p className='text-base truncate font-semibold leading-none text-gray-900 dark:text-white'>
-          <span>J0x60D0A1B4cD08f7A66C13ac30ABC568c98B79A2cd</span>
+          <span>{props?.data?.address}</span>
         </p>
         <p className='mb-3 text-sm font-normal'>
           <span className='hover:underline'>
-            @jeseleos
+            @{props?.data?.username}
           </span>
         </p>
         <p className='mb-4 text-sm truncate'>

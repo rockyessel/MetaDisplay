@@ -15,8 +15,9 @@ interface Props {
 }
 
 const Card = (props: Props) => {
+  const [assetOwner, setAssetOwner] = React.useState<AssetsDisplayProps | void>();
   const { handleAddAsset } = useThirdWebContext();
-  const { getAllUsers } = useUserContext();
+  const { getAllUsers, FindUserWithAddress } = useUserContext();
 
   console.log('getAllUsers', getAllUsers);
 
@@ -28,7 +29,14 @@ const Card = (props: Props) => {
   const matchingUsers = getAllUsers.filter((user) =>
     addressesOfAllAppreciators.includes(user.address)
   );
-  console.log('matchingUsers', matchingUsers);
+
+  React.useEffect(() => {
+    const getUser = async () => {
+      const data = await FindUserWithAddress(props?.asset?.owner);
+      setAssetOwner(data);
+    };
+    getUser()
+  }, []);
 
   return (
     <li className='w-full sm:w-[288px]'>
@@ -81,8 +89,11 @@ const Card = (props: Props) => {
         </div>
         <div className='w-full inline-flex items-center justify-between gap-5'>
           <div className='w-full h-full group relative'>
-            <ProfileImage />
-            <UserTooltip styles='hidden left-0 group-hover:block absolute after:content-[""] after:absolute after:bottom-full after:left-0 after:border-8 after:border-solid after:border-x-transparent after:border-t-transparent after:border-b-white after:translate-y-0.5 after:translate-x-0.5' />
+            <ProfileImage data={assetOwner} />
+            <UserTooltip
+              data={assetOwner}
+              styles='hidden left-0 group-hover:block absolute after:content-[""] after:absolute after:bottom-full after:left-0 after:border-8 after:border-solid after:border-x-transparent after:border-t-transparent after:border-b-white after:translate-y-0.5 after:translate-x-0.5'
+            />
           </div>
           <p className='truncate'>
             by <span className='font-semibold'>{props?.asset?.owner}</span>
