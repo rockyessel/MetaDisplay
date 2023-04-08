@@ -8,15 +8,24 @@ import {
   User,
   UploadAsset,
 } from './pages';
-import { Footer, LoginModal, Navbar, RegisterModal } from './components';
+import {
+  AppreciateAssetModal,
+  Footer,
+  LoginModal,
+  Navbar,
+  RegisterModal,
+} from './components';
 import { useUserContext } from './contexts/user-context';
+import { useThirdWebContext } from './contexts/thirdweb';
 
 const App = () => {
   const { showRegisterModal, showLoginModal } = useUserContext();
+  const { assetToBeAppreciatedState } = useThirdWebContext();
   return (
     <>
       {showRegisterModal && <RegisterModal />}
       {showLoginModal && <LoginModal />}
+      {assetToBeAppreciatedState && <AppreciateAssetModal />}
       <main className='px-4 lg:px-20 relative'>
         <Navbar />
         <Routes>

@@ -27,11 +27,10 @@ const Navbar = () => {
     }
   };
 
-  console.log('userLogState', userLogState);
 
   const handleConnection = async () => {
     if (address) navigate('/dashboard/upload-asset');
-    await handleConnect();
+    address ? null : await handleConnect();
   };
 
   let text: JSX.Element | string = '';

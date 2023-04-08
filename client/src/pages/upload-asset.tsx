@@ -17,7 +17,7 @@ interface Props {}
 const UploadAsset = () => {
   const [getImageURL, setGetImageURl] = React.useState<string>('');
   const [assetUploadPercent, setAssetUploadPercent] = React.useState<number>(0);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [loadingPercent, setLoadingPercent] = React.useState(0);
   const [inputFile, setInputFile] = React.useState<string | Blob>('');
 
@@ -73,10 +73,9 @@ const UploadAsset = () => {
 
   const handleSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     form.image = getImageURL ? getImageURL : '';
     form.dates = new Date().toISOString();
-    form.target = form.target = ethers.utils.parseUnits(form.target.toString(), 18);
     const { title, description, image } = form;
     if (!title || !description || !image) return;
     await uploadAsset(form);
@@ -93,8 +92,8 @@ const UploadAsset = () => {
 
   return (
     <section className='w-full h-full flex flex-col gap-5'>
-      {isLoading && <Loader styles='' stateValue='' /> }
-    <h1 className='font-bold text-4xl text-white'>Upload Assets</h1>
+      {isLoading && <Loader styles='' stateValue='' />}
+      <h1 className='font-bold text-4xl text-white'>Upload Assets</h1>
       <section className='w-full h-full flex-col lg:flex-row flex lg:justify-between gap-5'>
         <section className='flex flex-col gap-5'>
           <form
@@ -219,8 +218,6 @@ const UploadAsset = () => {
           </div>
         </section>
       </section>
-      
-      
     </section>
   );
 };

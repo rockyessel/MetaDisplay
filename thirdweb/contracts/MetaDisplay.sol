@@ -19,26 +19,29 @@ contract MetaDisplay {
         uint256[] apprecation;
     }
     struct User {
-        string name;
-        string image;
-        string email;
-        string username;
-        string description;
         address own;
     }
-    struct CollectionsDisplay {
-        string name;
-        string category;
-        string created_on;
-        uint256 total_items;
-        User[] owners;
-        AssetsDisplay[] assets;
-    }
-    mapping(uint256 => User) public users;
+
+    // struct CollectionsDisplay {
+    //     string name;
+    //     string category;
+    //     string created_on;
+    //     uint256 total_items;
+    //     User[] owners;
+    //     AssetsDisplay[] assets;
+    // }
+
     mapping(uint256 => AssetsDisplay) public assets_display;
     uint256 public no_of_assets = 0;
-    uint256 public no_of_users = 0;
-    function createAssetDisplay(address _user, string memory _title, string memory _description, string memory _image, string memory _category, string memory _dates) public returns (uint256) {
+
+    function createAssetDisplay(
+        address _user,
+        string memory _title,
+        string memory _description,
+        string memory _image,
+        string memory _category,
+        string memory _dates
+    ) public returns (uint256) {
         AssetsDisplay storage asset_display = assets_display[no_of_assets];
 
         asset_display.owner = _user;
@@ -53,19 +56,26 @@ contract MetaDisplay {
 
         return no_of_assets - 1;
     }
+
     function appreciateAsset(uint256 _id) public payable {
         uint256 amount = msg.value;
 
         AssetsDisplay storage asset_display = assets_display[_id];
 
-        AssetAppreciator memory appreciator = AssetAppreciator(msg.sender, amount, 1);
+        AssetAppreciator memory appreciator = AssetAppreciator(
+            msg.sender,
+            amount,
+            1
+        );
 
         bool found = false;
         uint256 i;
         for (i = 0; i < asset_display.appreciators.length; i++) {
             if (asset_display.appreciators[i].appreciator == msg.sender) {
                 appreciator.amountAppreciated += asset_display.apprecation[i];
-                appreciator.appreciationQuantity += asset_display.appreciators[i].appreciationQuantity;
+                appreciator.appreciationQuantity += asset_display
+                    .appreciators[i]
+                    .appreciationQuantity;
                 asset_display.appreciators[i] = appreciator;
                 found = true;
                 break;
@@ -84,9 +94,13 @@ contract MetaDisplay {
             asset_display.amountAppreciated += amount;
         }
     }
-    function getAppreciators(uint256 _id) public view returns (AssetAppreciator[] memory) {
+
+    function getAppreciators(
+        uint256 _id
+    ) public view returns (AssetAppreciator[] memory) {
         return assets_display[_id].appreciators;
     }
+
     function getAssetsDisplay() public view returns (AssetsDisplay[] memory) {
         AssetsDisplay[] memory allAssetsDisplay = new AssetsDisplay[](
             no_of_assets

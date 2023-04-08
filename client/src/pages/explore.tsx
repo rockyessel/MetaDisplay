@@ -94,7 +94,7 @@ const Explore = () => {
         {/* <Loader stateValue='Loading Assets' /> */}
 
         <ul className='flex flex-wrap gap-10'>
-          {getAssets.length > 0 ? (
+          {getAssets?.length > 0 ? (
             getAssets.map((asset) => <Card key={asset._id} asset={asset} />)
           ) : (
             <li>

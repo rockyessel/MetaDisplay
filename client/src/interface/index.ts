@@ -6,20 +6,18 @@ export interface FormProps {
   image: string;
   category: string;
   dates: string;
-  target: BigNumber;
 }
 
 export interface AssetsDisplayProps {
-  owner:string
+  owner: string;
   amountAppreciated: BigNumber;
   apprecation: any[];
-  appreciators: any[];
+  appreciators: Appreciator[];
   title: string;
   description: string;
   image: string;
   category: string;
   dates: string;
-  target: BigNumber;
   _id: number;
 }
 
@@ -30,4 +28,10 @@ export interface UserDataProps {
   token:string;
   email:string;
   profile:string;
+}
+
+interface Appreciator {
+  amountAppreciated:BigNumber;
+  appreciationQuantity:BigNumber;
+  appreciator:string;
 }

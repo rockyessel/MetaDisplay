@@ -6,7 +6,6 @@ export const formInitialValue = {
   image: ``,
   category: '',
   dates: ``,
-  target: ethers.BigNumber.from(0),
 };
 
 export const formDataInitialValue = {
@@ -21,7 +20,8 @@ export const loginDefaultValue = {
   address: '',
   username: '',
   password: '',
-};
+}
+
 
 export const userDataDefault = {
   address: '',
@@ -30,4 +30,17 @@ export const userDataDefault = {
   token: '',
   email: '',
   profile: '',
+}
+
+export const AssetsDisplayDefault = {
+  owner: '',
+  amountAppreciated: ethers.BigNumber.from(0),
+  apprecation: [],
+  appreciators: [],
+  title: '',
+  description: '',
+  image: '',
+  category: '',
+  dates: '',
+  _id: 0,
 };

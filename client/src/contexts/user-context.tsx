@@ -41,7 +41,6 @@ export const UserContextProvider = (props: Props) => {
     React.useState<UserDataProps>(userDataDefault);
   const address = useAddress();
 
-  console.log('userData', userData);
 
   const LoginUserWithAddress = async (form: typeof loginDefaultValue) => {
     const response = await axios({

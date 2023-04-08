@@ -5,12 +5,25 @@ import ProfileImage from './profile-image';
 import UserTooltip from './user-tooltip';
 import { Link } from 'react-router-dom';
 import { AssetsDisplayProps } from '../interface';
+import { useThirdWebContext } from '../contexts/thirdweb';
+import { FaEthereum } from 'react-icons/fa';
+import { useUserContext } from '../contexts/user-context';
 
 interface Props {
   asset: AssetsDisplayProps;
 }
 
 const Card = (props: Props) => {
+  const { handleAddAsset } = useThirdWebContext();
+  const {} = useUserContext()
+
+  const get = [...props?.asset?.appreciators];
+
+  console.log(
+    'get',
+    get.map((address) => address.appreciator)
+  );
+
   return (
     <li className='w-full sm:w-[288px]'>
       <header className='w-full flex items-center rounded-t-lg bg-[#141414] px-4 py-2 justify-between'>
@@ -20,8 +33,12 @@ const Card = (props: Props) => {
           <ProfileImage />
         </div>
 
-        <div className='hover:bg-violet-500 rounded-lg'>
-          <RiMoreFill className='text-3xl' />
+        <div className='inline-flex items-center gap-2 '>
+          <FaEthereum
+            className='text-3xl hover:text-violet-500 cursor-pointer'
+            onClick={() => handleAddAsset(props?.asset)}
+          />
+          <RiMoreFill className='text-3xl hover:bg-violet-500 rounded-lg' />
         </div>
       </header>
 

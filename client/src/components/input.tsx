@@ -13,7 +13,8 @@ interface Props {
   type?: string;
   label: string;
   elementType: string;
-  disabled?: boolean |  undefined;
+  disabled?: boolean | undefined;
+  step?: number | string | undefined
 }
 
 const Input = (props: Props) => {
@@ -26,6 +27,7 @@ const Input = (props: Props) => {
           name={props.name}
           type={props.type}
           value={props.value}
+          step={props.step}
           onChange={props.onChange}
           placeholder={props.placeholder}
           disabled={props.disabled}
