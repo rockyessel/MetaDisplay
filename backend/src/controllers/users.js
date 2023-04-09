@@ -77,18 +77,12 @@ const RegisterUser = async (request, response) => {
     const token = GenToken(createdUser.address);
     response.status(201).json({
       success: true,
-      address,
-      name,
-      username,
-      email,
-      profile: `${url}Users/${username}/${request.file.originalname}`,
-      _id: createdUser._id,
+      createdUser,
       token,
     });
 
     if (!response.headersSent) {
       response.status(200).json({
-        success: true,
         success: true,
         name,
         username,
@@ -204,10 +198,30 @@ const FindUserAddress = async (request, response) => {
   }
 };
 
+const FollowUser = async (request, response) => {
+  try {
+    const userAddress = request.params.address
+    const followerAddress = request.body.address
+
+    const updatingUserFollowers = await User.findOneAndUpdate(userAddress, { $push: { followers: followerAddress } }, { new: true })
+    response.json(updatingUserFollowers);
+
+  } catch (error) {
+    console.log(error)
+  }
+};
+
+
+const FollowingUser = async (request, response) => {
+
+}
+
 module.exports = {
   RegisterUser,
   LoginUser,
   UserDelete,
   FindUserAddress,
   AllUsers,
+  FollowingUser,
+  FollowUser,
 };

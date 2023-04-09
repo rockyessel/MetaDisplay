@@ -25,15 +25,45 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    bio: {
+      type: String,
+    },
     password: {
       type: String,
       required: true,
+    },
+    followers: {
+      type: [
+        {
+          type: String,
+          ref: 'User',
+        },
+      ],
+      default: [],
+      sparse: true,
+    },
+    following: {
+      type: [
+        {
+          type: String,
+          ref: 'User',
+        },
+      ],
+      default: [],
+      sparse: true,
+    },
+    savedAssets: {
+      type: [String],
+      ref: 'Asset',
+      default: [],
+      sparse: true,
     },
   },
   {
     timestamps: true,
   }
 );
+
 
 const User = mongoose.model('User', UserSchema);
 module.exports = User;
