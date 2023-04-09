@@ -235,7 +235,7 @@ const ExploreDetails = () => {
       <div className='w-full'>
         <p className='font-bold text-4xl text-white'>Collections</p>
 
-        <div className=' flex items-center gap-4 lg:grid grid-cols-3'>
+        <div className=' flex items-center flex-wrap gap-4 lg:grid grid-cols-3'>
           <div className='h-auto w-[25rem] border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
             <div className=''>
               <img
