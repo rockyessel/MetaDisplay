@@ -9,7 +9,9 @@ import { useParams } from 'react-router-dom';
 interface Props {}
 
 const ExploreDetails = () => {
-  const { title } = useParams();
+  const info = useParams();
+
+  console.log('info', info);
 
   return (
     <section className='w-full flex flex-col gap-10'>

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const AssetSchema = new mongoose.Schema(
   {
-    assetId: {
+    title: {
       type: String,
       unique: true,
       required: true,

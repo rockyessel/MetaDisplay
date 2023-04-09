@@ -5,19 +5,19 @@ export interface FormProps {
   description: string;
   image: string;
   category: string;
-  dates: string;
+  date: string;
 }
 
 export interface AssetsDisplayProps {
   owner: string;
   amountAppreciated: BigNumber;
-  apprecation: any[];
+  appreciation: any[];
   appreciators: Appreciator[];
   title: string;
   description: string;
   image: string;
   category: string;
-  dates: string;
+  date: string;
   _id: number;
 }
 

@@ -7,7 +7,7 @@ import {
   useContractRead,
   useDisconnect,
 } from '@thirdweb-dev/react';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { AssetsDisplayProps, FormProps } from '../interface';
 import { AssetsDisplayDefault } from '../utils/constant';
 
@@ -59,6 +59,8 @@ export const ThirdWebContextProvider = (props: any) => {
   const connect = useMetamask();
   const disconnect = useDisconnect();
 
+  console.log('getAssets', getAssets);
+
   const uploadAsset = async (form: FormProps) => {
     try {
       const data = await createAssetDisplay({
@@ -68,7 +70,7 @@ export const ThirdWebContextProvider = (props: any) => {
           form.description,
           form.image,
           form.category,
-          form.dates,
+          form.date,
         ],
       });
       console.log('contract call success', data);
@@ -82,42 +84,53 @@ export const ThirdWebContextProvider = (props: any) => {
     setAssetToBeAppreciated(asset);
   };
 
-  const userAppreciation = async (appreciateData: any) => {
-    try {
-      console.log('appreciateData', appreciateData);
-      const data = await appreciateAsset({
-        args: [`${appreciateData._id}`],
-      });
-      console.log('Asset appreciated', data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+const userAppreciation = async (appreciateData: any) => {
+  try {
+    console.log('appreciateData', appreciateData);
+    const amount = BigNumber.from(appreciateData.amount.toString()).mul(BigNumber.from(10).pow(18));
+    console.log('amount', amount);
+    const data = await appreciateAsset({args: [`${appreciateData._id}`, amount]});
+    console.log('Asset appreciated', data);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const getAssetsDisplay = async (): Promise<void> => {
     const allAssetsDisplay: AssetsDisplayProps[] = assetsDisplay?.map(
-      (asset: AssetsDisplayProps, index: number) => ({
+      (asset: AssetsDisplayProps) => ({
         owner: asset.owner,
         amountAppreciated: ethers.utils.formatEther(
           asset.amountAppreciated.toString()
         ),
-        appreciation: asset.apprecation,
+        appreciation: asset.appreciation,
         appreciators: asset.appreciators,
         title: asset.title,
         description: asset.description,
         image: asset.image,
         category: asset.category,
-        date: asset.dates,
-        _id: index,
+        date: asset.date,
+        _id: asset._id,
       })
     );
     setGetAsset(allAssetsDisplay);
   };
 
-  const getAppreciator = async () => {
-    const data = await contract?.call('getAppreciators', ['0']);
+  const getAssetDisplay = async (_id: string): Promise<void> => {
+    try {
+      if (contract) {
+        const data = await contract.call('getAssetDisplay', [`${_id}`]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    // console.log('appreciators', data);
+  const getAppreciator = async () => {
+    // if (contract) {
+    //   const data = await contract.call('getAppreciator', [`0`]);
+    // }
+    // console.log('getAssetDisplay', data);
   };
 
   React.useEffect(() => {

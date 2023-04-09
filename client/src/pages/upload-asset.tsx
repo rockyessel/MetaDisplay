@@ -75,7 +75,7 @@ const UploadAsset = () => {
     event.preventDefault();
     setIsLoading(true);
     form.image = getImageURL ? getImageURL : '';
-    form.dates = new Date().toISOString();
+    form.date = new Date().toISOString();
     const { title, description, image } = form;
     if (!title || !description || !image) return;
     await uploadAsset(form);

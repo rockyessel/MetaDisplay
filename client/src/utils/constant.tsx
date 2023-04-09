@@ -5,7 +5,7 @@ export const formInitialValue = {
   description: '',
   image: ``,
   category: '',
-  dates: ``,
+  date: ``,
 };
 
 export const formDataInitialValue = {
@@ -35,12 +35,12 @@ export const userDataDefault = {
 export const AssetsDisplayDefault = {
   owner: '',
   amountAppreciated: ethers.BigNumber.from(0),
-  apprecation: [],
+  appreciation: [],
   appreciators: [],
   title: '',
   description: '',
   image: '',
   category: '',
-  dates: '',
+  date: '',
   _id: 0,
 };

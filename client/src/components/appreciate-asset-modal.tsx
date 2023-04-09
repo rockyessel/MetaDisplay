@@ -6,8 +6,6 @@ import { useThirdWebContext } from '../contexts/thirdweb';
 import { AssetsDisplayDefault } from '../utils/constant';
 import { ethers } from 'ethers';
 
-interface Props {}
-
 interface appreciateProps {
   assetId: number;
   amount: ethers.BigNumber;
@@ -23,11 +21,17 @@ const AppreciateAssetModal = () => {
   const handleSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     setLoading(true);
-    const data = { amount: ethers.utils.parseUnits(appreciate.toString(), 18), _id: assetToBeAppreciated?._id};
+    const data = {
+      amount: ethers.BigNumber.from(Number(appreciate)),
+      _id: assetToBeAppreciated?._id,
+    };
     await userAppreciation(data);
     handleAddAsset(AssetsDisplayDefault);
     setLoading(false);
   };
+
+  console.log('appreciate', appreciate);
+  console.log('type', typeof appreciate);
 
   return (
     <main className='tx_modal fixed first-letter top-0 left-0 overflow-hidden px-10 backdrop-blur-lg bg-black/40 z-[3] flex justify-center items-center'>

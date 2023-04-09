@@ -34,7 +34,7 @@ const UserContext = React.createContext({
   handleLoginToggle: () => {},
   userLogState: false,
   getAllUsers: [userDataDefault],
-  FindUserWithAddress: (address: string) => Promise.resolve(),
+  FindUserWithAddress: (address: string) => Promise.resolve(userDataDefault),
 });
 
 export const UserContextProvider = (props: Props) => {
