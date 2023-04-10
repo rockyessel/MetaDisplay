@@ -5,6 +5,7 @@ import Button from './button';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import { AssetsDisplayDefault } from '../utils/constant';
 import { ethers } from 'ethers';
+import Loader from './loader';
 
 interface appreciateProps {
   assetId: number;
@@ -16,22 +17,56 @@ const AppreciateAssetModal = () => {
   const { assetToBeAppreciated, handleAddAsset, userAppreciation } =
     useThirdWebContext();
   const [appreciate, setAppreciate] = React.useState<string>('');
+  const [appreciateStateValue, setAppreciateStateValue] =
+    React.useState<string>('Appreciate');
   const [isLoading, setLoading] = React.useState<boolean>(false);
+  const [isSuccess, setLoadingIsSuccess] = React.useState<boolean>(false);
+  const [buttonDisable, setButtonDisable] = React.useState<boolean>(false);
+  const [title, setTitle] = React.useState<string>('');
+  const [error, setError] = React.useState<boolean>(false);
 
   const handleSubmission = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     setLoading(true);
+    setButtonDisable(true);
     const data = {
-      amount: ethers.BigNumber.from(Number(appreciate)),
+      address: assetToBeAppreciated?.owner,
       _id: assetToBeAppreciated?._id,
+      amount: appreciate,
     };
-    await userAppreciation(data);
-    handleAddAsset(AssetsDisplayDefault);
-    setLoading(false);
-  };
 
-  console.log('appreciate', appreciate);
-  console.log('type', typeof appreciate);
+    const receipt = await userAppreciation(data);
+
+    console.log('receipt', receipt);
+
+    if (receipt.state) {
+      setError(true);
+      setLoading(false);
+      setAppreciateStateValue(`${receipt.error}`);
+      setTitle(`${receipt.error}`);
+      const time = setTimeout(() => {
+        setTitle('Appreciate');
+        setAppreciateStateValue('Appreciate');
+        setButtonDisable(false);
+        setError(false);
+        handleAddAsset(AssetsDisplayDefault);
+      }, 10000);
+
+      return () => clearTimeout(time);
+    }
+
+    if (receipt.receipt.confirmations === 1) {
+      setLoading(false);
+      setLoadingIsSuccess(true);
+      setAppreciateStateValue(`Asset appreciated successfully`);
+      setTitle(`Asset appreciated successfully`);
+      const time = setTimeout(() => {
+        handleAddAsset(AssetsDisplayDefault);
+      }, 2000);
+      return () => clearTimeout(time);
+    }
+
+  };
 
   return (
     <main className='tx_modal fixed first-letter top-0 left-0 overflow-hidden px-10 backdrop-blur-lg bg-black/40 z-[3] flex justify-center items-center'>
@@ -59,10 +94,23 @@ const AppreciateAssetModal = () => {
         />
         <Button
           type='submit'
-          styles={'bg-[#141414] w-full mt-4'}
-          title={'Register'}
+          styles={`${
+            buttonDisable
+              ? isSuccess === true
+                ? 'bg-green-500 text-[#141414]'
+                : error === true
+                ? 'bg-rose-400'
+                : 'bg-violet-400 cursor-not-allowed text-black'
+              : 'bg-[#141414]'
+          } w-full mt-4`}
+          title={title}
+          disabled={buttonDisable}
         >
-          Appreciate
+          {isLoading ? (
+            <Loader iconStyles='text-2xl' stateValue='Appreciating...' />
+          ) : (
+            appreciateStateValue
+          )}
         </Button>
         <Button
           type='submit'

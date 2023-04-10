@@ -7,6 +7,7 @@ interface Props {
   styles: string;
   type?: ButtonType;
   title: string;
+  disabled?: boolean;
 }
 
 const Button = (props: Props) => {
@@ -15,6 +16,7 @@ const Button = (props: Props) => {
       className={`${props.styles} px-4 py-3.5 rounded-lg hover:bg-violet-700 font-medium`}
       type={props?.type}
       title={props.title}
+      disabled={props.disabled}
       onClick={props?.handleClick}
     >
       {props.children}

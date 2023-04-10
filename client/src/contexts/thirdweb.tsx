@@ -10,6 +10,8 @@ import {
 import { BigNumber, ethers } from 'ethers';
 import { AssetsDisplayProps, FormProps } from '../interface';
 import { AssetsDisplayDefault } from '../utils/constant';
+import { ThirdwebSDK } from '@thirdweb-dev/sdk';
+// import Web3 from 'web3';
 
 interface ContextProps {
   address?: string | undefined;
@@ -22,7 +24,7 @@ interface ContextProps {
   handleAddAsset: (asset: AssetsDisplayProps) => void;
   assetToBeAppreciated?: AssetsDisplayProps;
   assetToBeAppreciatedState: boolean;
-  userAppreciation: (appreciateData: any) => void;
+  userAppreciation: (appreciateData: any) => Promise<any>;
 }
 
 const ThirdWebContext = React.createContext<ContextProps>({
@@ -35,7 +37,7 @@ const ThirdWebContext = React.createContext<ContextProps>({
   handleAddAsset: (asset: AssetsDisplayProps) => {},
   assetToBeAppreciated: AssetsDisplayDefault,
   assetToBeAppreciatedState: false,
-  userAppreciation: (appreciateData: any) => {},
+  userAppreciation: (appreciateData: any) => Promise.resolve(),
 });
 
 export const ThirdWebContextProvider = (props: any) => {
@@ -45,10 +47,8 @@ export const ThirdWebContextProvider = (props: any) => {
     contract,
     'createAssetDisplay'
   );
-  const { mutateAsync: appreciateAsset } = useContractWrite(
-    contract,
-    'appreciateAsset'
-  );
+  const { mutateAsync: appreciateAsset, error: appreciateError } =
+    useContractWrite(contract, 'appreciateAsset');
   const [getAssets, setGetAsset] = React.useState<AssetsDisplayProps[]>([]);
   const [assetToBeAppreciated, setAssetToBeAppreciated] =
     React.useState<AssetsDisplayProps>(AssetsDisplayDefault);
@@ -60,6 +60,7 @@ export const ThirdWebContextProvider = (props: any) => {
   const disconnect = useDisconnect();
 
   console.log('getAssets', getAssets);
+  console.log('ABIs', contract?.abi);
 
   const uploadAsset = async (form: FormProps) => {
     try {
@@ -72,6 +73,7 @@ export const ThirdWebContextProvider = (props: any) => {
           form.category,
           form.date,
         ],
+        overrides: { value: ethers.utils.parseEther('0.0005') }, // send 0.1 ether with the contract call
       });
       console.log('contract call success', data);
     } catch (error) {
@@ -84,17 +86,23 @@ export const ThirdWebContextProvider = (props: any) => {
     setAssetToBeAppreciated(asset);
   };
 
-const userAppreciation = async (appreciateData: any) => {
-  try {
-    console.log('appreciateData', appreciateData);
-    const amount = BigNumber.from(appreciateData.amount.toString()).mul(BigNumber.from(10).pow(18));
-    console.log('amount', amount);
-    const data = await appreciateAsset({args: [`${appreciateData._id}`, amount]});
-    console.log('Asset appreciated', data);
-  } catch (error) {
-    console.log(error);
-  }
-};
+  const userAppreciation = async (appreciateData: any) => {
+    try {
+      const amount = ethers.utils.parseEther(appreciateData.amount).toString();
+      const data = await appreciateAsset({
+        args: [appreciateData.address, appreciateData._id],
+        overrides: { value: amount },
+      });
+      return data;
+    } catch (error) {
+      console.log(error);
+      return {
+        error: 'User rejected transaction',
+        state: true,
+        error_obj: error,
+      };
+    }
+  };
 
   const getAssetsDisplay = async (): Promise<void> => {
     const allAssetsDisplay: AssetsDisplayProps[] = assetsDisplay?.map(
@@ -119,7 +127,10 @@ const userAppreciation = async (appreciateData: any) => {
   const getAssetDisplay = async (_id: string): Promise<void> => {
     try {
       if (contract) {
-        const data = await contract.call('getAssetDisplay', [`${_id}`]);
+        const data = await contract.call('getAssetDisplay', [
+          `0xd972ddb9578dfcb8dad3bf69c0115d1ba9910e722986c2758fb01c8d70718ae8`,
+        ]);
+        console.log('getAssetDisplay', data);
       }
     } catch (error) {
       console.log(error);
@@ -127,15 +138,18 @@ const userAppreciation = async (appreciateData: any) => {
   };
 
   const getAppreciator = async () => {
-    // if (contract) {
-    //   const data = await contract.call('getAppreciator', [`0`]);
-    // }
-    // console.log('getAssetDisplay', data);
+    if (contract) {
+      const data = await contract.call('getAppreciators', [
+        `0xd972ddb9578dfcb8dad3bf69c0115d1ba9910e722986c2758fb01c8d70718ae8`,
+      ]);
+      console.log('getAssetDisplay', data);
+    }
   };
 
   React.useEffect(() => {
     if (contract) getAppreciator();
     if (contract) getAssetsDisplay();
+    // sendETH();
   }, [assetsDisplay]);
 
   const value = {

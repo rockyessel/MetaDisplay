@@ -18,7 +18,7 @@ export interface AssetsDisplayProps {
   image: string;
   category: string;
   date: string;
-  _id: number;
+  _id: string;
 }
 
 export interface UserDataProps {

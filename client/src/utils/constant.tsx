@@ -42,5 +42,5 @@ export const AssetsDisplayDefault = {
   image: '',
   category: '',
   date: '',
-  _id: 0,
+  _id: '',
 };

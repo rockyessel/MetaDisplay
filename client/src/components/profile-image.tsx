@@ -7,7 +7,7 @@ interface Props {
 }
 
 const ProfileImage = (props: Props) => {
-  console.log('props', props?.data?.profile);
+
   return (
     <img
       className={`w-10 object-contain h-10 border-[1.5px] border-gray-50/60 rounded-full ${props?.styles}`}

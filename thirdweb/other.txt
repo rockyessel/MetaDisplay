@@ -1,0 +1,137 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.9;
+
+
+contract MetaDisplay {
+
+
+    struct Asset {
+        bytes32 id; // the unique ID of the asset
+        address owner; // the creator of the asset address
+        string title; // the title of the asset
+        string description; // the description of the asset
+        string image; // the image url of the asset
+        string category; // the category in which the asset belongs to 
+        string date; // the date and time the asset was created
+        uint256 amountAppreciated; // the overall amount of appreciation from different users 
+        AssetAppreciator[] appreciators; // the total amount of users who appreciated a single asset
+    }
+
+
+    struct AssetAppreciator {
+        address appreciator;  // keeping track of the user address that want to make appreciation
+        uint256 amountAppreciated; // and the total amount appreciated
+        uint256 appreciationQuantity; // and the number of times you appreciated the asset
+        bytes32 assetId; // and the asset that he/she appreciated
+    }
+
+
+    mapping(bytes32 => Asset) public assets;
+    uint256 public no_of_assets;
+
+function createAsset(string memory _title, string memory _description, string memory _image, string memory _category,string memory _date) public returns (bytes32) {
+    // Generate unique ID for asset
+    bytes32 id = keccak256(abi.encodePacked(block.timestamp, _title, _description, _image, _category));
+
+    // Check that asset does not already exist
+    require(assets[id].owner == address(0), "Asset already exists");
+
+    // Create asset
+    assets[id] = Asset(id, msg.sender, _title, _description, _image, _category, _date, 0, new AssetAppreciator[](0));
+
+    // Increment number of assets
+    no_of_assets += 1;
+
+    // Return asset ID
+    return id;
+}
+function appreciateAsset(bytes32 _assetId) public payable {
+        // Check that asset exists
+        require(assets[_assetId].owner != address(0), "Asset does not exist");
+
+        // Add appreciator
+        AssetAppreciator storage appreciator = getOrCreateAppreciator(_assetId);
+        appreciator.amountAppreciated += msg.value;
+        appreciator.appreciationQuantity += 1;
+
+        // Transfer ETH to asset owner
+        address payable assetOwner = payable(assets[_assetId].owner);
+        assetOwner.transfer(msg.value);
+
+        // Update asset appreciation amount
+        assets[_assetId].amountAppreciated += msg.value;
+    }
+
+
+    function getOrCreateAppreciator(bytes32 _assetId) internal returns (AssetAppreciator storage) {
+        // Find appreciator for asset, or create a new one
+        for (uint256 i = 0; i < assets[_assetId].appreciators.length; i++) {
+            if (assets[_assetId].appreciators[i].appreciator == msg.sender) {
+                return assets[_assetId].appreciators[i];
+            }
+        }
+        assets[_assetId].appreciators.push(AssetAppreciator(msg.sender, 0, 0, _assetId));
+        return assets[_assetId].appreciators[assets[_assetId].appreciators.length - 1];
+    }
+
+function getAsset(bytes32 _assetId) public view returns (Asset memory) {
+    // Check that asset exists
+    require(assets[_assetId].owner != address(0), "Asset does not exist");
+    
+    return assets[_assetId];
+}
+function getAllAssets() public view returns (Asset[] memory) {
+    Asset[] memory allAssets = new Asset[](no_of_assets);
+
+    uint256 index = 0;
+    bytes32 assetId = 0;
+    while (index < no_of_assets) {
+        assetId = keccak256(abi.encodePacked(assetId, index));
+        if (assets[assetId].owner != address(0)) {
+            allAssets[index] = assets[assetId];
+            index++;
+        }
+    }
+    return allAssets;
+}
+function getAllAppreciators(bytes32 _assetId) public view returns (AssetAppreciator[] memory) {
+    return assets[_assetId].appreciators;
+}
+function getAppreciator(bytes32 _assetId, address _appreciator) public view returns (AssetAppreciator memory) {
+    for (uint256 i = 0; i < assets[_assetId].appreciators.length; i++) {
+        if (assets[_assetId].appreciators[i].appreciator == _appreciator) {
+            return assets[_assetId].appreciators[i];
+        }
+    }
+    
+    revert("Appreciator not found");
+} 
+}
+
+      // const sepoliaNetwork = `https://sepolia.rpc.thirdweb.com`;
+        // const provider = new ethers.providers.JsonRpcProvider(sepoliaNetwork);
+        // const txObj = {
+        //   to: `${recipientAddress}`,
+        //   value: ethers.utils.parseEther(amount.toString()),
+        //   gasPrice: ethers.utils.parseUnits('20', 'gwei').toString(),
+        //   gasLimit: 21000,
+        //   nonce: await provider.getTransactionCount(address),
+        // };
+
+        // const providerCall = await provider.send('eth_sendTransaction', [
+        //   txObj,
+        // ]);
+        // console.log('providerCall', providerCall);
+        // console.log('provider', provider);
+        // const signer = provider.getSigner(address);
+        // const contractABI = contract.abi;
+        // const newContract = new ethers.Contract(address, contractABI, signer);
+
+        // console.log('newContract', newContract);
+
+        // const weiAmount = ethers.utils.parseEther(amount.toString());
+
+        // const tx = newContract.sendNativeToken(recipientAddress, {
+        //   value: weiAmount,
+        // });
+        // console.log('tx', tx);

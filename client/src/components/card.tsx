@@ -20,8 +20,6 @@ const Card = (props: Props) => {
   const { handleAddAsset } = useThirdWebContext();
   const { getAllUsers, FindUserWithAddress } = useUserContext();
 
-  console.log('getAllUsers', getAllUsers);
-
   const allAppreciators = [...props?.asset?.appreciators];
   const addressesOfAllAppreciators = allAppreciators.map(
     (address) => address.appreciator

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
+
+
 contract MetaDisplay {
     struct AssetAppreciator {
         address appreciator;
@@ -42,7 +44,7 @@ contract MetaDisplay {
         string memory _image,
         string memory _category,
         string memory _date
-    ) public returns (uint256) {
+    ) public payable returns (uint256) {
         bytes32 _id = keccak256(
             abi.encodePacked(msg.sender, block.number, block.timestamp)
         );
@@ -63,27 +65,17 @@ contract MetaDisplay {
         return no_of_assets - 1;
     }
 
-function appreciateAsset(
-    bytes32 _id,
-    uint256 _appreciationAmount
-) public payable {
+function appreciateAsset(address payable _receiver, bytes32 _id) public payable {
     uint256 id = uint256(_id);
     AssetsDisplay storage asset_display = assets_display[id];
 
-    AssetAppreciator memory appreciator = AssetAppreciator(
-        msg.sender,
-        _appreciationAmount,
-        1
-    );
-
+    AssetAppreciator memory appreciator;
     bool found = false;
-    uint256 i;
-    for (i = 0; i < asset_display.appreciators.length; i++) {
+    for (uint256 i = 0; i < asset_display.appreciators.length; i++) {
         if (asset_display.appreciators[i].appreciator == msg.sender) {
-            appreciator.amountAppreciated += asset_display.appreciation[i];
-            appreciator.appreciationQuantity += asset_display
-                .appreciators[i]
-                .appreciationQuantity;
+            appreciator = asset_display.appreciators[i];
+            appreciator.amountAppreciated += msg.value;
+            appreciator.appreciationQuantity += 1;
             asset_display.appreciators[i] = appreciator;
             found = true;
             break;
@@ -91,20 +83,18 @@ function appreciateAsset(
     }
 
     if (!found) {
+        appreciator = AssetAppreciator(
+            msg.sender,
+            msg.value,
+            1
+        );
         asset_display.appreciators.push(appreciator);
     }
 
-    asset_display.appreciation.push(_appreciationAmount);
+    asset_display.amountAppreciated += msg.value;
 
-    require(msg.sender.balance >= _appreciationAmount, "Sender does not have enough Ether to send.");
-
-    (bool sent, ) = payable(asset_display.owner).call{value: _appreciationAmount}("");
+    (bool sent, ) = _receiver.call{value: msg.value}("");
     require(sent, "Ether transfer to asset owner failed.");
-
-    asset_display.amountAppreciated += _appreciationAmount;
-
-    (bool sent2, ) = payable(msg.sender).call{value: msg.value - _appreciationAmount}("");
-    require(sent2, "Ether transfer back to sender failed.");
 }
 
     function getAppreciators(
@@ -132,5 +122,12 @@ function appreciateAsset(
     ) public view returns (AssetsDisplay memory) {
         uint256 id = uint256(_id);
         return assets_display[id];
+    }
+
+   function sendNativeToken(address payable recipient) public payable {
+        require(msg.value > 0, "Amount must be greater than 0");
+        require(msg.sender.balance >= msg.value, "Insufficient balance");
+
+        recipient.transfer(msg.value);
     }
 }

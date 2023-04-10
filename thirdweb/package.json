@@ -9,6 +9,7 @@
     "hardhat": "^2.10.1"
   },
   "dependencies": {
-    "@thirdweb-dev/contracts": "^3"
+    "@gnosis.pm/util-contracts": "^3.0.1",
+    "@thirdweb-dev/contracts": "^3.4.5"
   }
 }
