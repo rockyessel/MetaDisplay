@@ -10,31 +10,65 @@ import { FaEthereum } from 'react-icons/fa';
 import { useUserContext } from '../contexts/user-context';
 import { SiHiveBlockchain } from 'react-icons/si';
 import { userDataDefault } from '../utils/constant';
+import { ethers, utils } from 'ethers';
 
 interface Props {
   asset: AssetsDisplayProps;
 }
 
+interface GetAllAppreciatorsProps {
+  appreciator: string;
+  appreciationQuantity: string;
+  amountAppreciated: ethers.BigNumber;
+}
+
 const Card = (props: Props) => {
-  const [assetOwner, setAssetOwner] = React.useState<UserDataProps>(userDataDefault);
-  const { handleAddAsset } = useThirdWebContext();
+  const [assetOwner, setAssetOwner] =
+    React.useState<UserDataProps>(userDataDefault);
+  const { handleAddAsset, getAppreciators } = useThirdWebContext();
+  const [arrAppreciators, setArrAppreciators] = React.useState<
+    GetAllAppreciatorsProps[]
+  >([]);
   const { getAllUsers, FindUserWithAddress } = useUserContext();
 
-  const allAppreciators = [...props?.asset?.appreciators];
-  const addressesOfAllAppreciators = allAppreciators.map(
+  const getAllAssetAppreciatorsAddress: string[] = arrAppreciators.map(
     (address) => address.appreciator
   );
 
+
+
   const matchingUsers = getAllUsers.filter((user) =>
-    addressesOfAllAppreciators.includes(user.address)
+    getAllAssetAppreciatorsAddress.includes(user.address)
   );
 
+  // Sum the amountAppreciated values in the array
+  const totalAmount: string | number = arrAppreciators.reduce(
+    (total, appreciation) => {
+      const amount = utils.formatEther(appreciation.amountAppreciated);
+      return total + parseFloat(amount);
+    },
+    0
+  );
+
+  const amount = totalAmount.toString();
+  // Format the total amount as ETH with 2 decimal places
+  const formattedTotal = parseFloat(amount).toFixed(4);
+
+
+
+  const getAllData = async () => {
+    const data = (await FindUserWithAddress(
+      props?.asset?.owner
+    )) as unknown as UserDataProps;
+    setAssetOwner(data);
+
+    const appreciatorsArr = await getAppreciators(props?.asset?._id);
+
+    setArrAppreciators(appreciatorsArr);
+  };
+
   React.useEffect(() => {
-    const getUser = async () => {
-      const data = await FindUserWithAddress(props?.asset?.owner) as unknown as UserDataProps;
-      setAssetOwner(data);
-    };
-    getUser()
+    getAllData();
   }, []);
 
   return (
@@ -47,13 +81,14 @@ const Card = (props: Props) => {
             ))
           ) : (
             <div className='w-10 h-10 bg-white rounded-full text-black text-xl inline-flex justify-center items-center'>
-              <SiHiveBlockchain />
+              <SiHiveBlockchain title='No appreciation shown' />
             </div>
           )}
         </div>
 
         <div className='inline-flex items-center gap-2 '>
           <FaEthereum
+            title='Appreciate Asset'
             className='text-3xl hover:text-violet-500 cursor-pointer'
             onClick={() => handleAddAsset(props?.asset)}
           />
@@ -61,11 +96,7 @@ const Card = (props: Props) => {
         </div>
       </header>
 
-      <Link
-        to={`/explore/${props?.asset?.owner}/${props?.asset?.title
-          ?.toLowerCase()
-          ?.replaceAll(' ', '-')}`}
-      >
+      <Link to={`/explore/${props?.asset?._id}`}>
         <main className='w-full'>
           <img
             title={props?.asset?.title}
@@ -84,7 +115,7 @@ const Card = (props: Props) => {
         </div>
         <div className='w-full inline-flex items-center justify-between'>
           <span>Appreciated</span>
-          <span>{props?.asset?.amountAppreciated.toString()} ETH</span>
+          <span>{formattedTotal} ETH</span>
         </div>
         <div className='w-full inline-flex items-center justify-between gap-5'>
           <div className='w-full h-full group relative'>

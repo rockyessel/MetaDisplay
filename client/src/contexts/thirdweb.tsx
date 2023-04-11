@@ -25,6 +25,8 @@ interface ContextProps {
   assetToBeAppreciated?: AssetsDisplayProps;
   assetToBeAppreciatedState: boolean;
   userAppreciation: (appreciateData: any) => Promise<any>;
+  getAppreciators: (_id: string) => Promise<any>;
+  getAssetDisplay: (_id: string) => Promise<void>;
 }
 
 const ThirdWebContext = React.createContext<ContextProps>({
@@ -38,6 +40,8 @@ const ThirdWebContext = React.createContext<ContextProps>({
   assetToBeAppreciated: AssetsDisplayDefault,
   assetToBeAppreciatedState: false,
   userAppreciation: (appreciateData: any) => Promise.resolve(),
+  getAppreciators: (_id: string) => Promise.resolve(),
+  getAssetDisplay: (_id: string) => Promise.resolve(),
 });
 
 export const ThirdWebContextProvider = (props: any) => {
@@ -59,8 +63,8 @@ export const ThirdWebContextProvider = (props: any) => {
   const connect = useMetamask();
   const disconnect = useDisconnect();
 
-  console.log('getAssets', getAssets);
-  console.log('ABIs', contract?.abi);
+  // console.log('getAssets', getAssets);
+  // console.log('ABIs', contract?.abi);
 
   const uploadAsset = async (form: FormProps) => {
     try {
@@ -127,28 +131,33 @@ export const ThirdWebContextProvider = (props: any) => {
   const getAssetDisplay = async (_id: string): Promise<void> => {
     try {
       if (contract) {
-        const data = await contract.call('getAssetDisplay', [
-          `0xd972ddb9578dfcb8dad3bf69c0115d1ba9910e722986c2758fb01c8d70718ae8`,
-        ]);
-        console.log('getAssetDisplay', data);
+        const data = await contract.call('getAssetDisplay', [`${_id}`]);
+        // console.log('getAssetDisplay', data);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getAppreciator = async () => {
-    if (contract) {
-      const data = await contract.call('getAppreciators', [
-        `0xd972ddb9578dfcb8dad3bf69c0115d1ba9910e722986c2758fb01c8d70718ae8`,
-      ]);
-      console.log('getAssetDisplay', data);
+  const getAppreciators = async (_id: string) => {
+    try {
+      if (contract) {
+        const data = await contract.call('getAppreciators', [`${_id}`]);
+        return data;
+      }
+    } catch (error) {
+      console.log('getAppreciators from ThirdWebContext', error);
+      return error;
     }
   };
 
   React.useEffect(() => {
-    if (contract) getAppreciator();
     if (contract) getAssetsDisplay();
+
+    if (contract)
+      getAssetDisplay(
+        `0xd972ddb9578dfcb8dad3bf69c0115d1ba9910e722986c2758fb01c8d70718ae8`
+      );
     // sendETH();
   }, [assetsDisplay]);
 
@@ -162,6 +171,8 @@ export const ThirdWebContextProvider = (props: any) => {
     assetToBeAppreciated,
     assetToBeAppreciatedState,
     userAppreciation,
+    getAppreciators,
+    getAssetDisplay,
   };
   return (
     <ThirdWebContext.Provider value={value}>

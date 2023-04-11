@@ -11,7 +11,7 @@ interface Props {}
 const ExploreDetails = () => {
   const info = useParams();
 
-  console.log('info', info);
+  // console.log('info', info);
 
   return (
     <section className='w-full flex flex-col gap-10'>

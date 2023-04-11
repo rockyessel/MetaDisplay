@@ -16,6 +16,7 @@ const ProfileImage = (props: Props) => {
           ? props?.data.profile
           : 'https://flowbite.com/docs/images/people/profile-picture-5.jpg'
       }
+      title={props?.data?.username}
       alt={props?.data?.address}
     />
   );
