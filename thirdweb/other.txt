@@ -135,3 +135,13 @@ function getAppreciator(bytes32 _assetId, address _appreciator) public view retu
         //   value: weiAmount,
         // });
         // console.log('tx', tx);
+
+
+
+        
+    function sendNativeToken(address payable recipient) public payable {
+        require(msg.value > 0, "Amount must be greater than 0");
+        require(msg.sender.balance >= msg.value, "Insufficient balance");
+
+        recipient.transfer(msg.value);
+    }

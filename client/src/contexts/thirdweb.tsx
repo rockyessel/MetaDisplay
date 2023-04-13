@@ -26,7 +26,7 @@ interface ContextProps {
   assetToBeAppreciatedState: boolean;
   userAppreciation: (appreciateData: any) => Promise<any>;
   getAppreciators: (_id: string) => Promise<any>;
-  getAssetDisplay: (_id: string) => Promise<void>;
+  getAssetDisplay: (_id: string) => Promise<any>;
 }
 
 const ThirdWebContext = React.createContext<ContextProps>({
@@ -133,6 +133,8 @@ export const ThirdWebContextProvider = (props: any) => {
       if (contract) {
         const data = await contract.call('getAssetDisplay', [`${_id}`]);
         // console.log('getAssetDisplay', data);
+
+        return data;
       }
     } catch (error) {
       console.log(error);
@@ -154,11 +156,8 @@ export const ThirdWebContextProvider = (props: any) => {
   React.useEffect(() => {
     if (contract) getAssetsDisplay();
 
-    if (contract)
-      getAssetDisplay(
-        `0xd972ddb9578dfcb8dad3bf69c0115d1ba9910e722986c2758fb01c8d70718ae8`
-      );
-    // sendETH();
+   
+
   }, [assetsDisplay]);
 
   const value = {

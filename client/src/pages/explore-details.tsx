@@ -5,13 +5,44 @@ import { FaEthereum } from 'react-icons/fa';
 import { VscListFlat, VscCopy } from 'react-icons/vsc';
 import { ProfileImage } from '../components';
 import { useParams } from 'react-router-dom';
+import { useThirdWebContext } from '../contexts/thirdweb';
+import { GetAllAppreciatorsProps } from '../components/card';
+import { Summation } from '../utils/services';
 
 interface Props {}
 
 const ExploreDetails = () => {
-  const info = useParams();
+  const { assetId } = useParams();
+  const [assetDetails, setAssetDetails] = React.useState();
+  const [arrAppreciators, setArrAppreciators] = React.useState<
+    GetAllAppreciatorsProps[]
+  >([]);
 
-  // console.log('info', info);
+  const { getAssetDisplay, getAppreciators, getAssets } = useThirdWebContext();
+  console.log('assetDetails', assetDetails);
+  console.log('assetId', assetId);
+
+  const getAssetDetails = async () => {
+    const data = await getAssetDisplay(`${assetId}`);
+    setAssetDetails(data);
+  };
+
+  const foundPathAsset = getAssets.find((asset) => asset._id === assetId);
+  console.log('foundPathAsset', foundPathAsset);
+
+  const formattedTotal = Summation(arrAppreciators);
+
+  const getAllData = async () => {
+    if (assetId) {
+      const appreciatorsArr = await getAppreciators(assetId);
+      setArrAppreciators(appreciatorsArr);
+    }
+  };
+
+  React.useEffect(() => {
+    getAssetDetails();
+    getAllData();
+  }, [assetId]);
 
   return (
     <section className='w-full flex flex-col gap-10'>
@@ -23,7 +54,9 @@ const ExploreDetails = () => {
             </span>
             <span className='inline-flex items-center gap-2'>
               <span>
-                <RxExternalLink />
+                <a href={`${foundPathAsset?.image}`} target='_blank'>
+                  <RxExternalLink /> <span className='sr-only'>Full image</span>
+                </a>
               </span>
               <span className='inline-flex items-center gap-1'>
                 <AiOutlineHeart /> 54
@@ -33,7 +66,7 @@ const ExploreDetails = () => {
 
           <div>
             <img
-              src='https://klaudbox.vercel.app/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Ffiles%2Fut3w84xx%2Fproduction%2F0e1b8a553d29ab837a71867b151acd49982bdd08.webp&w=1080&q=75'
+              src={foundPathAsset?.image}
               className='w-full lg:w-[30rem] h-full lg:h-[34.4rem] object-cover'
               alt=''
             />
@@ -46,9 +79,10 @@ const ExploreDetails = () => {
               Angry WAVs
             </p>
 
-            <p className='font-bold text-xl lg:text-3xl'>
-              Michael Circle - Demons.wav
-            </p>
+            <div className='w-full flex justify-between font-bold text-xl lg:text-3xl'>
+              <p>{foundPathAsset?.title}</p>
+              <p>{formattedTotal} ETH</p>
+            </div>
             <div className='flex items-center gap-1 h-full'>
               <div className='flex mb-3 -space-x-3'>
                 <ProfileImage />
@@ -64,16 +98,13 @@ const ExploreDetails = () => {
             </div>
           </div>
 
-          <div className='border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
+          <div className='w-full border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
             <p className='inline-flex items-center gap-2 px-4 py-2 text-lg'>
               <VscListFlat className='text-3xl' /> Description
             </p>
 
             <p className='px-4 py-2 bg-[#141414]'>
-              WVRPS are the 1st hybrid generative PFP + AI-composed music NFTs
-              minted on the Ethereum blockchain. 9,999 unique NFTs based on the
-              WarpSound virtual artists Nayomi, Gnar Heart + DJ Dragoon, with
-              art by Emmy-winning illustrator Andy Poon
+              {foundPathAsset?.description}
             </p>
           </div>
 

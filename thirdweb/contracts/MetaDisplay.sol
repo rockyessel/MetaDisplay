@@ -1,15 +1,27 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-
-
 contract MetaDisplay {
-    struct AssetAppreciator {
+    struct Collections {
+        bytes32 _id;
+        address owner;
+        string profile;
+        string cover;
+        string title;
+        string description;
+        string date;
+        string category;
+        bytes32[] assetId;
+    }
+
+    struct Appreciator {
         address appreciator;
+        bytes32 assetId;
         uint256 amountAppreciated;
         uint256 appreciationQuantity;
     }
-    struct AssetsDisplay {
+
+    struct Assets {
         bytes32 _id;
         address owner;
         string title;
@@ -18,26 +30,91 @@ contract MetaDisplay {
         string category;
         string date;
         uint256 amountAppreciated;
-        AssetAppreciator[] appreciators;
+        Appreciator[] appreciators;
         uint256[] appreciation;
     }
-    struct User {
-        address own;
+
+    mapping(uint256 => Assets) public assets_display;
+    mapping(uint256 => Collections) public collections;
+    uint256 public no_of_assets = 0;
+    uint256 public no_of_appreciators = 0;
+    uint256 public no_of_collections = 0;
+
+    event CollectionCreated(
+        bytes32 indexed collectionId,
+        address indexed owner,
+        string title
+    );
+
+    event AssetAdded(bytes32 indexed collectionId, bytes32 indexed assetId);
+
+    function createCollection(
+        address _owner,
+        string memory _profile,
+        string memory _cover,
+        string memory _title,
+        string memory _description,
+        string memory _date,
+        string memory _category
+    ) public payable {
+        // Generate a unique ID for the collection
+        bytes32 collectionId = keccak256(
+            abi.encodePacked(msg.sender, block.number, block.timestamp)
+        );
+
+        // Create the collection object
+        Collections memory collection = Collections({
+            _id: collectionId,
+            owner: _owner,
+            profile: _profile,
+            cover: _cover,
+            title: _title,
+            description: _description,
+            date: _date,
+            category: _category,
+            assetId: new bytes32[](0)
+        });
+
+        // Add the collection to the global collections mapping
+        collections[uint256(collectionId)] = collection;
+
+        no_of_collections++;
+
+        // Emit a CollectionCreated event
+        emit CollectionCreated(collectionId, _owner, _title);
     }
 
-    // struct CollectionsDisplay {
-    //     string name;
-    //     string category;
-    //     string created_on;
-    //     uint256 total_items;
-    //     address[] owners;
-    //     _id[] assets;
-    // }
+    function addAssetToCollection(
+        bytes32 _collectionId,
+        bytes32 _assetId
+    ) public {
+        // Get the collection from the global collections mapping
+        Collections storage collection = collections[uint256(_collectionId)];
 
-    mapping(uint256 => AssetsDisplay) public assets_display;
-    uint256 public no_of_assets = 0;
+        // Add the asset ID to the collection's assetId array
+        collection.assetId.push(_assetId);
 
-    function createAssetDisplay(
+        // Emit an AssetAdded event
+        emit AssetAdded(_collectionId, _assetId);
+    }
+
+    function getAllCollections() public view returns (Collections[] memory) {
+        Collections[] memory allCollections = new Collections[](
+            no_of_collections
+        );
+        for (uint256 i = 0; i < no_of_collections; i++) {
+            allCollections[i] = collections[i];
+        }
+        return allCollections;
+    }
+
+    function getCollection(
+        bytes32 _collectionId
+    ) public view returns (Collections memory) {
+        return collections[uint256(_collectionId)];
+    }
+
+    function createAsset(
         address _owner,
         string memory _title,
         string memory _description,
@@ -49,7 +126,7 @@ contract MetaDisplay {
             abi.encodePacked(msg.sender, block.number, block.timestamp)
         );
 
-        AssetsDisplay storage asset_display = assets_display[no_of_assets];
+        Assets storage asset_display = assets_display[no_of_assets];
 
         asset_display._id = _id;
         asset_display.owner = _owner;
@@ -65,69 +142,59 @@ contract MetaDisplay {
         return no_of_assets - 1;
     }
 
-function appreciateAsset(address payable _receiver, bytes32 _id) public payable {
-    uint256 id = uint256(_id);
-    AssetsDisplay storage asset_display = assets_display[id];
-
-    AssetAppreciator memory appreciator;
-    bool found = false;
-    for (uint256 i = 0; i < asset_display.appreciators.length; i++) {
-        if (asset_display.appreciators[i].appreciator == msg.sender) {
-            appreciator = asset_display.appreciators[i];
-            appreciator.amountAppreciated += msg.value;
-            appreciator.appreciationQuantity += 1;
-            asset_display.appreciators[i] = appreciator;
-            found = true;
-            break;
-        }
-    }
-
-    if (!found) {
-        appreciator = AssetAppreciator(
-            msg.sender,
-            msg.value,
-            1
-        );
-        asset_display.appreciators.push(appreciator);
-    }
-
-    asset_display.amountAppreciated += msg.value;
-
-    (bool sent, ) = _receiver.call{value: msg.value}("");
-    require(sent, "Ether transfer to asset owner failed.");
-}
-
-    function getAppreciators(
-        uint256 _id
-    ) public view returns (AssetAppreciator[] memory) {
-        return assets_display[_id].appreciators;
-    }
-
-    function getAssetsDisplay() public view returns (AssetsDisplay[] memory) {
-        AssetsDisplay[] memory allAssetsDisplay = new AssetsDisplay[](
-            no_of_assets
-        );
+    function getAllAssets() public view returns (Assets[] memory) {
+        Assets[] memory allAssets = new Assets[](no_of_assets);
 
         for (uint256 i = 0; i < no_of_assets; i++) {
-            AssetsDisplay storage asset = assets_display[i];
+            Assets storage asset = assets_display[i];
 
-            allAssetsDisplay[i] = asset;
+            allAssets[i] = asset;
         }
 
-        return allAssetsDisplay;
+        return allAssets;
     }
 
-    function getAssetDisplay(
-        bytes32 _id
-    ) public view returns (AssetsDisplay memory) {
+    function getAsset(bytes32 _id) public view returns (Assets memory) {
         uint256 id = uint256(_id);
         return assets_display[id];
     }
 
-   function sendNativeToken(address payable recipient) public payable {
-        require(msg.value > 0, "Amount must be greater than 0");
-        require(msg.sender.balance >= msg.value, "Insufficient balance");
+    function appreciateAsset(
+        address payable _receiver,
+        bytes32 _id
+    ) public payable {
+        uint256 id = uint256(_id);
+        Assets storage asset_display = assets_display[id];
 
-        recipient.transfer(msg.value);
+        Appreciator memory appreciator;
+        bool found = false;
+        for (uint256 i = 0; i < asset_display.appreciators.length; i++) {
+            if (asset_display.appreciators[i].appreciator == msg.sender) {
+                appreciator = asset_display.appreciators[i];
+                appreciator.amountAppreciated += msg.value;
+                appreciator.appreciationQuantity += 1;
+                asset_display.appreciators[i] = appreciator;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            appreciator = Appreciator(msg.sender, _id, msg.value, 1);
+            asset_display.appreciators.push(appreciator);
+
+            no_of_appreciators++;
+        }
+
+        asset_display.amountAppreciated += msg.value;
+
+        (bool sent, ) = _receiver.call{value: msg.value}("");
+        require(sent, "Ether transfer to asset owner failed.");
+    }
+
+    function getAppreciators(
+        uint256 _id
+    ) public view returns (Appreciator[] memory) {
+        return assets_display[_id].appreciators;
     }
 }
