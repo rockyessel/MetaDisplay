@@ -28,7 +28,6 @@ const AssetPost = async (request, response) => {
     response.status(500).json({ error: 'Could not upload asset.' });
   }
 };
-
 const AssetDelete = async (request, response) => {
   try {
     const params = {
@@ -61,6 +60,17 @@ const IncreaseAssetViewCount = async (request, response) => {
     // get
     const { assetId } = request.body;
     console.log('assetId', assetId);
+
+    const find = await Asset.findOne({ assetId });
+
+    if (find === null) {
+      const asset = await Asset.updateOne(
+        { _id: existingAsset._id },
+        { $set: { assetId: assetId } },
+        { upsert: true }
+      );
+    }
+
     const found = await Asset.findOneAndUpdate(
       { assetId },
       { $inc: { views: 1 } },

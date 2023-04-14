@@ -10,7 +10,7 @@ import { FaEthereum } from 'react-icons/fa';
 import { useUserContext } from '../contexts/user-context';
 import { SiHiveBlockchain } from 'react-icons/si';
 import { userDataDefault } from '../utils/constant';
-import { ethers, utils } from 'ethers';
+import { ethers } from 'ethers';
 import { Summation } from '../utils/services';
 
 interface Props {

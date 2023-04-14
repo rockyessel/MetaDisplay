@@ -5,7 +5,6 @@ const AssetSchema = new mongoose.Schema(
     assetId: {
       type: mongoose.Schema.Types.Mixed,
       unique: true,
-      required: true,
     },
     views: {
       type: Number,

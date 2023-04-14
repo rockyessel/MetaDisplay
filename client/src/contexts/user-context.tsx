@@ -19,6 +19,9 @@ interface UserContextProviderProps {
   userLogState: boolean;
   getAllUsers: UserDataProps[];
   FindUserWithAddress: (address: string) => Promise<UserDataProps>;
+  AssetViewCounts: (assetId: string) => Promise<void>;
+  AssetSave: (assetId: string) => Promise<void>;
+  GetAsset: (assetId: string) => Promise<any>;
 }
 
 type Props = {
@@ -35,6 +38,9 @@ const UserContext = React.createContext({
   userLogState: false,
   getAllUsers: [userDataDefault],
   FindUserWithAddress: (address: string) => Promise.resolve(userDataDefault),
+  AssetViewCounts: (assetId: string) => Promise.resolve(),
+  AssetSave: (assetId: string) => Promise.resolve(),
+  GetAsset: (assetId: string) => Promise.resolve(),
 });
 
 export const UserContextProvider = (props: Props) => {
@@ -97,7 +103,68 @@ export const UserContextProvider = (props: Props) => {
     }
   };
 
-  const FindUserWithAddress = async (address: string): Promise<UserDataProps> => {
+  const AssetViewCounts = async (assetId: string) => {
+    try {
+      await axios({
+        method: 'PUT',
+        baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/assets/saves`,
+        data: assetId,
+        xsrfCookieName: 'XSRF-TOKEN',
+        xsrfHeaderName: 'X-XSRF-TOKEN',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const AssetSave = async (assetId: string) => {
+    try {
+      const data = localStorage.getItem('user');
+      const user = data && JSON.parse(data);
+      const token = user?.token;
+      await axios({
+        method: 'PUT',
+        baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/assets/views`,
+        data: assetId,
+        xsrfCookieName: 'XSRF-TOKEN',
+        xsrfHeaderName: 'X-XSRF-TOKEN',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+    const GetAsset = async (assetId: string) => {
+      try {
+        const response = await axios({
+          method: 'GET',
+          baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/assets/${assetId}`,
+          xsrfCookieName: 'XSRF-TOKEN',
+          xsrfHeaderName: 'X-XSRF-TOKEN',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+          console.log('getAssetDB',response.data)
+
+
+          return response.data
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+  const FindUserWithAddress = async (
+    address: string
+  ): Promise<UserDataProps> => {
     const response = await axios({
       method: 'GET',
       baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/users/find/${address}`,
@@ -154,6 +221,9 @@ export const UserContextProvider = (props: Props) => {
     userLogState,
     getAllUsers,
     FindUserWithAddress,
+    AssetViewCounts,
+    AssetSave,
+    GetAsset,
   };
   return (
     <UserContext.Provider value={value}>{props.children}</UserContext.Provider>

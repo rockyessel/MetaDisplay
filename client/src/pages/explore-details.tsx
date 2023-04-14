@@ -18,16 +18,19 @@ const ExploreDetails = () => {
   const [arrAppreciators, setArrAppreciators] = React.useState<GetAllAppreciatorsProps[]>([]);
   const [currentAssetUser, setCurrentAssetUser] = React.useState({});
   const { getAppreciators, getAssets, handleAddAsset } = useThirdWebContext();
-  const { getAllUsers, FindUserWithAddress } = useUserContext();
+  const { getAllUsers, FindUserWithAddress, AssetViewCounts, GetAsset } = useUserContext();
   const [totalAppreciations, setTotalAppreciations] = React.useState<string | undefined>('');
 
   const foundPathAsset = getAssets.find((asset) => asset._id === assetId);
-  const getAllAssetAppreciatorsAddress: string[] = arrAppreciators?.map((address) => address?.appreciator);
-  
-  console.log('arrAppreciators', arrAppreciators);
-  
-  const matchingUsers = getAllUsers?.filter((user) => getAllAssetAppreciatorsAddress?.includes(user?.address));
+  const getAllAssetAppreciatorsAddress: string[] = arrAppreciators?.map(
+    (address) => address?.appreciator
+  );
 
+  console.log('arrAppreciators', arrAppreciators);
+
+  const matchingUsers = getAllUsers?.filter((user) =>
+    getAllAssetAppreciatorsAddress?.includes(user?.address)
+  );
 
   const getAllData = async () => {
     if (assetId) {
@@ -41,9 +44,19 @@ const ExploreDetails = () => {
   };
 
   React.useEffect(() => {
-    setTotalAppreciations(Summation(arrAppreciators))
+    // We delay by few seconds because the user could have click on it by mistake.
+    // So the user stays on the asset page for few seconds then we make the request.
+    assetId && GetAsset(assetId);
+    const time = setTimeout(async () => {
+      if (assetId) await AssetViewCounts(assetId);
+    }, 2000);
+
+    return () => clearTimeout(time);
+  }, []);
+
+  React.useEffect(() => {
+    setTotalAppreciations(Summation(arrAppreciators));
     getAllData();
-    
   }, [assetId, currentAssetUser, getAllUsers]);
 
   return (
@@ -55,7 +68,7 @@ const ExploreDetails = () => {
               <FaEthereum
                 title='Appreciate Asset'
                 className='text-3xl hover:text-violet-500 cursor-pointer'
-                onClick={() => handleAddAsset(foundPathAsset)}
+                onClick={() => handleAddAsset(`${foundPathAsset}`)}
               />
             </span>
             <span className='inline-flex items-center gap-2'>
