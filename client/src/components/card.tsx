@@ -26,7 +26,7 @@ export interface GetAllAppreciatorsProps {
 const Card = (props: Props) => {
   const [assetOwner, setAssetOwner] =
     React.useState<UserDataProps>(userDataDefault);
-  const { handleAddAsset, getAppreciators } = useThirdWebContext();
+  const { handleAddAsset, getAppreciators, address } = useThirdWebContext();
   const [arrAppreciators, setArrAppreciators] = React.useState<
     GetAllAppreciatorsProps[]
   >([]);
@@ -36,15 +36,11 @@ const Card = (props: Props) => {
     (address) => address.appreciator
   );
 
-
-
   const matchingUsers = getAllUsers.filter((user) =>
     getAllAssetAppreciatorsAddress.includes(user.address)
   );
 
   const formattedTotal = Summation(arrAppreciators);
-
-
 
   const getAllData = async () => {
     const data = (await FindUserWithAddress(
@@ -77,11 +73,13 @@ const Card = (props: Props) => {
         </div>
 
         <div className='inline-flex items-center gap-2 '>
-          <FaEthereum
-            title='Appreciate Asset'
-            className='text-3xl hover:text-violet-500 cursor-pointer'
-            onClick={() => handleAddAsset(props?.asset)}
-          />
+          {address && (
+            <FaEthereum
+              title='Appreciate Asset'
+              className='text-3xl hover:text-violet-500 cursor-pointer'
+              onClick={() => handleAddAsset(props?.asset)}
+            />
+          )}
           <RiMoreFill className='text-3xl hover:bg-violet-500 rounded-lg' />
         </div>
       </header>

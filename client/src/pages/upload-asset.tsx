@@ -38,10 +38,7 @@ const UploadAsset = () => {
       if (inputFile) {
         const data = new FormData();
         data.append('file', inputFile);
-        const imageURL: string = await UploadAssetRequest({
-          data,
-          setAssetUploadPercent,
-        });
+        const imageURL: string = await UploadAssetRequest({data, setAssetUploadPercent});
         setGetImageURl(imageURL);
       }
     },

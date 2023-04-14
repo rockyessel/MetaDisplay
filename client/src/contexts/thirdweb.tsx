@@ -7,7 +7,7 @@ import {
   useContractRead,
   useDisconnect,
 } from '@thirdweb-dev/react';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, ethers, utils } from 'ethers';
 import { AssetsDisplayProps, FormProps } from '../interface';
 import { AssetsDisplayDefault } from '../utils/constant';
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
@@ -46,10 +46,10 @@ const ThirdWebContext = React.createContext<ContextProps>({
 
 export const ThirdWebContextProvider = (props: any) => {
   const { contract } = useContract(`${process.env.VITE_META_DISPLAY_WALLET}`);
-  const { data: assetsDisplay } = useContractRead(contract, 'getAssetsDisplay');
+  const { data: assetsDisplay } = useContractRead(contract, 'getAllAssets');
   const { mutateAsync: createAssetDisplay } = useContractWrite(
     contract,
-    'createAssetDisplay'
+    'createAsset'
   );
   const { mutateAsync: appreciateAsset, error: appreciateError } =
     useContractWrite(contract, 'appreciateAsset');
@@ -58,6 +58,7 @@ export const ThirdWebContextProvider = (props: any) => {
     React.useState<AssetsDisplayProps>(AssetsDisplayDefault);
   const [assetToBeAppreciatedState, setAssetToBeAppreciatedState] =
     React.useState<boolean>(false);
+  const [arrAppreciators, setArrAppreciators] = React.useState<any[]>([]);
 
   const address = useAddress();
   const connect = useMetamask();
@@ -97,7 +98,7 @@ export const ThirdWebContextProvider = (props: any) => {
         args: [appreciateData.address, appreciateData._id],
         overrides: { value: amount },
       });
-      return data;
+      return { success: true, data };
     } catch (error) {
       console.log(error);
       return {
@@ -115,7 +116,6 @@ export const ThirdWebContextProvider = (props: any) => {
         amountAppreciated: ethers.utils.formatEther(
           asset.amountAppreciated.toString()
         ),
-        appreciation: asset.appreciation,
         appreciators: asset.appreciators,
         title: asset.title,
         description: asset.description,
@@ -125,13 +125,15 @@ export const ThirdWebContextProvider = (props: any) => {
         _id: asset._id,
       })
     );
+
+    console.log('allAssetsDisplay', allAssetsDisplay);
     setGetAsset(allAssetsDisplay);
   };
 
   const getAssetDisplay = async (_id: string): Promise<void> => {
     try {
       if (contract) {
-        const data = await contract.call('getAssetDisplay', [`${_id}`]);
+        const data = await contract.call('getAsset', [`${_id}`]);
         // console.log('getAssetDisplay', data);
 
         return data;
@@ -145,7 +147,21 @@ export const ThirdWebContextProvider = (props: any) => {
     try {
       if (contract) {
         const data = await contract.call('getAppreciators', [`${_id}`]);
-        return data;
+
+        const appreciators: any = data?.map((data: any) => ({
+          appreciator: data.appreciator,
+          appreciationQuantity: ethers.utils.formatEther(
+            data.appreciationQuantity.toString()
+          ),
+          amountAppreciated: ethers.utils.formatEther(
+            data.amountAppreciated.toString()
+          ),
+        }));
+
+        setArrAppreciators(appreciators);
+        console.log('appreciators', appreciators);
+
+        return appreciators;
       }
     } catch (error) {
       console.log('getAppreciators from ThirdWebContext', error);
@@ -155,9 +171,6 @@ export const ThirdWebContextProvider = (props: any) => {
 
   React.useEffect(() => {
     if (contract) getAssetsDisplay();
-
-   
-
   }, [assetsDisplay]);
 
   const value = {

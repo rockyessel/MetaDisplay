@@ -2,14 +2,23 @@ const mongoose = require('mongoose');
 
 const AssetSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
+    assetId: {
+      type: mongoose.Schema.Types.Mixed,
       unique: true,
       required: true,
     },
     views: {
       type: Number,
       default: 0,
+    },
+    asset_url: {
+      type: String,
+    },
+    saves: {
+      type: [String],
+      ref: 'Asset',
+      default: [],
+      sparse: true,
     },
   },
   {

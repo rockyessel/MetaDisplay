@@ -4,53 +4,59 @@ import { RxExternalLink } from 'react-icons/rx';
 import { FaEthereum } from 'react-icons/fa';
 import { VscListFlat, VscCopy } from 'react-icons/vsc';
 import { ProfileImage } from '../components';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import { GetAllAppreciatorsProps } from '../components/card';
 import { Summation } from '../utils/services';
+import { useUserContext } from '../contexts/user-context';
+import { SiHiveBlockchain } from 'react-icons/si';
 
 interface Props {}
 
 const ExploreDetails = () => {
   const { assetId } = useParams();
-  const [assetDetails, setAssetDetails] = React.useState();
-  const [arrAppreciators, setArrAppreciators] = React.useState<
-    GetAllAppreciatorsProps[]
-  >([]);
-
-  const { getAssetDisplay, getAppreciators, getAssets } = useThirdWebContext();
-  console.log('assetDetails', assetDetails);
-  console.log('assetId', assetId);
-
-  const getAssetDetails = async () => {
-    const data = await getAssetDisplay(`${assetId}`);
-    setAssetDetails(data);
-  };
+  const [arrAppreciators, setArrAppreciators] = React.useState<GetAllAppreciatorsProps[]>([]);
+  const [currentAssetUser, setCurrentAssetUser] = React.useState({});
+  const { getAppreciators, getAssets, handleAddAsset } = useThirdWebContext();
+  const { getAllUsers, FindUserWithAddress } = useUserContext();
+  const [totalAppreciations, setTotalAppreciations] = React.useState<string | undefined>('');
 
   const foundPathAsset = getAssets.find((asset) => asset._id === assetId);
-  console.log('foundPathAsset', foundPathAsset);
+  const getAllAssetAppreciatorsAddress: string[] = arrAppreciators?.map((address) => address?.appreciator);
+  
+  console.log('arrAppreciators', arrAppreciators);
+  
+  const matchingUsers = getAllUsers?.filter((user) => getAllAssetAppreciatorsAddress?.includes(user?.address));
 
-  const formattedTotal = Summation(arrAppreciators);
 
   const getAllData = async () => {
     if (assetId) {
       const appreciatorsArr = await getAppreciators(assetId);
       setArrAppreciators(appreciatorsArr);
     }
+    if (foundPathAsset) {
+      const data = await FindUserWithAddress(foundPathAsset?.owner);
+      setCurrentAssetUser(data);
+    }
   };
 
   React.useEffect(() => {
-    getAssetDetails();
+    setTotalAppreciations(Summation(arrAppreciators))
     getAllData();
-  }, [assetId]);
+    
+  }, [assetId, currentAssetUser, getAllUsers]);
 
   return (
     <section className='w-full flex flex-col gap-10'>
       <div className='w-full flex flex-col lg:flex-row items-center gap-5'>
         <div className='w-full lg:w-[30rem] h-full lg:h-[34.4rem]  overflow-hidden border-[1px] border-gray-50/60 rounded-t-md'>
-          <div className='w-full bg-gray-50 text-black rounded-t-md inline-flex items-center justify-between px-3 py-1.5'>
+          <div className='text-2xl w-full bg-[#141414] rounded-t-md inline-flex items-center justify-between px-3 py-1.5'>
             <span>
-              <FaEthereum />
+              <FaEthereum
+                title='Appreciate Asset'
+                className='text-3xl hover:text-violet-500 cursor-pointer'
+                onClick={() => handleAddAsset(foundPathAsset)}
+              />
             </span>
             <span className='inline-flex items-center gap-2'>
               <span>
@@ -73,26 +79,43 @@ const ExploreDetails = () => {
           </div>
         </div>
 
-        <div className='flex-1 h-full flex flex-col gap-3 lg:gap-5'>
+        <div className='w-full lg:w-auto flex-1 h-full flex flex-col gap-3 lg:gap-5'>
           <div className='flex flex-col gap-4'>
-            <p className='font-medium text-violet-400 cursor-pointer'>
-              Angry WAVs
+            <p className='inline-flex flex-col'>
+              <span className='text-xs'>Category</span>
+              <span className='font-medium text-violet-400 cursor-pointer'>
+                {' '}
+                Angry WAVs
+              </span>
             </p>
 
             <div className='w-full flex justify-between font-bold text-xl lg:text-3xl'>
-              <p>{foundPathAsset?.title}</p>
-              <p>{formattedTotal} ETH</p>
+              <p className='inline-flex flex-col'>
+                <span className='text-xs'>Title</span>
+                <span>{foundPathAsset?.title}</span>
+              </p>
+
+              <p className='inline-flex flex-col'>
+                <span className='text-xs'>Total Appreciation</span>
+                <span>{totalAppreciations ? totalAppreciations : '0'} ETH</span>
+              </p>
             </div>
             <div className='flex items-center gap-1 h-full'>
               <div className='flex mb-3 -space-x-3'>
-                <ProfileImage />
-                <ProfileImage />
-                <ProfileImage />
+                {matchingUsers.length > 0 ? (
+                  matchingUsers?.map((appreciator, index) => (
+                    <ProfileImage key={index} data={appreciator} />
+                  ))
+                ) : (
+                  <div className='w-10 h-10 bg-white rounded-full text-black text-xl inline-flex justify-center items-center'>
+                    <SiHiveBlockchain title='No appreciation shown' />
+                  </div>
+                )}
               </div>
               <span className='text-sm'>
-                5 appreciate to{' '}
+                {matchingUsers.length} appreciate to{' '}
                 <span className='font-medium text-violet-400 cursor-pointer'>
-                  michael-circle
+                  {currentAssetUser?.username}
                 </span>
               </span>
             </div>
@@ -213,7 +236,7 @@ const ExploreDetails = () => {
                 <VscListFlat className='text-3xl' /> Category
               </p>
               <div className='flex items-center gap-3 px-4 py-2 bg-[#141414]'>
-                Art
+                {foundPathAsset?.category}
               </div>
             </div>
           </div>
@@ -335,3 +358,6 @@ const ExploreDetails = () => {
 };
 
 export default ExploreDetails;
+// amountAppreciated
+// appreciationQuantity
+// appreciator

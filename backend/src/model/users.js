@@ -52,7 +52,7 @@ const UserSchema = new mongoose.Schema(
       default: [],
       sparse: true,
     },
-    savedAssets: {
+    saves: {
       type: [String],
       ref: 'Asset',
       default: [],

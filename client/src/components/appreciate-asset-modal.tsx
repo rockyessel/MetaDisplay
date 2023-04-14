@@ -36,8 +36,6 @@ const AppreciateAssetModal = () => {
 
     const receipt = await userAppreciation(data);
 
-   
-
     if (receipt.state) {
       setError(true);
       setAppreciateStateValue(`${receipt.error_obj.info.reason}`);
@@ -51,7 +49,7 @@ const AppreciateAssetModal = () => {
       return () => clearTimeout(time);
     }
 
-    if (receipt.receipt.confirmations === 1) {
+    if (receipt.success) {
       setAppreciateStateValue(`Asset appreciated successfully`);
       setTitle(`Asset appreciated successfully`);
       const time = setTimeout(() => {
@@ -106,7 +104,7 @@ const AppreciateAssetModal = () => {
               disabled={buttonDisable}
             >
               {isLoading ? (
-                <Loader iconStyles='text-2xl' stateValue='Appreciating...' />
+                <Loader iconStyles='text-2xl hover:text-white' stateValue='Appreciating...' />
               ) : (
                 appreciateStateValue
               )}
@@ -114,7 +112,9 @@ const AppreciateAssetModal = () => {
             <Button
               type='submit'
               handleClick={() => handleAddAsset(AssetsDisplayDefault)}
-              styles={`hover:bg-rose-500 bg-[#141414] w-full ${buttonDisable === true ? 'cursor-not-allowed' : ''}`}
+              styles={`hover:bg-rose-500 bg-[#141414] w-full ${
+                buttonDisable === true ? 'cursor-not-allowed' : ''
+              }`}
               title={'Close'}
             >
               Close

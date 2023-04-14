@@ -18,7 +18,7 @@ contract MetaDisplay {
         address appreciator;
         bytes32 assetId;
         uint256 amountAppreciated;
-        uint256 appreciationQuantity;
+        uint16 appreciationQuantity;
     }
 
     struct Assets {
@@ -31,7 +31,6 @@ contract MetaDisplay {
         string date;
         uint256 amountAppreciated;
         Appreciator[] appreciators;
-        uint256[] appreciation;
     }
 
     mapping(uint256 => Assets) public assets_display;
@@ -156,6 +155,7 @@ contract MetaDisplay {
 
     function getAsset(bytes32 _id) public view returns (Assets memory) {
         uint256 id = uint256(_id);
+        require(id < no_of_assets, "Asset with the given ID does not exist.");
         return assets_display[id];
     }
 
@@ -166,23 +166,24 @@ contract MetaDisplay {
         uint256 id = uint256(_id);
         Assets storage asset_display = assets_display[id];
 
-        Appreciator memory appreciator;
         bool found = false;
         for (uint256 i = 0; i < asset_display.appreciators.length; i++) {
             if (asset_display.appreciators[i].appreciator == msg.sender) {
-                appreciator = asset_display.appreciators[i];
-                appreciator.amountAppreciated += msg.value;
-                appreciator.appreciationQuantity += 1;
-                asset_display.appreciators[i] = appreciator;
+                asset_display.appreciators[i].amountAppreciated += msg.value;
+                asset_display.appreciators[i].appreciationQuantity++;
                 found = true;
                 break;
             }
         }
 
         if (!found) {
-            appreciator = Appreciator(msg.sender, _id, msg.value, 1);
-            asset_display.appreciators.push(appreciator);
-
+            Appreciator storage newAppreciator = asset_display
+                .appreciators
+                .push();
+            newAppreciator.appreciator = msg.sender;
+            newAppreciator.assetId = _id;
+            newAppreciator.amountAppreciated = msg.value;
+            newAppreciator.appreciationQuantity = 1;
             no_of_appreciators++;
         }
 
