@@ -45,6 +45,8 @@ const UploadAsset = () => {
     [inputFile]
   );
 
+  console.log('getImageURL', getImageURL);
+
   const handleUpdates = (
     event:
       | React.ChangeEvent<HTMLInputElement>

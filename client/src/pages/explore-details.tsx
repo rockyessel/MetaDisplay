@@ -18,7 +18,7 @@ const ExploreDetails = () => {
   const [arrAppreciators, setArrAppreciators] = React.useState<GetAllAppreciatorsProps[]>([]);
   const [currentAssetUser, setCurrentAssetUser] = React.useState({});
   const { getAppreciators, getAssets, handleAddAsset } = useThirdWebContext();
-  const { getAllUsers, FindUserWithAddress, AssetViewCounts, GetAsset } = useUserContext();
+  const { getAllUsers, FindUserWithAddress } = useUserContext();
   const [totalAppreciations, setTotalAppreciations] = React.useState<string | undefined>('');
 
   const foundPathAsset = getAssets.find((asset) => asset._id === assetId);
@@ -43,16 +43,6 @@ const ExploreDetails = () => {
     }
   };
 
-  React.useEffect(() => {
-    // We delay by few seconds because the user could have click on it by mistake.
-    // So the user stays on the asset page for few seconds then we make the request.
-    assetId && GetAsset(assetId);
-    const time = setTimeout(async () => {
-      if (assetId) await AssetViewCounts(assetId);
-    }, 2000);
-
-    return () => clearTimeout(time);
-  }, []);
 
   React.useEffect(() => {
     setTotalAppreciations(Summation(arrAppreciators));

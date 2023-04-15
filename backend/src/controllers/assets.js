@@ -18,7 +18,7 @@ const AssetPost = async (request, response) => {
     await s3.send(command);
 
     const asset = await Asset.create({
-      assetId,
+      assetId:'',
       asset_url: `${url}Assets/${user.username}/${request.file.originalname}`,
     });
 
@@ -60,23 +60,26 @@ const IncreaseAssetViewCount = async (request, response) => {
     // get
     const { assetId } = request.body;
     console.log('assetId', assetId);
-
+    
     const find = await Asset.findOne({ assetId });
-
+    console.log('find', find);
+    
     if (find === null) {
       const asset = await Asset.updateOne(
         { _id: existingAsset._id },
         { $set: { assetId: assetId } },
         { upsert: true }
       );
+
+      
     }
 
-    const found = await Asset.findOneAndUpdate(
-      { assetId },
-      { $inc: { views: 1 } },
-      { new: true }
-    );
-    response.status(200).json({ success: true, found });
+    // const found = await Asset.findOneAndUpdate(
+    //   { assetId },
+    //   { $inc: { views: 1 } },
+    //   { new: true }
+    // );
+    // response.status(200).json({ success: true, found });
   } catch (error) {
     response
       .status(500)

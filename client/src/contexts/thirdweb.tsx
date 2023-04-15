@@ -113,9 +113,6 @@ export const ThirdWebContextProvider = (props: any) => {
     const allAssetsDisplay: AssetsDisplayProps[] = assetsDisplay?.map(
       (asset: AssetsDisplayProps) => ({
         owner: asset.owner,
-        amountAppreciated: ethers.utils.formatEther(
-          asset.amountAppreciated.toString()
-        ),
         appreciators: asset.appreciators,
         title: asset.title,
         description: asset.description,
