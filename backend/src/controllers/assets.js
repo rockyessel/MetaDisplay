@@ -5,7 +5,6 @@ const User = require('../model/users.js');
 
 const AssetPost = async (request, response) => {
   try {
-    const { assetId } = request.body;
     const user = request.user;
     await createFolder(`Assets/${user.username}/`);
     const params = {
@@ -18,7 +17,6 @@ const AssetPost = async (request, response) => {
     await s3.send(command);
 
     const asset = await Asset.create({
-      assetId:'',
       asset_url: `${url}Assets/${user.username}/${request.file.originalname}`,
     });
 
@@ -45,10 +43,8 @@ const AssetDelete = async (request, response) => {
 };
 const GetAsset = async (request, response) => {
   try {
-    const { assetId } = request.params;
-
-    const found = await Asset.find({ assetId });
-
+    const { id } = request.params;
+    const found = await Asset.findById({ _id: id });
     console.log(found);
     response.status(200).json({ success: true, found });
   } catch (error) {
@@ -58,28 +54,14 @@ const GetAsset = async (request, response) => {
 const IncreaseAssetViewCount = async (request, response) => {
   try {
     // get
-    const { assetId } = request.body;
-    console.log('assetId', assetId);
-    
-    const find = await Asset.findOne({ assetId });
-    console.log('find', find);
-    
-    if (find === null) {
-      const asset = await Asset.updateOne(
-        { _id: existingAsset._id },
-        { $set: { assetId: assetId } },
-        { upsert: true }
-      );
+    const { id } = request.params;
 
-      
-    }
-
-    // const found = await Asset.findOneAndUpdate(
-    //   { assetId },
-    //   { $inc: { views: 1 } },
-    //   { new: true }
-    // );
-    // response.status(200).json({ success: true, found });
+    const found = await Asset.findByIdAndUpdate(
+      { _id: id },
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+    response.status(200).json({ success: true, found });
   } catch (error) {
     response
       .status(500)
@@ -88,38 +70,39 @@ const IncreaseAssetViewCount = async (request, response) => {
 };
 const AssetSave = async (request, response) => {
   try {
-    const { assetId } = request.body;
+    const { id } = request.body;
     const user = request.user;
+
+    const doesAssetExist = await Asset.findById({ _id: id });
+
+    if (!doesAssetExist || doesAssetExist === null) {
+      response.status(500).json({ error: 'Asset do not exist' });
+    }
 
     // Find the user and check if the asset is already saved
     const foundUser = await User.findOne({ address: user.address });
-    if (foundUser.saves.includes(assetId)) {
+    if (foundUser.saves.includes(id)) {
       response.status(500).json({ error: 'Asset already saved by user' });
-      throw new Error('Asset already saved by user');
     }
-
-    // Find the assetId and check if the user is already saved
-    const asset = await Asset.findOne({ assetId });
+    // Find the id and check if the user is already saved
+    const asset = await Asset.findById({ _id: id });
     if (asset.saves.includes(user.address)) {
       response.status(500).json({ error: 'User already saved by user' });
-      throw new Error('User already saved by user');
     }
-
     // Find the asset and add the user address to its saves array
-    const foundAsset = await Asset.findOneAndUpdate(
-      { assetId },
+    const foundAsset = await Asset.findByIdAndUpdate(
+      { _id: id },
       { $push: { saves: user.address } },
       { new: true }
     );
-
     // Add the asset ID to the user's saves array
     await User.findOneAndUpdate(
       { address: user.address },
-      { $push: { saves: assetId } }
+      { $push: { saves: id } }
     );
-
     response.status(200).json({ success: true, foundAsset });
   } catch (error) {
+    console.log(error);
     response.status(500).json({ error: 'Could not save asset.' });
   }
 };

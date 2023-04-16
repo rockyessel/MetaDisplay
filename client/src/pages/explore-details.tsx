@@ -3,23 +3,31 @@ import { AiOutlineHeart } from 'react-icons/ai';
 import { RxExternalLink } from 'react-icons/rx';
 import { FaEthereum } from 'react-icons/fa';
 import { VscListFlat, VscCopy } from 'react-icons/vsc';
-import { ProfileImage } from '../components';
+import { CollectionCard, ProfileImage } from '../components';
 import { Link, useParams } from 'react-router-dom';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import { GetAllAppreciatorsProps } from '../components/card';
 import { Summation } from '../utils/services';
 import { useUserContext } from '../contexts/user-context';
 import { SiHiveBlockchain } from 'react-icons/si';
+import { ethers } from 'ethers';
 
 interface Props {}
 
 const ExploreDetails = () => {
   const { assetId } = useParams();
-  const [arrAppreciators, setArrAppreciators] = React.useState<GetAllAppreciatorsProps[]>([]);
+  const [arrAppreciators, setArrAppreciators] = React.useState<
+    GetAllAppreciatorsProps[]
+  >([]);
   const [currentAssetUser, setCurrentAssetUser] = React.useState({});
   const { getAppreciators, getAssets, handleAddAsset } = useThirdWebContext();
-  const { getAllUsers, FindUserWithAddress } = useUserContext();
-  const [totalAppreciations, setTotalAppreciations] = React.useState<string | undefined>('');
+  const { getAllUsers, FindUserWithAddress, AssetViewCounts, GetAsset } =
+    useUserContext();
+  const [totalAppreciations, setTotalAppreciations] = React.useState<
+    string | undefined
+  >('');
+  const [hasIncremented, setHasIncremented] = React.useState<boolean>(false);
+  const [assetDetails, setAssetDetails] = React.useState({});
 
   const foundPathAsset = getAssets.find((asset) => asset._id === assetId);
   const getAllAssetAppreciatorsAddress: string[] = arrAppreciators?.map(
@@ -34,23 +42,40 @@ const ExploreDetails = () => {
 
   const getAllData = async () => {
     if (assetId) {
-      const appreciatorsArr = await getAppreciators(assetId);
+      const [appreciatorsArr, data] = await Promise.all([
+        getAppreciators(assetId),
+        GetAsset(assetId),
+      ]);
       setArrAppreciators(appreciatorsArr);
+      setAssetDetails(data);
     }
     if (foundPathAsset) {
       const data = await FindUserWithAddress(foundPathAsset?.owner);
       setCurrentAssetUser(data);
     }
   };
+  console.log('assetDetails', assetDetails);
+  React.useEffect(() => {
+    if (!hasIncremented) {
+      const time = setTimeout(() => {
+        if (assetId)
+          AssetViewCounts(assetId).then(() => {
+            setHasIncremented(true);
+            console.log('Called once');
+          });
+      }, 10000);
 
+      return () => clearTimeout(time);
+    }
+  }, []);
 
   React.useEffect(() => {
     setTotalAppreciations(Summation(arrAppreciators));
     getAllData();
-  }, [assetId, currentAssetUser, getAllUsers]);
+  }, [assetId, getAllUsers]);
 
   return (
-    <section className='w-full flex flex-col gap-10'>
+    <section className='w-full flex flex-col gap-10 pb-5'>
       <div className='w-full flex flex-col lg:flex-row items-center gap-5'>
         <div className='w-full lg:w-[30rem] h-full lg:h-[34.4rem]  overflow-hidden border-[1px] border-gray-50/60 rounded-t-md'>
           <div className='text-2xl w-full bg-[#141414] rounded-t-md inline-flex items-center justify-between px-3 py-1.5'>
@@ -68,7 +93,7 @@ const ExploreDetails = () => {
                 </a>
               </span>
               <span className='inline-flex items-center gap-1'>
-                <AiOutlineHeart /> 54
+                <AiOutlineHeart /> {assetDetails?.found?.saves?.length}
               </span>
             </span>
           </div>
@@ -223,7 +248,7 @@ const ExploreDetails = () => {
                 <VscListFlat className='text-3xl' /> Views
               </p>
               <div className='flex items-center gap-3 px-4 py-2 bg-[#141414]'>
-                439
+                {assetDetails?.found?.views}
               </div>
             </div>
             <div className='w-full border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
@@ -231,7 +256,7 @@ const ExploreDetails = () => {
                 <VscListFlat className='text-3xl' /> Saves
               </p>
               <div className='flex items-center gap-3 px-4 py-2 bg-[#141414]'>
-                54
+                {assetDetails?.found?.saves?.length}
               </div>
             </div>
             <div className='w-full border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
@@ -246,115 +271,54 @@ const ExploreDetails = () => {
         </div>
       </div>
 
-      <div>
-        <div className='relative overflow-x-auto shadow-md'>
-          <table className='w-full text-sm text-left'>
-            <caption className='p-5 text-lg font-semibold text-left border-[1px] rounded-t-md border-gray-50/60 divide-y-[1px] divide-gray-50/60 shadow-md'>
-              Appreciate Lists
-              <p className='mt-1 text-sm font-normal '>
-                Browse a list of Flowbite products designed to help you work and
-                play, stay organized, get answers, keep in touch, grow your
-                business, and more.
+      <div className='w-full'>
+        <div className='w-full relative overflow-x-auto shadow-md'>
+          <div className='w-full p-5 text-lg font-semibold text-left border-[1px] rounded-t-md border-gray-50/60 divide-y-[1px] divide-gray-50/60 shadow-md'>
+            Appreciate Lists
+            <p className='mt-1 text-sm font-normal '>
+              Here is the list of appreciation show to this creator by other
+              user.
+            </p>
+          </div>
+          {arrAppreciators?.length > 0 ? (
+            <table className='w-full text-sm text-left'>
+              <thead className='uppercase bg-[#141414] text-gray-400 border-[1px] border-gray-50/60 divide-y-[1px] divide-gray-50/60 shadow-md'>
+                <tr>
+                  <th className='px-6 py-3'>Appreciators</th>
+                  <th className='px-6 py-3'>Amount appreciated</th>
+                  <th className='px-6 py-3'>Quantity</th>
+                </tr>
+              </thead>
+              <tbody className='border-[1px] border-gray-50/60 divide-y-[1px] divide-gray-50/60 shadow-md'>
+                {arrAppreciators?.map((appreciator, index) => (
+                  <tr key={index} className='bg-[#141414]'>
+                    <td className='px-6 py-4 truncate'>
+                      {appreciator?.appreciator}
+                    </td>
+                    <td className='px-6 py-4'>
+                      {appreciator?.amountAppreciated}
+                    </td>
+                    <td className='px-6 py-4'>
+                      {appreciator?.appreciationQuantity}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className='w-full border-[1px] border-gray-50/60 divide-y-[1px] divide-gray-50/60 shadow-md bg-[#141414]'>
+              <p className='w-full px-6 py-4'>
+                Be the first to show appreciation to this creator's asset.
               </p>
-            </caption>
-            <thead className='uppercase bg-[#141414] text-gray-400 border-[1px] border-gray-50/60 divide-y-[1px] divide-gray-50/60 shadow-md'>
-              <tr>
-                <th className='px-6 py-3'>Appre</th>
-                <th className='px-6 py-3'>Unit Price</th>
-                <th className='px-6 py-3'>Category</th>
-                <th className='px-6 py-3'>Price</th>
-                <th className='px-6 py-3'>Date</th>
-              </tr>
-            </thead>
-            <tbody className='border-[1px] border-gray-50/60 divide-y-[1px] divide-gray-50/60 shadow-md'>
-              <tr className='bg-[#141414]'>
-                <th
-                  scope='row'
-                  className='px-6 py-4 font-medium whitespace-nowrap'
-                >
-                  Apple MacBook Pro 17"
-                </th>
-                <td className='px-6 py-4'>Silver</td>
-                <td className='px-6 py-4'>Laptop</td>
-                <td className='px-6 py-4'>$2999</td>
-                <td className='px-6 py-4 text-right'>
-                  <a
-                    href='#'
-                    className='font-medium text-blue-600 dark:text-blue-500 hover:underline'
-                  >
-                    Edit
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            </div>
+          )}
         </div>
       </div>
 
       <div className='w-full'>
         <p className='font-bold text-4xl text-white'>Collections</p>
 
-        <div className=' flex items-center flex-wrap gap-4 lg:grid grid-cols-3'>
-          <div className='h-auto w-[25rem] border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
-            <div className=''>
-              <img
-                src='https://i.seadn.io/s/primary-drops/0xcd15cabf8f047e226a719826f0a4726e34e69e28/24146804:about:preview_media:d4232f34-be0b-4ed0-87ca-6a6b82601bc9.gif?auto=format&w=1920'
-                alt=''
-                className='w-full h-full object-cover'
-              />
-            </div>
-            <div className='w-full px-4 py-2 bg-[#141414] inline-flex items-center justify-between'>
-              <p>Michael Circle - Demons.wav</p>
-              <p className='inline-flex items-center gap-1'>
-                <RxExternalLink />
-
-                <span className='inline-flex items-center gap-1'>
-                  <AiOutlineHeart /> 54
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <div className='h-auto w-[25rem] border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
-            <div className=''>
-              <img
-                src='https://openseauserdata.com/files/3219422aa7a2d04f2067e46cfb0cd919.svg'
-                alt=''
-                className='w-full h-full object-cover'
-              />
-            </div>
-            <div className='w-full px-4 py-2 bg-[#141414] inline-flex items-center justify-between'>
-              <p>Michael Circle - Demons.wav</p>
-              <p className='inline-flex items-center gap-1'>
-                <RxExternalLink />
-
-                <span className='inline-flex items-center gap-1'>
-                  <AiOutlineHeart /> 54
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <div className='h-auto w-[25rem] border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
-            <div className=''>
-              <img
-                src='https://dl.openseauserdata.com/cache/originImage/files/f6729747348edd42d037bab2f77a81be.jpg'
-                alt=''
-                className='w-full h-full object-cover'
-              />
-            </div>
-            <div className='w-full px-4 py-2 bg-[#141414] inline-flex items-center justify-between'>
-              <p>Michael Circle - Demons.wav</p>
-              <p className='inline-flex items-center gap-1'>
-                <RxExternalLink />
-
-                <span className='inline-flex items-center gap-1'>
-                  <AiOutlineHeart /> 54
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
+        <CollectionCard />
       </div>
     </section>
   );

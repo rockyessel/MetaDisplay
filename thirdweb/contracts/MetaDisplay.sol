@@ -16,7 +16,7 @@ contract MetaDisplay {
 
     struct Appreciator {
         address appreciator;
-        bytes32 assetId;
+        string _id;
         uint256 amountAppreciated;
         uint16 appreciationQuantity;
     }
@@ -32,6 +32,8 @@ contract MetaDisplay {
         Appreciator[] appreciators;
     }
 
+    mapping(bytes32 => mapping(address => uint256))
+        public assetAppreciatorIndex;
     mapping(uint256 => Assets) public assets_display;
     mapping(uint256 => Collections) public collections;
     uint256 public no_of_assets = 0;
@@ -114,37 +116,26 @@ contract MetaDisplay {
 
     function createAsset(
         string memory _id,
-        address _owner,
         string memory _title,
         string memory _description,
         string memory _image,
         string memory _category,
         string memory _date
-    ) public payable returns (uint256) {
-        require(keccak256(bytes(_id)) != keccak256(""), "Invalid asset ID");
+    ) public {
+        bytes32 assetId = keccak256(abi.encodePacked(no_of_assets));
+        Assets memory newAsset = Assets({
+            _id: _id,
+            owner: msg.sender,
+            title: _title,
+            description: _description,
+            image: _image,
+            category: _category,
+            date: _date,
+            appreciators: new Appreciator[](0)
+        });
 
-        // Check for duplicate _id values
-        for (uint256 i = 0; i < no_of_assets; i++) {
-            Assets storage asset_display = assets_display[i];
-            require(
-                keccak256(bytes(asset_display._id)) != keccak256(bytes(_id)),
-                "Asset with this ID already exists"
-            );
-        }
-
-        Assets storage asset_display = assets_display[no_of_assets];
-
-        asset_display._id = _id;
-        asset_display.owner = _owner;
-        asset_display.title = _title;
-        asset_display.description = _description;
-        asset_display.image = _image;
-        asset_display.category = _category;
-        asset_display.date = _date;
-
+        assets_display[assetId] = newAsset;
         no_of_assets++;
-
-        return no_of_assets - 1;
     }
 
     // function getAllAssets() public view returns (Assets[] memory) {
@@ -159,40 +150,13 @@ contract MetaDisplay {
     //     return allAssets;
     // }
 
- function getAllAssets() public view returns (Assets[] memory) {
-    Assets[] memory allAssets = new Assets[](no_of_assets);
+    function getAllAssets() public view returns (Assets[] memory) {
+        Assets[] memory allAssets = new Assets[](no_of_assets);
 
-    for (uint256 i = 0; i < no_of_assets; i++) {
-        Assets storage asset = assets_display[i];
+        for (uint256 i = 0; i < no_of_assets; i++) {
+            Assets storage asset = assets_display[i];
 
-        allAssets[i] = Assets({
-            _id: asset._id,
-            owner: asset.owner,
-            title: asset.title,
-            description: asset.description,
-            image: asset.image,
-            category: asset.category,
-            date: asset.date,
-            appreciators: asset.appreciators
-        });
-    }
-
-    return allAssets;
-}
-
-    // function getAsset(bytes32 _id) public view returns (Assets memory) {
-    //     uint256 id = uint256(_id);
-    //     require(id < no_of_assets, "Asset with the given ID does not exist.");
-    //     return assets_display[id];
-    // }
-
-  function getAssetById(string memory _id) public view returns (Assets memory) {
-    // Loop through all assets to find the one with the given _id
-    for (uint256 i = 0; i < no_of_assets; i++) {
-        Assets storage asset = assets_display[i];
-        if (keccak256(bytes(asset._id)) == keccak256(bytes(_id))) {
-            // Return the asset if the _id matches
-            return Assets({
+            allAssets[i] = Assets({
                 _id: asset._id,
                 owner: asset.owner,
                 title: asset.title,
@@ -203,46 +167,73 @@ contract MetaDisplay {
                 appreciators: asset.appreciators
             });
         }
+
+        return allAssets;
     }
-    // If no asset with the given _id is found, return an empty struct
-    return Assets({
-        _id: "",
-        owner: address(0),
-        title: "",
-        description: "",
-        image: "",
-        category: "",
-        date: "",
-        appreciators: new Appreciator[](0)
-    });
-}
+
+    // function getAsset(bytes32 _id) public view returns (Assets memory) {
+    //     uint256 id = uint256(_id);
+    //     require(id < no_of_assets, "Asset with the given ID does not exist.");
+    //     return assets_display[id];
+    // }
+
+    function getAssetById(
+        string memory _id
+    ) public view returns (Assets memory) {
+        // Loop through all assets to find the one with the given _id
+        for (uint256 i = 0; i < no_of_assets; i++) {
+            Assets storage asset = assets_display[i];
+            if (keccak256(bytes(asset._id)) == keccak256(bytes(_id))) {
+                // Return the asset if the _id matches
+                return
+                    Assets({
+                        _id: asset._id,
+                        owner: asset.owner,
+                        title: asset.title,
+                        description: asset.description,
+                        image: asset.image,
+                        category: asset.category,
+                        date: asset.date,
+                        appreciators: asset.appreciators
+                    });
+            }
+        }
+        // If no asset with the given _id is found, return an empty struct
+        return
+            Assets({
+                _id: "",
+                owner: address(0),
+                title: "",
+                description: "",
+                image: "",
+                category: "",
+                date: "",
+                appreciators: new Appreciator[](0)
+            });
+    }
 
     function appreciateAsset(
         address payable _receiver,
-        bytes32 _id
+        string memory _assetId
     ) public payable {
-        uint256 id = uint256(_id);
-        Assets storage asset_display = assets_display[id];
+        bytes32 assetId = keccak256(abi.encodePacked(_assetId));
+        Assets storage asset = assets_display[assetId];
 
-        bool found = false;
-        for (uint256 i = 0; i < asset_display.appreciators.length; i++) {
-            if (asset_display.appreciators[i].appreciator == msg.sender) {
-                asset_display.appreciators[i].amountAppreciated += msg.value;
-                asset_display.appreciators[i].appreciationQuantity++;
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
+        uint256 index = assetAppreciatorIndex[assetId][msg.sender];
+        if (index == 0) {
             Appreciator memory newAppreciator = Appreciator(
                 msg.sender,
-                _id,
+                _assetId,
                 msg.value,
                 1
             );
-            asset_display.appreciators.push(newAppreciator);
-            no_of_appreciators++;
+            asset.appreciators.push(newAppreciator);
+            assetAppreciatorIndex[assetId][msg.sender] = asset
+                .appreciators
+                .length;
+        } else {
+            asset.appreciators[index - 1].amountAppreciated += msg.value;
+            asset.appreciators[index - 1].appreciationQuantity++;
         }
 
         (bool sent, ) = _receiver.call{value: msg.value}("");
@@ -250,8 +241,9 @@ contract MetaDisplay {
     }
 
     function getAppreciators(
-        uint256 _id
+        string memory _id
     ) public view returns (Appreciator[] memory) {
-        return assets_display[_id].appreciators;
+        bytes32 assetId = keccak256(abi.encodePacked(_id));
+        return assets_display[uint256(assetId)].appreciators;
     }
 }

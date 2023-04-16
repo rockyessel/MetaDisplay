@@ -13,8 +13,8 @@ const router = express.Router();
 
 router.post('/', asset_upload.single('file'), protect, AssetPost);
 router.delete('/delete/:assetName', AssetDelete);
-router.get('/:assetId', GetAsset);
-router.put('/views', IncreaseAssetViewCount);
+router.get('/:id', GetAsset);
+router.put('/views/:id', IncreaseAssetViewCount);
 router.put('/saves',protect, AssetSave);
 
 module.exports = router;

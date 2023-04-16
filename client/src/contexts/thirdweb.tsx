@@ -71,6 +71,7 @@ export const ThirdWebContextProvider = (props: any) => {
     try {
       const data = await createAssetDisplay({
         args: [
+          form._id,
           address,
           form.title,
           form.description,

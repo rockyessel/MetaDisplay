@@ -2,10 +2,6 @@ const mongoose = require('mongoose');
 
 const AssetSchema = new mongoose.Schema(
   {
-    assetId: {
-      type: mongoose.Schema.Types.Mixed,
-      unique: true,
-    },
     views: {
       type: Number,
       default: 0,

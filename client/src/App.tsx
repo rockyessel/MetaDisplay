@@ -7,6 +7,8 @@ import {
   Dashboard,
   User,
   UploadAsset,
+  CreateCollection,
+  All,
 } from './pages';
 import {
   AppreciateAssetModal,
@@ -33,7 +35,9 @@ const App = () => {
           <Route path='/explore/:assetId' element={<ExploreDetails />} />
           <Route path='/home' element={<Home />} />
           <Route path='/dashboard' element={<Dashboard />}>
-            <Route path='user' element={<User />} />
+            <Route path='user-account' element={<User />} />
+            <Route path='all' element={<All />} />
+            <Route path='create-collection' element={<CreateCollection />} />
             <Route path='upload-asset' element={<UploadAsset />} />
           </Route>
         </Routes>

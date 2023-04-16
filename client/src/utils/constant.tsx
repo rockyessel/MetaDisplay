@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 
 export const formInitialValue = {
+  _id: '',
   title: '',
   description: '',
   image: ``,

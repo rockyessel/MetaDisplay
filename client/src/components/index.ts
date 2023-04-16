@@ -11,3 +11,4 @@ export { default as Loader } from './loader';
 export { default as RegisterModal } from './register-modal';
 export { default as LoginModal } from './login-modal';
 export { default as AppreciateAssetModal } from './appreciate-asset-modal';
+export { default as CollectionCard } from './collection-card';

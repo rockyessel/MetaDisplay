@@ -53,10 +53,13 @@ export const UserContextProvider = (props: Props) => {
   const address = useAddress();
   const [getAllUsers, setGetAllUsers] = React.useState<UserDataProps[]>([]);
 
+  // const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
+  const baseURL = `http://localhost:4000/`;
+
   const LoginUserWithAddress = async (form: typeof loginDefaultValue) => {
     const response = await axios({
       method: 'POST',
-      baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/users/login`,
+      baseURL: `${baseURL}v1/users/login`,
       data: form,
       xsrfCookieName: 'XSRF-TOKEN',
       xsrfHeaderName: 'X-XSRF-TOKEN',
@@ -73,7 +76,7 @@ export const UserContextProvider = (props: Props) => {
   const AllUsers = async () => {
     const response = await axios({
       method: 'GET',
-      baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/users`,
+      baseURL: `${baseURL}v1/users`,
       xsrfCookieName: 'XSRF-TOKEN',
       xsrfHeaderName: 'X-XSRF-TOKEN',
       headers: {
@@ -89,7 +92,7 @@ export const UserContextProvider = (props: Props) => {
   const RegisterUser = async (formData: typeof formDataInitialValue) => {
     const response = await axios({
       method: 'POST',
-      baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/users/register`,
+      baseURL: `${baseURL}v1/users/register`,
       data: formData,
       xsrfCookieName: 'XSRF-TOKEN',
       xsrfHeaderName: 'X-XSRF-TOKEN',
@@ -103,18 +106,17 @@ export const UserContextProvider = (props: Props) => {
     }
   };
 
-  const AssetViewCounts = async (assetId: string) => {
+  const AssetViewCounts = async (_id: string) => {
     try {
-      await axios({
+      console.log('AssetViewCounts', _id);
+      const data = await axios({
         method: 'PUT',
-        baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/assets/saves`,
-        data: assetId,
+        baseURL: `${baseURL}v1/assets/views/${_id}`,
         xsrfCookieName: 'XSRF-TOKEN',
         xsrfHeaderName: 'X-XSRF-TOKEN',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
+
+      console.log('views', data);
     } catch (error) {
       console.log(error);
     }
@@ -127,7 +129,7 @@ export const UserContextProvider = (props: Props) => {
       const token = user?.token;
       await axios({
         method: 'PUT',
-        baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/assets/views`,
+        baseURL: `${baseURL}v1/assets/views`,
         data: assetId,
         xsrfCookieName: 'XSRF-TOKEN',
         xsrfHeaderName: 'X-XSRF-TOKEN',
@@ -141,33 +143,32 @@ export const UserContextProvider = (props: Props) => {
     }
   };
 
-    const GetAsset = async (assetId: string) => {
-      try {
-        const response = await axios({
-          method: 'GET',
-          baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/assets/${assetId}`,
-          xsrfCookieName: 'XSRF-TOKEN',
-          xsrfHeaderName: 'X-XSRF-TOKEN',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+  const GetAsset = async (_id: string) => {
+    try {
+      const response = await axios({
+        method: 'GET',
+        baseURL: `${baseURL}v1/assets/${_id}`,
+        xsrfCookieName: 'XSRF-TOKEN',
+        xsrfHeaderName: 'X-XSRF-TOKEN',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-          console.log('getAssetDB',response.data)
+      console.log('getAssetDB', response.data);
 
-
-          return response.data
-      } catch (error) {
-        console.log(error);
-      }
-    };
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const FindUserWithAddress = async (
     address: string
   ): Promise<UserDataProps> => {
     const response = await axios({
       method: 'GET',
-      baseURL: `${process.env.VITE_BACKEND_API_BASE_URL}v1/users/find/${address}`,
+      baseURL: `${baseURL}v1/users/find/${address}`,
       xsrfCookieName: 'XSRF-TOKEN',
       xsrfHeaderName: 'X-XSRF-TOKEN',
       headers: {

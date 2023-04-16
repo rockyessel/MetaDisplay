@@ -1,6 +1,7 @@
 import { BigNumber } from 'ethers';
 
 export interface FormProps {
+  _id: string;
   title: string;
   description: string;
   image: string;
