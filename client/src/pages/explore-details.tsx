@@ -22,17 +22,16 @@ const ExploreDetails = () => {
   const [currentAssetUser, setCurrentAssetUser] = React.useState({
     username: '',
   });
-  const { getAppreciators, getAssets, handleAddAsset, address } =
-    useThirdWebContext();
+  const { getAppreciators, getAssets, handleAddAsset } = useThirdWebContext();
   const { getAllUsers, FindUserWithAddress, AssetViewCounts, GetAsset } =
     useUserContext();
   const [totalAppreciations, setTotalAppreciations] = React.useState<
     string | undefined
   >('');
   const [hasIncremented, setHasIncremented] = React.useState<boolean>(false);
-  const [assetDetails, setAssetDetails] = React.useState({
-    found: { _id: '', views: 0, saves: [] },
-  });
+  const [assetDetails, setAssetDetails] = React.useState<{
+    found: { _id: string; views: number; saves: never[] };
+  }>({ found: { _id: '', views: 0, saves: [] } });
   const [totalAssets, setTotalAssets] = React.useState<number>();
 
   const foundPathAsset = getAssets.find((asset) => asset._id === assetId);
@@ -99,7 +98,11 @@ const ExploreDetails = () => {
               <FaEthereum
                 title='Appreciate Asset'
                 className='text-3xl hover:text-violet-500 cursor-pointer'
-                onClick={() => handleAddAsset(`${foundPathAsset}`)}
+                onClick={() => {
+                  if (foundPathAsset) {
+                    handleAddAsset(foundPathAsset);
+                  }
+                }}
               />
             </span>
             <span className='inline-flex items-center gap-2'>
@@ -312,7 +315,7 @@ const ExploreDetails = () => {
                       {appreciator?.appreciator}
                     </td>
                     <td className='px-6 py-4'>
-                      {ethers.BigNumber.from(appreciator?.amountAppreciated.toString(),18)}
+                      {appreciator?.amountAppreciated.toString()}
                     </td>
                     <td className='px-6 py-4'>
                       {appreciator?.appreciationQuantity}
