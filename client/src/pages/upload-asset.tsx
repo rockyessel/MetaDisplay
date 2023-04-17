@@ -15,7 +15,10 @@ import { formInitialValue } from '../utils/constant';
 interface Props {}
 
 const UploadAsset = () => {
-  const [getAssetData, setGetAssetData] = React.useState<string>('');
+  const [getAssetData, setGetAssetData] = React.useState({
+    asset_url: '',
+    _id: '',
+  });
   const [assetUploadPercent, setAssetUploadPercent] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [loadingPercent, setLoadingPercent] = React.useState(0);
@@ -30,7 +33,7 @@ const UploadAsset = () => {
     await UploadAssetRequestDelete(getFileNameFromURL);
     setInputFile('');
     setAssetUploadPercent(0);
-    setGetAssetData('');
+    setGetAssetData({ asset_url: '', _id: '' });
   };
 
   const handleImageUpload = React.useMemo(
@@ -38,10 +41,7 @@ const UploadAsset = () => {
       if (inputFile) {
         const data = new FormData();
         data.append('file', inputFile);
-        const imageURL: string = await UploadAssetRequest({
-          data,
-          setAssetUploadPercent,
-        });
+        const imageURL = await UploadAssetRequest({data, setAssetUploadPercent});
         setGetAssetData(imageURL);
       }
     },
@@ -83,7 +83,7 @@ const UploadAsset = () => {
     const { title, description, image } = form;
     if (!title || !description || !image) return;
     await uploadAsset(form);
-    setGetAssetData('');
+    setGetAssetData({ asset_url: '', _id: '' });
     setAssetUploadPercent(0);
     setInputFile('');
     setForm(formInitialValue);
@@ -144,7 +144,7 @@ const UploadAsset = () => {
                     </p>
                   )}
 
-                  {getAssetData !== '' && (
+                  {getAssetData.asset_url !== '' && (
                     <img
                       className='w-full  h-full object-cover'
                       src={getAssetData?.asset_url}
@@ -200,7 +200,9 @@ const UploadAsset = () => {
                       type='submit'
                       styles={'bg-rose-800 text-white'}
                       title={'Upload Asset'}
-                      handleClick={() => handleAssetDelete(getAssetData)}
+                      handleClick={() =>
+                        handleAssetDelete(getAssetData?.asset_url)
+                      }
                     >
                       Delete
                     </Button>

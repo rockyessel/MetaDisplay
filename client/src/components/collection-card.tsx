@@ -6,16 +6,32 @@ interface Props {}
 
 const CollectionCard = () => {
   return (
-    <div className='h-auto w-[25rem] border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
-      <div className=''>
+    <div className='w-full sm:w-[25rem] border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
+      <div className='grid grid-cols-4 gap-1'>
         <img
           src='https://i.seadn.io/s/primary-drops/0xcd15cabf8f047e226a719826f0a4726e34e69e28/24146804:about:preview_media:d4232f34-be0b-4ed0-87ca-6a6b82601bc9.gif?auto=format&w=1920'
           alt=''
-          className='w-full h-full object-cover'
+          className='w-full h-full object-cover row-span-3 col-span-2'
+        />
+        <img
+          src='https://i.seadn.io/s/primary-drops/0xcd15cabf8f047e226a719826f0a4726e34e69e28/24146804:about:preview_media:d4232f34-be0b-4ed0-87ca-6a6b82601bc9.gif?auto=format&w=1920'
+          alt=''
+          className='w-full h-full object-cover col-span-2'
+        />
+        <img
+          src='https://i.seadn.io/s/primary-drops/0xcd15cabf8f047e226a719826f0a4726e34e69e28/24146804:about:preview_media:d4232f34-be0b-4ed0-87ca-6a6b82601bc9.gif?auto=format&w=1920'
+          alt=''
+          className='w-full h-full object-cover row-span-2 '
+        />
+        <img
+          src='https://i.seadn.io/s/primary-drops/0xcd15cabf8f047e226a719826f0a4726e34e69e28/24146804:about:preview_media:d4232f34-be0b-4ed0-87ca-6a6b82601bc9.gif?auto=format&w=1920'
+          alt=''
+          className='w-full h-full object-cover row-span-2 '
         />
       </div>
-      <div className='w-full px-4 py-2 bg-[#141414] inline-flex items-center justify-between'>
-        <p>Michael Circle - Demons.wav</p>
+
+      <div className='w-full px-4 py-2 bg-[#141414] inline-flex items-center justify-between gap-5'>
+        <p className='truncate'>Michael Circle - Demons.wav</p>
         <p className='inline-flex items-center gap-1'>
           <RxExternalLink />
 

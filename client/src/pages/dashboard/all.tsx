@@ -1,7 +1,7 @@
 import React from 'react';
 import { useThirdWebContext } from '../../contexts/thirdweb';
 import { AssetsDisplayProps } from '../../interface';
-import { Card } from '../../components';
+import { Card, CollectionCard } from '../../components';
 
 interface Props {}
 
@@ -13,9 +13,9 @@ const All = () => {
 
   React.useEffect(() => {
     if (address) {
-      const filterAssetsForCurrentUser = getAssets?.filter(
-        (asset) => asset.owner === address
-      );
+      const filterAssetsForCurrentUser = contract
+        ? getAssets?.filter((asset) => asset.owner === address)
+        : [];
       setUserOwnAssets(filterAssetsForCurrentUser);
     }
   }, []);
@@ -38,9 +38,12 @@ const All = () => {
           All Collection created
         </p>
         <ul className='flex flex-wrap gap-10'>
-          {userOwnAssets?.map((asset, index) => (
-            <Card asset={asset} key={index} />
-          ))}
+          <CollectionCard />
+          <CollectionCard />
+          <CollectionCard />
+          <CollectionCard />
+          <CollectionCard />
+          <CollectionCard />
         </ul>
       </section>
     </main>

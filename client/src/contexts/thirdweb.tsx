@@ -6,6 +6,7 @@ import {
   useContractWrite,
   useContractRead,
   useDisconnect,
+  SmartContract,
 } from '@thirdweb-dev/react';
 import { BigNumber, ethers, utils } from 'ethers';
 import { AssetsDisplayProps, FormProps } from '../interface';
@@ -27,6 +28,7 @@ interface ContextProps {
   userAppreciation: (appreciateData: any) => Promise<any>;
   getAppreciators: (_id: string) => Promise<any>;
   getAssetDisplay: (_id: string) => Promise<any>;
+  contract: SmartContract<ethers.BaseContract> | undefined;
 }
 
 const ThirdWebContext = React.createContext<ContextProps>({
@@ -42,6 +44,7 @@ const ThirdWebContext = React.createContext<ContextProps>({
   userAppreciation: (appreciateData: any) => Promise.resolve(),
   getAppreciators: (_id: string) => Promise.resolve(),
   getAssetDisplay: (_id: string) => Promise.resolve(),
+  contract: undefined,
 });
 
 export const ThirdWebContextProvider = (props: any) => {
@@ -183,6 +186,7 @@ export const ThirdWebContextProvider = (props: any) => {
     userAppreciation,
     getAppreciators,
     getAssetDisplay,
+    contract,
   };
   return (
     <ThirdWebContext.Provider value={value}>

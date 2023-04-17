@@ -19,20 +19,28 @@ const ExploreDetails = () => {
   const [arrAppreciators, setArrAppreciators] = React.useState<
     GetAllAppreciatorsProps[]
   >([]);
-  const [currentAssetUser, setCurrentAssetUser] = React.useState({});
-  const { getAppreciators, getAssets, handleAddAsset } = useThirdWebContext();
+  const [currentAssetUser, setCurrentAssetUser] = React.useState({
+    username: '',
+  });
+  const { getAppreciators, getAssets, handleAddAsset, address } =
+    useThirdWebContext();
   const { getAllUsers, FindUserWithAddress, AssetViewCounts, GetAsset } =
     useUserContext();
   const [totalAppreciations, setTotalAppreciations] = React.useState<
     string | undefined
   >('');
   const [hasIncremented, setHasIncremented] = React.useState<boolean>(false);
-  const [assetDetails, setAssetDetails] = React.useState({});
+  const [assetDetails, setAssetDetails] = React.useState({
+    found: { _id: '', views: 0, saves: [] },
+  });
+  const [totalAssets, setTotalAssets] = React.useState<number>();
 
   const foundPathAsset = getAssets.find((asset) => asset._id === assetId);
   const getAllAssetAppreciatorsAddress: string[] = arrAppreciators?.map(
     (address) => address?.appreciator
   );
+
+  console.log('totalAssets', totalAssets);
 
   console.log('arrAppreciators', arrAppreciators);
 
@@ -73,6 +81,14 @@ const ExploreDetails = () => {
     setTotalAppreciations(Summation(arrAppreciators));
     getAllData();
   }, [assetId, getAllUsers]);
+
+  React.useEffect(() => {
+    const totalAssetsUploads = getAssets?.filter(
+      (asset) => asset?.owner === foundPathAsset?.owner
+    )?.length;
+
+    setTotalAssets(totalAssetsUploads);
+  }, [assetId]);
 
   return (
     <section className='w-full flex flex-col gap-10 pb-5'>
@@ -226,8 +242,8 @@ const ExploreDetails = () => {
                   </span>
                 </span>
                 <span className='inline-flex items-center justify-between gap-16'>
-                  <span className='flex-shrink-0'>Total Uploads</span>
-                  <span>89,348</span>
+                  <span className='flex-shrink-0'>Total Assets Uploaded</span>
+                  <span>{totalAssets}</span>
                 </span>
               </div>
             </div>
@@ -296,7 +312,7 @@ const ExploreDetails = () => {
                       {appreciator?.appreciator}
                     </td>
                     <td className='px-6 py-4'>
-                      {appreciator?.amountAppreciated}
+                      {ethers.BigNumber.from(appreciator?.amountAppreciated.toString(),18)}
                     </td>
                     <td className='px-6 py-4'>
                       {appreciator?.appreciationQuantity}

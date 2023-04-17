@@ -5,11 +5,12 @@ import { useThirdWebContext } from '../contexts/thirdweb';
 interface Props {}
 
 const User = () => {
-  const { address } = useThirdWebContext();
-
-  const [userDetails, setUserDetails] = React.useState({});
-
-  console.log('userDetails', userDetails);
+  const [userDetails, setUserDetails] = React.useState({
+    address: '',
+    name: '',
+    username: '',
+    email: '',
+  });
 
   React.useEffect(() => {
     const userData = localStorage.getItem('user');
