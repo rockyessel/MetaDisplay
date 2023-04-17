@@ -11,8 +11,19 @@ import { Summation } from '../utils/services';
 import { useUserContext } from '../contexts/user-context';
 import { SiHiveBlockchain } from 'react-icons/si';
 import { ethers } from 'ethers';
+import { AssetDetailsDefault } from '../utils/constant';
 
 interface Props {}
+
+export interface AssetDetailsProps {
+  found: {
+    views: number;
+    saves: never[];
+    _id: string;
+    asset_url: string;
+  };
+  success: boolean;
+}
 
 const ExploreDetails = () => {
   const { assetId } = useParams();
@@ -29,9 +40,8 @@ const ExploreDetails = () => {
     string | undefined
   >('');
   const [hasIncremented, setHasIncremented] = React.useState<boolean>(false);
-  const [assetDetails, setAssetDetails] = React.useState<{
-    found: { _id: string; views: number; saves: never[] };
-  }>({ found: { _id: '', views: 0, saves: [] } });
+  const [assetDetails, setAssetDetails] =
+    React.useState<AssetDetailsProps>(AssetDetailsDefault);
   const [totalAssets, setTotalAssets] = React.useState<number>();
 
   const foundPathAsset = getAssets.find((asset) => asset._id === assetId);

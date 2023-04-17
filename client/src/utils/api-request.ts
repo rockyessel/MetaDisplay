@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { BsWindowSidebar } from 'react-icons/bs';
 
-// const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
-const baseURL = `http://localhost:4000/`;
+const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
+// const baseURL = `http://localhost:4000/`;
 
 export const UploadAssetRequest = async (asset: any) => {
   const data = localStorage.getItem('user');

@@ -2,11 +2,13 @@ import axios from 'axios';
 import React from 'react';
 import { useAddress } from '@thirdweb-dev/react';
 import {
+  AssetDetailsDefault,
   formDataInitialValue,
   loginDefaultValue,
   userDataDefault,
 } from '../utils/constant';
 import { UserDataProps } from '../interface';
+import { AssetDetailsProps } from '../pages/explore-details';
 
 interface UserContextProviderProps {
   RegisterUser: (formData: any) => Promise<void>;
@@ -21,7 +23,7 @@ interface UserContextProviderProps {
   FindUserWithAddress: (address: string) => Promise<UserDataProps>;
   AssetViewCounts: (assetId: string) => Promise<void>;
   AssetSave: (assetId: string) => Promise<void>;
-  GetAsset: (assetId: string) => Promise<any>;
+  GetAsset: (_id: string) => Promise<AssetDetailsProps>;
 }
 
 type Props = {
@@ -40,7 +42,7 @@ const UserContext = React.createContext({
   FindUserWithAddress: (address: string) => Promise.resolve(userDataDefault),
   AssetViewCounts: (assetId: string) => Promise.resolve(),
   AssetSave: (assetId: string) => Promise.resolve(),
-  GetAsset: (assetId: string) => Promise.resolve(),
+  GetAsset: (_id: string) => Promise.resolve(AssetDetailsDefault),
 });
 
 export const UserContextProvider = (props: Props) => {
@@ -53,8 +55,8 @@ export const UserContextProvider = (props: Props) => {
   const address = useAddress();
   const [getAllUsers, setGetAllUsers] = React.useState<UserDataProps[]>([]);
 
-  // const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
-  const baseURL = `http://localhost:4000/`;
+  const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
+  // const baseURL = `http://localhost:4000/`;
 
   const LoginUserWithAddress = async (form: typeof loginDefaultValue) => {
     const response = await axios({
@@ -143,7 +145,7 @@ export const UserContextProvider = (props: Props) => {
     }
   };
 
-  const GetAsset = async (_id: string) => {
+  const GetAsset = async (_id: string): Promise<AssetDetailsProps> => {
     try {
       const response = await axios({
         method: 'GET',
@@ -155,11 +157,10 @@ export const UserContextProvider = (props: Props) => {
         },
       });
 
-      console.log('getAssetDB', response.data);
-
       return response.data;
     } catch (error) {
       console.log(error);
+      return AssetDetailsDefault;
     }
   };
 

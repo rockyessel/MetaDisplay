@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import Loader from './loader';
 import { useUserContext } from '../contexts/user-context';
+import Button from './button';
 
 interface Props {}
 
@@ -26,7 +27,6 @@ const Navbar = () => {
       return () => clearTimeout(time);
     }
   };
-
 
   const handleConnection = async () => {
     if (address) navigate('/dashboard/upload-asset');
@@ -108,12 +108,11 @@ const Navbar = () => {
 
         <nav className='w-full hidden md:flex items-center gap-6 justify-end'>
           <ul className='flex items-center gap-2'>
-            <li
-              onClick={handleConnection}
-              title={title}
-              className='cursor-pointer bg-violet-600 hover:bg-violet-700 text-white font-light rounded-2xl w-fit px-4 py-2'
-            >
-              {text}
+            <li onClick={handleConnection} title={title}>
+              <Button title={title} type='button' styles='bg-violet-600'>
+           
+                {text}
+              </Button>
             </li>
             <li>
               <label className='swap swap-rotate border-[1px] border-gray-50/60 rounded-full p-2'>

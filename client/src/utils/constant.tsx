@@ -45,3 +45,13 @@ export const AssetsDisplayDefault = {
   date: '',
   _id: '',
 };
+
+export const AssetDetailsDefault = {
+  found: {
+    views: 0,
+    saves: [],
+    _id: '',
+    asset_url: '',
+  },
+  success: false,
+};
