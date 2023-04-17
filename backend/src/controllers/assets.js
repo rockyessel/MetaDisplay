@@ -81,25 +81,40 @@ const AssetSave = async (request, response) => {
 
     // Find the user and check if the asset is already saved
     const foundUser = await User.findOne({ address: user.address });
+
+    // Remove the existing entry from the saves array if it exists
     if (foundUser.saves.includes(id)) {
-      response.status(500).json({ error: 'Asset already saved by user' });
+      await User.findOneAndUpdate(
+        { address: user.address },
+        { $pull: { saves: id } }
+      );
     }
+
     // Find the id and check if the user is already saved
     const asset = await Asset.findById({ _id: id });
+
+    // Remove the existing entry from the saves array if it exists
     if (asset.saves.includes(user.address)) {
-      response.status(500).json({ error: 'User already saved by user' });
+      await Asset.findByIdAndUpdate(
+        { _id: id },
+        { $pull: { saves: user.address } },
+        { new: true }
+      );
     }
+
     // Find the asset and add the user address to its saves array
     const foundAsset = await Asset.findByIdAndUpdate(
       { _id: id },
       { $push: { saves: user.address } },
       { new: true }
     );
+
     // Add the asset ID to the user's saves array
     await User.findOneAndUpdate(
       { address: user.address },
       { $push: { saves: id } }
     );
+
     response.status(200).json({ success: true, foundAsset });
   } catch (error) {
     console.log(error);

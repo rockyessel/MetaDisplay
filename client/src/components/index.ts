@@ -12,3 +12,4 @@ export { default as RegisterModal } from './register-modal';
 export { default as LoginModal } from './login-modal';
 export { default as AppreciateAssetModal } from './appreciate-asset-modal';
 export { default as CollectionCard } from './collection-card';
+export { default as Search } from './search';

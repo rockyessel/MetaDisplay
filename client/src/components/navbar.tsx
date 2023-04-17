@@ -6,6 +6,7 @@ import { useThirdWebContext } from '../contexts/thirdweb';
 import Loader from './loader';
 import { useUserContext } from '../contexts/user-context';
 import Button from './button';
+import Search from './search';
 
 interface Props {}
 
@@ -67,14 +68,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          <div className='flex-1 border-[1px] hidden border-gray-50/60 md:flex items-center gap-3 px-3 py-1.5 rounded-3xl max-w-sm lg:max-w-lg'>
-            <BsSearch />
-            <input
-              type='text'
-              className='bg-transparent outline-none w-full'
-              placeholder='Search items, collection, accounts'
-            />
-          </div>
+          <Search />
         </div>
 
         <div className='block md:hidden'>
@@ -110,7 +104,6 @@ const Navbar = () => {
           <ul className='flex items-center gap-2'>
             <li onClick={handleConnection} title={title}>
               <Button title={title} type='button' styles='bg-violet-600'>
-           
                 {text}
               </Button>
             </li>
