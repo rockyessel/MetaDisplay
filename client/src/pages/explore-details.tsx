@@ -325,7 +325,7 @@ const ExploreDetails = () => {
                       {appreciator?.appreciator}
                     </td>
                     <td className='px-6 py-4'>
-                      {appreciator?.amountAppreciated.toString()}
+                      {appreciator?.amountAppreciated.toString()} ETH
                     </td>
                     <td className='px-6 py-4'>
                       {appreciator?.appreciationQuantity}
