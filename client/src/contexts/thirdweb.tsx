@@ -50,12 +50,8 @@ const ThirdWebContext = React.createContext<ContextProps>({
 export const ThirdWebContextProvider = (props: any) => {
   const { contract } = useContract(`${process.env.VITE_META_DISPLAY_WALLET}`);
   const { data: assetsDisplay } = useContractRead(contract, 'getAllAssets');
-  const { mutateAsync: createAssetDisplay } = useContractWrite(
-    contract,
-    'createAsset'
-  );
-  const { mutateAsync: appreciateAsset, error: appreciateError } =
-    useContractWrite(contract, 'appreciateAsset');
+  const { mutateAsync: createAssetDisplay } = useContractWrite(contract, 'createAsset');
+  const { mutateAsync: appreciateAsset, error: appreciateError } = useContractWrite(contract, 'appreciateAssetById');
   const [getAssets, setGetAsset] = React.useState<AssetsDisplayProps[]>([]);
   const [assetToBeAppreciated, setAssetToBeAppreciated] =
     React.useState<AssetsDisplayProps>(AssetsDisplayDefault);
@@ -147,7 +143,7 @@ export const ThirdWebContextProvider = (props: any) => {
   const getAppreciators = async (_id: string) => {
     try {
       if (contract) {
-        const data = await contract.call('getAppreciators', [`${_id}`]);
+        const data = await contract.call('getAppreciatorsByAssetId', [`${_id}`]);
 
         const appreciators: any = data?.map((data: any) => ({
           appreciator: data.appreciator,
