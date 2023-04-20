@@ -11,12 +11,12 @@ contract MetaDisplay {
         string description;
         string date;
         string category;
-        bytes32[] assetId;
+        string[] assetId;
     }
 
     struct Appreciator {
         address appreciator;
-        string _id;
+        string assetId;
         uint256 amountAppreciated;
         uint16 appreciationQuantity;
     }
@@ -34,7 +34,7 @@ contract MetaDisplay {
 
     mapping(bytes32 => mapping(address => uint256))
         public assetAppreciatorIndex;
-    mapping(uint256 => Assets) public assets_display;
+    mapping(bytes32 => Assets) public assets_display;
     mapping(uint256 => Collections) public collections;
     uint256 public no_of_assets = 0;
     uint256 public no_of_appreciators = 0;
@@ -72,7 +72,7 @@ contract MetaDisplay {
             description: _description,
             date: _date,
             category: _category,
-            assetId: new bytes32[](0)
+            assetId: new string[](0)
         });
 
         // Add the collection to the global collections mapping
@@ -86,7 +86,7 @@ contract MetaDisplay {
 
     function addAssetToCollection(
         bytes32 _collectionId,
-        bytes32 _assetId
+        string memory _assetId
     ) public {
         // Get the collection from the global collections mapping
         Collections storage collection = collections[uint256(_collectionId)];
@@ -94,8 +94,13 @@ contract MetaDisplay {
         // Add the asset ID to the collection's assetId array
         collection.assetId.push(_assetId);
 
+        // Update the collection's assetId field
+        collections[uint256(_collectionId)].assetId = collection.assetId;
+
+        bytes32 assetId = keccak256(abi.encodePacked(_assetId));
+        emit AssetAdded(_collectionId, assetId);
         // Emit an AssetAdded event
-        emit AssetAdded(_collectionId, _assetId);
+        emit AssetAdded(_collectionId, assetId);
     }
 
     function getAllCollections() public view returns (Collections[] memory) {
@@ -121,21 +126,21 @@ contract MetaDisplay {
         string memory _image,
         string memory _category,
         string memory _date
-    ) public {
-        bytes32 assetId = keccak256(abi.encodePacked(no_of_assets));
-        Assets memory newAsset = Assets({
-            _id: _id,
-            owner: msg.sender,
-            title: _title,
-            description: _description,
-            image: _image,
-            category: _category,
-            date: _date,
-            appreciators: new Appreciator[](0)
-        });
+    ) public returns (uint256) {
+        bytes32 assetId = keccak256(abi.encodePacked(uint256(no_of_assets)));
+        Assets storage assets = assets_display[assetId];
 
-        assets_display[assetId] = newAsset;
+        assets._id = _id;
+        assets.owner = msg.sender;
+        assets.title = _title;
+        assets.description = _description;
+        assets.image = _image;
+        assets.category = _category;
+        assets.date = _date;
+
         no_of_assets++;
+
+        return no_of_assets - 1;
     }
 
     // function getAllAssets() public view returns (Assets[] memory) {
@@ -149,12 +154,12 @@ contract MetaDisplay {
 
     //     return allAssets;
     // }
-
     function getAllAssets() public view returns (Assets[] memory) {
         Assets[] memory allAssets = new Assets[](no_of_assets);
 
         for (uint256 i = 0; i < no_of_assets; i++) {
-            Assets storage asset = assets_display[i];
+            bytes32 assetId = keccak256(abi.encodePacked(i));
+            Assets storage asset = assets_display[assetId];
 
             allAssets[i] = Assets({
                 _id: asset._id,
@@ -164,8 +169,19 @@ contract MetaDisplay {
                 image: asset.image,
                 category: asset.category,
                 date: asset.date,
-                appreciators: asset.appreciators
+                appreciators: new Appreciator[](asset.appreciators.length)
             });
+
+            for (uint256 j = 0; j < asset.appreciators.length; j++) {
+                allAssets[i].appreciators[j] = Appreciator({
+                    appreciator: asset.appreciators[j].appreciator,
+                    assetId: asset.appreciators[j].assetId,
+                    amountAppreciated: asset.appreciators[j].amountAppreciated,
+                    appreciationQuantity: asset
+                        .appreciators[j]
+                        .appreciationQuantity
+                });
+            }
         }
 
         return allAssets;
@@ -180,39 +196,51 @@ contract MetaDisplay {
     function getAssetById(
         string memory _id
     ) public view returns (Assets memory) {
-        // Loop through all assets to find the one with the given _id
-        for (uint256 i = 0; i < no_of_assets; i++) {
-            Assets storage asset = assets_display[i];
-            if (keccak256(bytes(asset._id)) == keccak256(bytes(_id))) {
-                // Return the asset if the _id matches
-                return
-                    Assets({
-                        _id: asset._id,
-                        owner: asset.owner,
-                        title: asset.title,
-                        description: asset.description,
-                        image: asset.image,
-                        category: asset.category,
-                        date: asset.date,
-                        appreciators: asset.appreciators
-                    });
+        bytes32 key = keccak256(bytes(_id));
+        Assets storage asset = assets_display[key];
+
+        if (keccak256(bytes(asset._id)) == keccak256(bytes(_id))) {
+            // Get the number of appreciators
+            uint256 numAppreciators = asset.appreciators.length;
+
+            // Initialize a new array to store the addresses of the appreciators
+            address[] memory appreciatorAddresses = new address[](
+                numAppreciators
+            );
+
+            // Loop through the appreciators and add their addresses to the array
+            for (uint256 i = 0; i < numAppreciators; i++) {
+                appreciatorAddresses[i] = asset.appreciators[i].appreciator;
             }
+
+            // Return the asset without the appreciatorAddresses field
+            return
+                Assets({
+                    _id: asset._id,
+                    owner: asset.owner,
+                    title: asset.title,
+                    description: asset.description,
+                    image: asset.image,
+                    category: asset.category,
+                    date: asset.date,
+                    appreciators: asset.appreciators
+                });
+        } else {
+            return
+                Assets({
+                    _id: "",
+                    owner: address(0),
+                    title: "",
+                    description: "",
+                    image: "",
+                    category: "",
+                    date: "",
+                    appreciators: new Appreciator[](0)
+                });
         }
-        // If no asset with the given _id is found, return an empty struct
-        return
-            Assets({
-                _id: "",
-                owner: address(0),
-                title: "",
-                description: "",
-                image: "",
-                category: "",
-                date: "",
-                appreciators: new Appreciator[](0)
-            });
     }
 
-    function appreciateAsset(
+    function appreciateAssetById(
         address payable _receiver,
         string memory _assetId
     ) public payable {
@@ -240,10 +268,33 @@ contract MetaDisplay {
         require(sent, "Ether transfer to asset owner failed.");
     }
 
-    function getAppreciators(
+    function getAppreciatorsByAssetId(
         string memory _id
     ) public view returns (Appreciator[] memory) {
         bytes32 assetId = keccak256(abi.encodePacked(_id));
-        return assets_display[uint256(assetId)].appreciators;
+        Assets storage asset = assets_display[assetId];
+
+        return asset.appreciators;
+    }
+
+    function getAllAppreciators() public view returns (Appreciator[] memory) {
+        Appreciator[] memory allAppreciators = new Appreciator[](
+            no_of_appreciators
+        );
+        uint256 currentIndex = 0;
+
+        // Loop through all the assets
+        for (uint256 i = 0; i < no_of_assets; i++) {
+            bytes32 assetId = keccak256(abi.encodePacked(i));
+            Assets storage asset = assets_display[assetId];
+
+            // Loop through all the appreciators for this asset
+            for (uint256 j = 0; j < asset.appreciators.length; j++) {
+                allAppreciators[currentIndex] = asset.appreciators[j];
+                currentIndex++;
+            }
+        }
+
+        return allAppreciators;
     }
 }
