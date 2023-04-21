@@ -39,6 +39,7 @@ contract MetaDisplay {
     uint256 public no_of_assets = 0;
     uint256 public no_of_appreciators = 0;
     uint256 public no_of_collections = 0;
+    bytes32[] public assetIds;
 
     event CollectionCreated(
         bytes32 indexed collectionId,
@@ -126,22 +127,59 @@ contract MetaDisplay {
         string memory _image,
         string memory _category,
         string memory _date
-    ) public returns (uint256) {
-        bytes32 assetId = keccak256(abi.encodePacked(uint256(no_of_assets)));
-        Assets storage assets = assets_display[assetId];
+    ) public returns (string memory) {
+        require(bytes(_id).length > 0, "ID cannot be empty");
 
-        assets._id = _id;
-        assets.owner = msg.sender;
-        assets.title = _title;
-        assets.description = _description;
-        assets.image = _image;
-        assets.category = _category;
-        assets.date = _date;
+        bytes32 assetId = keccak256(abi.encodePacked(_id));
 
+        // Check if asset with this ID already exists
+        require(
+            assets_display[assetId].owner == address(0),
+            "Asset with this ID already exists"
+        );
+
+        Assets storage asset = assets_display[assetId];
+        asset._id = _id;
+        asset.owner = msg.sender;
+        asset.title = _title;
+        asset.description = _description;
+        asset.image = _image;
+        asset.category = _category;
+        asset.date = _date;
+
+        assetIds.push(assetId);
         no_of_assets++;
 
-        return no_of_assets - 1;
+        return _id;
     }
+
+    function assetExists(bytes32 assetId) public view returns (bool) {
+        return assets_display[assetId].owner != address(0);
+    }
+
+    // function createAsset(
+    //     string memory _id,
+    //     string memory _title,
+    //     string memory _description,
+    //     string memory _image,
+    //     string memory _category,
+    //     string memory _date
+    // ) public returns (uint256) {
+    //     bytes32 assetId = keccak256(abi.encodePacked(uint256(no_of_assets)));
+    //     Assets storage assets = assets_display[assetId];
+
+    //     assets._id = _id;
+    //     assets.owner = msg.sender;
+    //     assets.title = _title;
+    //     assets.description = _description;
+    //     assets.image = _image;
+    //     assets.category = _category;
+    //     assets.date = _date;
+
+    //     no_of_assets++;
+
+    //     return no_of_assets - 1;
+    // }
 
     // function getAllAssets() public view returns (Assets[] memory) {
     //     Assets[] memory allAssets = new Assets[](no_of_assets);
@@ -154,37 +192,47 @@ contract MetaDisplay {
 
     //     return allAssets;
     // }
+    // function getAllAssets() public view returns (Assets[] memory) {
+    //     Assets[] memory allAssets = new Assets[](no_of_assets);
+
+    //     for (uint256 i = 0; i < no_of_assets; i++) {
+    //         bytes32 assetId = keccak256(abi.encodePacked(i));
+    //         Assets storage asset = assets_display[assetId];
+
+    //         allAssets[i] = Assets({
+    //             _id: asset._id,
+    //             owner: asset.owner,
+    //             title: asset.title,
+    //             description: asset.description,
+    //             image: asset.image,
+    //             category: asset.category,
+    //             date: asset.date,
+    //             appreciators: new Appreciator[](asset.appreciators.length)
+    //         });
+
+    //         for (uint256 j = 0; j < asset.appreciators.length; j++) {
+    //             allAssets[i].appreciators[j] = Appreciator({
+    //                 appreciator: asset.appreciators[j].appreciator,
+    //                 assetId: asset.appreciators[j].assetId,
+    //                 amountAppreciated: asset.appreciators[j].amountAppreciated,
+    //                 appreciationQuantity: asset
+    //                     .appreciators[j]
+    //                     .appreciationQuantity
+    //             });
+    //         }
+    //     }
+
+    //     return allAssets;
+    // }
+
     function getAllAssets() public view returns (Assets[] memory) {
-        Assets[] memory allAssets = new Assets[](no_of_assets);
+        Assets[] memory assets = new Assets[](no_of_assets);
 
         for (uint256 i = 0; i < no_of_assets; i++) {
-            bytes32 assetId = keccak256(abi.encodePacked(i));
-            Assets storage asset = assets_display[assetId];
-
-            allAssets[i] = Assets({
-                _id: asset._id,
-                owner: asset.owner,
-                title: asset.title,
-                description: asset.description,
-                image: asset.image,
-                category: asset.category,
-                date: asset.date,
-                appreciators: new Appreciator[](asset.appreciators.length)
-            });
-
-            for (uint256 j = 0; j < asset.appreciators.length; j++) {
-                allAssets[i].appreciators[j] = Appreciator({
-                    appreciator: asset.appreciators[j].appreciator,
-                    assetId: asset.appreciators[j].assetId,
-                    amountAppreciated: asset.appreciators[j].amountAppreciated,
-                    appreciationQuantity: asset
-                        .appreciators[j]
-                        .appreciationQuantity
-                });
-            }
+            assets[i] = assets_display[assetIds[i]];
         }
 
-        return allAssets;
+        return assets;
     }
 
     // function getAsset(bytes32 _id) public view returns (Assets memory) {
@@ -259,6 +307,9 @@ contract MetaDisplay {
             assetAppreciatorIndex[assetId][msg.sender] = asset
                 .appreciators
                 .length;
+
+            // Increment no_of_appreciators
+            no_of_appreciators++;
         } else {
             asset.appreciators[index - 1].amountAppreciated += msg.value;
             asset.appreciators[index - 1].appreciationQuantity++;
@@ -284,8 +335,8 @@ contract MetaDisplay {
         uint256 currentIndex = 0;
 
         // Loop through all the assets
-        for (uint256 i = 0; i < no_of_assets; i++) {
-            bytes32 assetId = keccak256(abi.encodePacked(i));
+        for (uint256 i = 0; i < assetIds.length; i++) {
+            bytes32 assetId = assetIds[i];
             Assets storage asset = assets_display[assetId];
 
             // Loop through all the appreciators for this asset
