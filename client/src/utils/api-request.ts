@@ -4,10 +4,11 @@ import { BsWindowSidebar } from 'react-icons/bs';
 const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
 // const baseURL = `http://localhost:4000/`;
 
+const data = localStorage.getItem('user');
+const user = data && JSON.parse(data);
+const token = user?.token;
+
 export const UploadAssetRequest = async (asset: any) => {
-  const data = localStorage.getItem('user');
-  const user = data && JSON.parse(data);
-  const token = user?.token;
   const response = await axios({
     method: 'POST',
     baseURL: `${baseURL}v1/assets`,
@@ -24,7 +25,24 @@ export const UploadAssetRequest = async (asset: any) => {
     },
   });
 
-  return response.data
+  return response.data;
+};
+
+export const generateImageURL = async (file: any) => {
+  const data = new FormData();
+  data.append('file', file);
+
+  const response = await axios({
+    method: 'POST',
+    baseURL: `${baseURL}v1/assets`,
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
 };
 
 export const UploadAssetRequestDelete = async (assetName: any) => {

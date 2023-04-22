@@ -145,3 +145,81 @@ function getAppreciator(bytes32 _assetId, address _appreciator) public view retu
 
         recipient.transfer(msg.value);
     }
+
+
+    
+    /* function createAsset(
+    //     string memory _id,
+    //     string memory _title,
+    //     string memory _description,
+    //     string memory _image,
+    //     string memory _category,
+    //     string memory _date
+    // ) public returns (uint256) {
+    //     bytes32 assetId = keccak256(abi.encodePacked(uint256(no_of_assets)));
+    //     Assets storage assets = assets_display[assetId];
+
+    //     assets._id = _id;
+    //     assets.owner = msg.sender;
+    //     assets.title = _title;
+    //     assets.description = _description;
+    //     assets.image = _image;
+    //     assets.category = _category;
+    //     assets.date = _date;
+
+    //     no_of_assets++;
+
+    //     return no_of_assets - 1;
+    // }
+
+    // function getAllAssets() public view returns (Assets[] memory) {
+    //     Assets[] memory allAssets = new Assets[](no_of_assets);
+
+    //     for (uint256 i = 0; i < no_of_assets; i++) {
+    //         Assets storage asset = assets_display[i];
+
+    //         allAssets[i] = asset;
+    //     }
+
+    //     return allAssets;
+    // }
+    // function getAllAssets() public view returns (Assets[] memory) {
+    //     Assets[] memory allAssets = new Assets[](no_of_assets);
+
+    //     for (uint256 i = 0; i < no_of_assets; i++) {
+    //         bytes32 assetId = keccak256(abi.encodePacked(i));
+    //         Assets storage asset = assets_display[assetId];
+
+    //         allAssets[i] = Assets({
+    //             _id: asset._id,
+    //             owner: asset.owner,
+    //             title: asset.title,
+    //             description: asset.description,
+    //             image: asset.image,
+    //             category: asset.category,
+    //             date: asset.date,
+    //             appreciators: new Appreciator[](asset.appreciators.length)
+    //         });
+
+    //         for (uint256 j = 0; j < asset.appreciators.length; j++) {
+    //             allAssets[i].appreciators[j] = Appreciator({
+    //                 appreciator: asset.appreciators[j].appreciator,
+    //                 assetId: asset.appreciators[j].assetId,
+    //                 amountAppreciated: asset.appreciators[j].amountAppreciated,
+    //                 appreciationQuantity: asset
+    //                     .appreciators[j]
+    //                     .appreciationQuantity
+    //             });
+    //         }
+    //     }
+
+    //     return allAssets;
+    */ 
+
+    // function getAsset(bytes32 _id) public view returns (Assets memory) {
+    //     uint256 id = uint256(_id);
+    //     require(id < no_of_assets, "Asset with the given ID does not exist.");
+    //     return assets_display[id];
+    // }
+
+    

@@ -30,7 +30,7 @@ const Navbar = () => {
   };
 
   const handleConnection = async () => {
-    if (address) navigate('/dashboard/upload-asset');
+    if (address) navigate('/dashboard/all');
     address ? null : await handleConnect();
   };
 

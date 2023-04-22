@@ -3,11 +3,7 @@ import React from 'react';
 interface Props {
   value?: string;
   name: string;
-  onChange: (
-    event:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => void;
+  onChange: (event:  React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
   styles?: string;
   type?: string;

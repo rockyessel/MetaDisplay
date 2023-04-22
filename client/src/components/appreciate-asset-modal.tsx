@@ -36,7 +36,7 @@ const AppreciateAssetModal = () => {
 
     const receipt = await userAppreciation(data);
 
-    if (receipt.state) {
+    if (receipt?.receipt?.status === 1) {
       setError(true);
       setAppreciateStateValue(`${receipt.error_obj.info.reason}`);
       setTitle(`${receipt.error_obj.info.reason}`);

@@ -3,15 +3,16 @@ import { AiOutlineHeart } from 'react-icons/ai';
 import { RxExternalLink } from 'react-icons/rx';
 import { FaEthereum } from 'react-icons/fa';
 import { VscListFlat, VscCopy } from 'react-icons/vsc';
-import { CollectionCard, ProfileImage } from '../components';
+import { CollectionCard, MoreButton, ProfileImage } from '../components';
 import { Link, useParams } from 'react-router-dom';
 import { useThirdWebContext } from '../contexts/thirdweb';
-import { GetAllAppreciatorsProps } from '../components/card';
 import { Summation } from '../utils/services';
 import { useUserContext } from '../contexts/user-context';
 import { SiHiveBlockchain } from 'react-icons/si';
 import { ethers } from 'ethers';
 import { AssetDetailsDefault } from '../utils/constant';
+import { AssetsDisplayProps } from '../interface';
+import moment from 'moment';
 
 interface Props {}
 
@@ -25,60 +26,52 @@ export interface AssetDetailsProps {
   success: boolean;
 }
 
+interface CurrentAssetProps {}
+
 const ExploreDetails = () => {
   const { assetId } = useParams();
-  const [arrAppreciators, setArrAppreciators] = React.useState<
-    GetAllAppreciatorsProps[]
-  >([]);
-  const [currentAssetUser, setCurrentAssetUser] = React.useState({
+  const [assetUserFromDB, setAssetUserFromDB] = React.useState({
     username: '',
   });
-  const { getAppreciators, getAssets, handleAddAsset } = useThirdWebContext();
+  const { getAssets, handleAddAsset, getAssetWithId, address } =
+    useThirdWebContext();
   const { getAllUsers, FindUserWithAddress, AssetViewCounts, GetAsset } =
     useUserContext();
-  const [totalAppreciations, setTotalAppreciations] = React.useState<
-    string | undefined
-  >('');
-  const [hasIncremented, setHasIncremented] = React.useState<boolean>(false);
   const [assetDetails, setAssetDetails] =
     React.useState<AssetDetailsProps>(AssetDetailsDefault);
+  const [hasIncremented, setHasIncremented] = React.useState<boolean>(false);
+  const [currentAsset, setCurrentAsset] = React.useState<AssetsDisplayProps>();
   const [totalAssets, setTotalAssets] = React.useState<number>();
 
-  const foundPathAsset = getAssets.find((asset) => asset._id === assetId);
-  const getAllAssetAppreciatorsAddress: string[] = arrAppreciators?.map(
-    (address) => address?.appreciator
+  console.log('currentAsset', currentAsset);
+
+  const getAddressFromProps = currentAsset?.appreciators?.map(
+    (address) => address.appreciator
   );
-
-  console.log('totalAssets', totalAssets);
-
-  console.log('arrAppreciators', arrAppreciators);
 
   const matchingUsers = getAllUsers?.filter((user) =>
-    getAllAssetAppreciatorsAddress?.includes(user?.address)
+    getAddressFromProps?.includes(user?.address)
   );
+
+  const totalAppreciation = Summation(currentAsset?.appreciators);
 
   const getAllData = async () => {
     if (assetId) {
-      const [appreciatorsArr, data] = await Promise.all([
-        getAppreciators(assetId),
-        GetAsset(assetId),
-      ]);
-      setArrAppreciators(appreciatorsArr);
-      setAssetDetails(data);
+      const asset_info = await GetAsset(assetId);
+      setAssetDetails(asset_info);
     }
-    if (foundPathAsset) {
-      const data = await FindUserWithAddress(foundPathAsset?.owner);
-      setCurrentAssetUser(data);
+
+    if (currentAsset) {
+      const data = await FindUserWithAddress(currentAsset?.owner);
+      setAssetUserFromDB(data);
     }
   };
-  console.log('assetDetails', assetDetails);
   React.useEffect(() => {
     if (!hasIncremented) {
       const time = setTimeout(() => {
         if (assetId)
           AssetViewCounts(assetId).then(() => {
             setHasIncremented(true);
-            console.log('Called once');
           });
       }, 10000);
 
@@ -87,15 +80,17 @@ const ExploreDetails = () => {
   }, []);
 
   React.useEffect(() => {
-    setTotalAppreciations(Summation(arrAppreciators));
+    if (assetId)
+      getAssetWithId(assetId).then((data) => {
+        setCurrentAsset(data);
+      });
     getAllData();
-  }, [assetId, getAllUsers]);
+  }, [assetId]);
 
   React.useEffect(() => {
     const totalAssetsUploads = getAssets?.filter(
-      (asset) => asset?.owner === foundPathAsset?.owner
+      (asset) => asset?.owner === currentAsset?.owner
     )?.length;
-
     setTotalAssets(totalAssetsUploads);
   }, [assetId]);
 
@@ -103,33 +98,26 @@ const ExploreDetails = () => {
     <section className='w-full flex flex-col gap-10 pb-5'>
       <div className='w-full flex flex-col lg:flex-row items-center gap-5'>
         <div className='w-full lg:w-[30rem] h-full lg:h-[34.4rem]  overflow-hidden border-[1px] border-gray-50/60 rounded-t-md'>
-          <div className='text-2xl w-full bg-[#141414] rounded-t-md inline-flex items-center justify-between px-3 py-1.5'>
+          <div className='w-full bg-[#141414] rounded-t-md inline-flex items-center justify-between px-3 py-1.5'>
             <span>
-              <FaEthereum
-                title='Appreciate Asset'
-                className='text-3xl hover:text-violet-500 cursor-pointer'
-                onClick={() => {
-                  if (foundPathAsset) {
-                    handleAddAsset(foundPathAsset);
-                  }
-                }}
-              />
+              {address && (
+                <FaEthereum
+                  title='Appreciate Asset'
+                  className='text-3xl hover:text-violet-500 cursor-pointer'
+                  onClick={() => {
+                    if (currentAsset) {
+                      handleAddAsset(currentAsset);
+                    }
+                  }}
+                />
+              )}
             </span>
-            <span className='inline-flex items-center gap-2'>
-              <span>
-                <a href={`${foundPathAsset?.image}`} target='_blank'>
-                  <RxExternalLink /> <span className='sr-only'>Full image</span>
-                </a>
-              </span>
-              <span className='inline-flex items-center gap-1'>
-                <AiOutlineHeart /> {assetDetails?.found?.saves?.length}
-              </span>
-            </span>
+            <MoreButton position='dropdown-left' />
           </div>
 
           <div>
             <img
-              src={foundPathAsset?.image}
+              src={currentAsset?.image}
               className='w-full lg:w-[30rem] h-full lg:h-[34.4rem] object-cover'
               alt=''
             />
@@ -138,23 +126,31 @@ const ExploreDetails = () => {
 
         <div className='w-full lg:w-auto flex-1 h-full flex flex-col gap-3 lg:gap-5'>
           <div className='flex flex-col gap-4'>
-            <p className='inline-flex flex-col'>
-              <span className='text-xs'>Category</span>
-              <span className='font-medium text-violet-400 cursor-pointer'>
-                {' '}
-                Angry WAVs
-              </span>
-            </p>
+            <div className='w-full flex justify-between font-bold text-xl lg:text-3xl'>
+              <p className='inline-flex flex-col'>
+                <span className='text-xs'>Category</span>
+                <span className='font-medium text-violet-400 cursor-pointer'>
+                  {' '}
+                  Angry WAVs
+                </span>
+              </p>
 
+              <p className='inline-flex flex-col'>
+                <span className='text-xs'>Day Uploaded</span>
+                <span>{moment(currentAsset?.date).format('dddd')}</span>
+              </p>
+            </div>
             <div className='w-full flex justify-between font-bold text-xl lg:text-3xl'>
               <p className='inline-flex flex-col'>
                 <span className='text-xs'>Title</span>
-                <span>{foundPathAsset?.title}</span>
+                <span>{currentAsset?.title}</span>
               </p>
 
               <p className='inline-flex flex-col'>
                 <span className='text-xs'>Total Appreciation</span>
-                <span>{totalAppreciations ? totalAppreciations : '0'} ETH</span>
+                <span>
+                  {totalAppreciation ? totalAppreciation : '0.0000'} ETH
+                </span>
               </p>
             </div>
             <div className='flex items-center gap-1 h-full'>
@@ -169,12 +165,12 @@ const ExploreDetails = () => {
                   </div>
                 )}
               </div>
-              <span className='text-sm'>
+          {matchingUsers.length === 0 ? <span>No appreciation shown yet.</span> :    <span className='text-sm'>
                 {matchingUsers.length} appreciate to{' '}
                 <span className='font-medium text-violet-400 cursor-pointer'>
-                  {currentAssetUser?.username}
+                  {assetUserFromDB?.username}
                 </span>
-              </span>
+              </span>}
             </div>
           </div>
 
@@ -184,7 +180,7 @@ const ExploreDetails = () => {
             </p>
 
             <p className='px-4 py-2 bg-[#141414]'>
-              {foundPathAsset?.description}
+              {currentAsset?.description}
             </p>
           </div>
 
@@ -293,7 +289,7 @@ const ExploreDetails = () => {
                 <VscListFlat className='text-3xl' /> Category
               </p>
               <div className='flex items-center gap-3 px-4 py-2 bg-[#141414]'>
-                {foundPathAsset?.category}
+                {currentAsset?.category}
               </div>
             </div>
           </div>
@@ -309,7 +305,8 @@ const ExploreDetails = () => {
               user.
             </p>
           </div>
-          {arrAppreciators?.length > 0 ? (
+          {currentAsset?.appreciators?.length &&
+          currentAsset.appreciators.length > 0 ? (
             <table className='w-full text-sm text-left'>
               <thead className='uppercase bg-[#141414] text-gray-400 border-[1px] border-gray-50/60 divide-y-[1px] divide-gray-50/60 shadow-md'>
                 <tr>
@@ -319,16 +316,19 @@ const ExploreDetails = () => {
                 </tr>
               </thead>
               <tbody className='border-[1px] border-gray-50/60 divide-y-[1px] divide-gray-50/60 shadow-md'>
-                {arrAppreciators?.map((appreciator, index) => (
+                {currentAsset?.appreciators?.map((appreciator, index) => (
                   <tr key={index} className='bg-[#141414]'>
                     <td className='px-6 py-4 truncate'>
                       {appreciator?.appreciator}
                     </td>
                     <td className='px-6 py-4'>
-                      {appreciator?.amountAppreciated.toString()} ETH
+                      {ethers.utils.formatEther(
+                        appreciator?.amountAppreciated.toString()
+                      )}{' '}
+                      ETH
                     </td>
                     <td className='px-6 py-4'>
-                      {appreciator?.appreciationQuantity}
+                      {appreciator?.appreciationQuantity.toString()}
                     </td>
                   </tr>
                 ))}
@@ -346,7 +346,6 @@ const ExploreDetails = () => {
 
       <div className='w-full'>
         <p className='font-bold text-4xl text-white'>Collections</p>
-
         <CollectionCard />
       </div>
     </section>
@@ -354,6 +353,3 @@ const ExploreDetails = () => {
 };
 
 export default ExploreDetails;
-// amountAppreciated
-// appreciationQuantity
-// appreciator

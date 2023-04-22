@@ -1,6 +1,6 @@
 import React from 'react';
 import { RiMoreFill } from 'react-icons/ri';
-import { AiOutlineHeart } from 'react-icons/ai';
+import { AiOutlineHeart, AiOutlineMore } from 'react-icons/ai';
 import ProfileImage from './profile-image';
 import UserTooltip from './user-tooltip';
 import { Link } from 'react-router-dom';
@@ -12,6 +12,7 @@ import { SiHiveBlockchain } from 'react-icons/si';
 import { userDataDefault } from '../utils/constant';
 import { ethers } from 'ethers';
 import { Summation } from '../utils/services';
+import MoreButton from './more-button';
 
 interface Props {
   asset: AssetsDisplayProps;
@@ -26,35 +27,28 @@ export interface GetAllAppreciatorsProps {
 const Card = (props: Props) => {
   const [assetOwner, setAssetOwner] =
     React.useState<UserDataProps>(userDataDefault);
-  const { handleAddAsset, getAppreciators, address } = useThirdWebContext();
-  const [arrAppreciators, setArrAppreciators] = React.useState<
-    GetAllAppreciatorsProps[]
-  >([]);
+
+  // Context
+  const { handleAddAsset, address } = useThirdWebContext();
   const { getAllUsers, FindUserWithAddress } = useUserContext();
 
-  const getAllAssetAppreciatorsAddress: string[] = arrAppreciators.map(
+  const getAddressFromProps = props?.asset?.appreciators?.map(
     (address) => address.appreciator
   );
-
   const matchingUsers = getAllUsers.filter((user) =>
-    getAllAssetAppreciatorsAddress.includes(user.address)
+    getAddressFromProps.includes(user.address)
   );
+  const formattedTotal = Summation(props?.asset?.appreciators);
 
-  const formattedTotal = Summation(arrAppreciators);
-
-  const getAllData = async () => {
+  const getUserWithAddress = async () => {
     const data = (await FindUserWithAddress(
       props?.asset?.owner
     )) as unknown as UserDataProps;
     setAssetOwner(data);
-
-    const appreciatorsArr = await getAppreciators(props?.asset?._id);
-
-    setArrAppreciators(appreciatorsArr);
   };
 
   React.useEffect(() => {
-    getAllData();
+    getUserWithAddress();
   }, []);
 
   return (
@@ -66,7 +60,7 @@ const Card = (props: Props) => {
               <ProfileImage key={index} data={appreciator} />
             ))
           ) : (
-            <div className='w-10 h-10 bg-white rounded-full text-black text-xl inline-flex justify-center items-center'>
+            <div className='w-10 h-10 shadow-md shadow-violet-800 bg-white rounded-full text-black text-xl inline-flex justify-center items-center'>
               <SiHiveBlockchain title='No appreciation shown' />
             </div>
           )}
@@ -80,7 +74,8 @@ const Card = (props: Props) => {
               onClick={() => handleAddAsset(props?.asset)}
             />
           )}
-          <RiMoreFill className='text-3xl hover:bg-violet-500 rounded-lg' />
+
+          <MoreButton asset={props?.asset} position='dropdown-left' />
         </div>
       </header>
 

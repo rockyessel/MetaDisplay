@@ -1,9 +1,79 @@
 import React from 'react';
 import { Button, Input } from '../../components';
+import { generateImageURL } from '../../utils/api-request';
+import axios from 'axios';
+import { useThirdWebContext } from '../../contexts/thirdweb';
 
 interface Props {}
 
 const CreateCollection = () => {
+  const [form, setForm] = React.useState({
+    title: '',
+    description: '',
+    category: '',
+  });
+
+  const { AddCollection } = useThirdWebContext();
+
+  const [profileFile, setProfileFile] = React.useState<string | Blob>('');
+  const [coverFile, setCoverFile] = React.useState<string | Blob>('');
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: string) => {
+    const { target } = event;
+    switch (type) {
+      case 'profile':
+        if (target.files) {
+          const file = target.files[0];
+          setProfileFile(file);
+        }
+        break;
+      default:
+        if (target.files) {
+          const file = target.files[0];
+          setCoverFile(file);
+        }
+        break;
+    }
+  };
+
+  const handleUpdates = (
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const formState = {
+      ...form,
+      [event.target.name]: event.target.value,
+    };
+    setForm(formState);
+  };
+
+  const handleSubmission = async (event: React.SyntheticEvent) => {
+    event.preventDefault();
+
+    const [profileImage, coverImage] = await Promise.all([
+      generateImageURL(profileFile),
+      generateImageURL(coverFile),
+    ]);
+
+    const formData = {
+      _id: profileImage._id,
+      title: form.title,
+      description: form.description,
+      category: form.category,
+      date: new Date().toISOString(),
+      profile: profileImage.asset_url,
+      cover: coverImage.asset_url,
+    };
+
+    console.log('formData', formData);
+    AddCollection(formData);
+  };
+
+  console.log('form', form);
+  console.log('profileFile', profileFile);
+  console.log('coverFile', coverFile);
+
   return (
     <main className='flex flex-col gap-5'>
       <section className='flex flex-col gap-5'>
@@ -18,20 +88,20 @@ const CreateCollection = () => {
         <p className='font-bold text-2xl text-white'>Create now</p>
       </section>
 
-      <form className='flex flex-col gap-5'>
+      <form onSubmit={handleSubmission} className='flex flex-col gap-5'>
         <div className='flex flex-col lg:flex-row items-center gap-5 lg:gap-10'>
           <Input
-            value={''}
-            onChange={() => {}}
+            value={form.title}
+            onChange={handleUpdates}
             placeholder={'Onchain: Inspiration'}
-            label={'Name'}
+            label={'Title'}
             elementType={'input'}
             type='text'
-            name={'name'}
+            name={'title'}
           />
           <Input
-            value={''}
-            onChange={() => {}}
+            value={form.category}
+            onChange={handleUpdates}
             placeholder={'Onchain: Inspiration'}
             label={'Category'}
             elementType={'input'}
@@ -41,8 +111,8 @@ const CreateCollection = () => {
         </div>
 
         <Input
-          value={''}
-          onChange={() => {}}
+          value={form.description}
+          onChange={handleUpdates}
           placeholder={'Write your collection description here...'}
           label={'Description'}
           styles='h-40'
@@ -58,14 +128,18 @@ const CreateCollection = () => {
 
           <div className='flex flex-col lg:flex-row items-center gap-5 lg:gap-10'>
             <Input
-              onChange={() => {}}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                handleFileChange(event, 'cover')
+              }
               label={'Cover'}
               elementType={'file'}
               styles='file'
               name={'cover'}
             />
             <Input
-              onChange={() => {}}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                handleFileChange(event, 'profile')
+              }
               label={'Profile'}
               elementType={'file'}
               name={'profile'}
@@ -85,6 +159,5 @@ const CreateCollection = () => {
     </main>
   );
 };
-
 
 export default CreateCollection;

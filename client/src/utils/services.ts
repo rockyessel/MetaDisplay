@@ -1,11 +1,11 @@
-
+import { ethers } from 'ethers';
 
 export const Summation = (arrAppreciators: any): string | undefined => {
   if (arrAppreciators) {
     // Sum the amountAppreciated values in the array
     const totalAmount: string | number = arrAppreciators.reduce(
       (total: any, appreciation: any) => {
-        const amount = appreciation.amountAppreciated
+        const amount = ethers.utils.formatEther(appreciation.amountAppreciated);
         return total + parseFloat(amount);
       },
       0

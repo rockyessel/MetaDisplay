@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 contract MetaDisplay {
     struct Collections {
-        bytes32 _id;
+        string _id;
         address owner;
         string profile;
         string cover;
@@ -33,39 +33,26 @@ contract MetaDisplay {
     }
 
     mapping(bytes32 => mapping(address => uint256))
-        public assetAppreciatorIndex;
+    public assetAppreciatorIndex;
     mapping(bytes32 => Assets) public assets_display;
-    mapping(uint256 => Collections) public collections;
+    mapping(bytes32 => Collections) public collections;
     uint256 public no_of_assets = 0;
     uint256 public no_of_appreciators = 0;
     uint256 public no_of_collections = 0;
     bytes32[] public assetIds;
+    bytes32[] public collectionIds;
 
-    event CollectionCreated(
-        bytes32 indexed collectionId,
-        address indexed owner,
-        string title
-    );
+    event CollectionCreated(bytes32 indexed collectionId, address indexed owner, string title);
 
     event AssetAdded(bytes32 indexed collectionId, bytes32 indexed assetId);
 
-    function createCollection(
-        address _owner,
-        string memory _profile,
-        string memory _cover,
-        string memory _title,
-        string memory _description,
-        string memory _date,
-        string memory _category
-    ) public payable {
+    function createCollection(string memory _id, address _owner, string memory _profile, string memory _cover, string memory _title, string memory _description, string memory _date, string memory _category) public payable {
         // Generate a unique ID for the collection
-        bytes32 collectionId = keccak256(
-            abi.encodePacked(msg.sender, block.number, block.timestamp)
-        );
+        bytes32 collectionId = keccak256(abi.encodePacked(_id));
 
         // Create the collection object
         Collections memory collection = Collections({
-            _id: collectionId,
+            _id: _id,
             owner: _owner,
             profile: _profile,
             cover: _cover,
@@ -77,26 +64,29 @@ contract MetaDisplay {
         });
 
         // Add the collection to the global collections mapping
-        collections[uint256(collectionId)] = collection;
+        collections[collectionId] = collection;
 
+        collectionIds.push(collectionId);
         no_of_collections++;
 
         // Emit a CollectionCreated event
         emit CollectionCreated(collectionId, _owner, _title);
     }
 
-    function addAssetToCollection(
-        bytes32 _collectionId,
-        string memory _assetId
-    ) public {
+    function getCollectionById(string memory _id) public view returns (Collections memory) {
+        bytes32 collectionId = keccak256(abi.encodePacked(_id));
+        return collections[collectionId];
+    }
+
+    function addAssetToCollection(bytes32 _collectionId, string memory _assetId) public {
         // Get the collection from the global collections mapping
-        Collections storage collection = collections[uint256(_collectionId)];
+        Collections storage collection = collections[_collectionId];
 
         // Add the asset ID to the collection's assetId array
         collection.assetId.push(_assetId);
 
         // Update the collection's assetId field
-        collections[uint256(_collectionId)].assetId = collection.assetId;
+        collections[_collectionId].assetId = collection.assetId;
 
         bytes32 assetId = keccak256(abi.encodePacked(_assetId));
         emit AssetAdded(_collectionId, assetId);
@@ -109,25 +99,47 @@ contract MetaDisplay {
             no_of_collections
         );
         for (uint256 i = 0; i < no_of_collections; i++) {
-            allCollections[i] = collections[i];
+            allCollections[i] = collections[collectionIds[i]];
         }
         return allCollections;
     }
 
-    function getCollection(
-        bytes32 _collectionId
-    ) public view returns (Collections memory) {
-        return collections[uint256(_collectionId)];
+    function deleteAssetById(string memory _id) public {
+        bytes32 assetId = keccak256(bytes(_id));
+        require(assetExists(assetId), "Asset does not exist");
+        require(
+            msg.sender == assets_display[assetId].owner,
+            "Only the owner can delete this asset"
+        );
+        delete assets_display[assetId];
+        for (uint256 i = 0; i < no_of_assets; i++) {
+            if (assetIds[i] == assetId) {
+                assetIds[i] = assetIds[no_of_assets - 1];
+                assetIds.pop();
+                no_of_assets--;
+                break;
+            }
+        }
     }
 
-    function createAsset(
-        string memory _id,
-        string memory _title,
-        string memory _description,
-        string memory _image,
-        string memory _category,
-        string memory _date
-    ) public returns (string memory) {
+    function deleteCollectionById(string memory _id) public {
+        bytes32 collectionId = keccak256(bytes(_id));
+        require(
+            collections[collectionId].owner == msg.sender,
+            "Only the owner can delete this collection"
+        );
+        delete collections[collectionId];
+        for (uint256 i = 0; i < no_of_collections; i++) {
+            if (collectionIds[i] == collectionId) {
+                collectionIds[i] = collectionIds[no_of_collections - 1];
+                collectionIds.pop();
+                no_of_collections--;
+                break;
+            }
+        }
+    }
+
+    function createAsset(string memory _id, string memory _title, string memory _description, string memory _image, string memory _category, string memory _date) public returns (string memory) {
         require(bytes(_id).length > 0, "ID cannot be empty");
 
         bytes32 assetId = keccak256(abi.encodePacked(_id));
@@ -157,74 +169,6 @@ contract MetaDisplay {
         return assets_display[assetId].owner != address(0);
     }
 
-    // function createAsset(
-    //     string memory _id,
-    //     string memory _title,
-    //     string memory _description,
-    //     string memory _image,
-    //     string memory _category,
-    //     string memory _date
-    // ) public returns (uint256) {
-    //     bytes32 assetId = keccak256(abi.encodePacked(uint256(no_of_assets)));
-    //     Assets storage assets = assets_display[assetId];
-
-    //     assets._id = _id;
-    //     assets.owner = msg.sender;
-    //     assets.title = _title;
-    //     assets.description = _description;
-    //     assets.image = _image;
-    //     assets.category = _category;
-    //     assets.date = _date;
-
-    //     no_of_assets++;
-
-    //     return no_of_assets - 1;
-    // }
-
-    // function getAllAssets() public view returns (Assets[] memory) {
-    //     Assets[] memory allAssets = new Assets[](no_of_assets);
-
-    //     for (uint256 i = 0; i < no_of_assets; i++) {
-    //         Assets storage asset = assets_display[i];
-
-    //         allAssets[i] = asset;
-    //     }
-
-    //     return allAssets;
-    // }
-    // function getAllAssets() public view returns (Assets[] memory) {
-    //     Assets[] memory allAssets = new Assets[](no_of_assets);
-
-    //     for (uint256 i = 0; i < no_of_assets; i++) {
-    //         bytes32 assetId = keccak256(abi.encodePacked(i));
-    //         Assets storage asset = assets_display[assetId];
-
-    //         allAssets[i] = Assets({
-    //             _id: asset._id,
-    //             owner: asset.owner,
-    //             title: asset.title,
-    //             description: asset.description,
-    //             image: asset.image,
-    //             category: asset.category,
-    //             date: asset.date,
-    //             appreciators: new Appreciator[](asset.appreciators.length)
-    //         });
-
-    //         for (uint256 j = 0; j < asset.appreciators.length; j++) {
-    //             allAssets[i].appreciators[j] = Appreciator({
-    //                 appreciator: asset.appreciators[j].appreciator,
-    //                 assetId: asset.appreciators[j].assetId,
-    //                 amountAppreciated: asset.appreciators[j].amountAppreciated,
-    //                 appreciationQuantity: asset
-    //                     .appreciators[j]
-    //                     .appreciationQuantity
-    //             });
-    //         }
-    //     }
-
-    //     return allAssets;
-    // }
-
     function getAllAssets() public view returns (Assets[] memory) {
         Assets[] memory assets = new Assets[](no_of_assets);
 
@@ -235,15 +179,7 @@ contract MetaDisplay {
         return assets;
     }
 
-    // function getAsset(bytes32 _id) public view returns (Assets memory) {
-    //     uint256 id = uint256(_id);
-    //     require(id < no_of_assets, "Asset with the given ID does not exist.");
-    //     return assets_display[id];
-    // }
-
-    function getAssetById(
-        string memory _id
-    ) public view returns (Assets memory) {
+    function getAssetById(string memory _id) public view returns (Assets memory) {
         bytes32 key = keccak256(bytes(_id));
         Assets storage asset = assets_display[key];
 
@@ -288,10 +224,7 @@ contract MetaDisplay {
         }
     }
 
-    function appreciateAssetById(
-        address payable _receiver,
-        string memory _assetId
-    ) public payable {
+    function appreciateAssetById(address payable _receiver, string memory _assetId) public payable {
         bytes32 assetId = keccak256(abi.encodePacked(_assetId));
         Assets storage asset = assets_display[assetId];
 
@@ -319,9 +252,7 @@ contract MetaDisplay {
         require(sent, "Ether transfer to asset owner failed.");
     }
 
-    function getAppreciatorsByAssetId(
-        string memory _id
-    ) public view returns (Appreciator[] memory) {
+    function getAppreciatorsByAssetId(string memory _id) public view returns (Appreciator[] memory) {
         bytes32 assetId = keccak256(abi.encodePacked(_id));
         Assets storage asset = assets_display[assetId];
 

@@ -122,6 +122,16 @@ const Explore = () => {
           <CollectionCard />
         </ul>
       </div>
+
+      <div className='flex flex-col gap-10'>
+        <h1 className='font-bold text-4xl text-white underline underline-offset-8 decoration-violet-700'>
+          Appreciators
+        </h1>
+
+        <ul className='flex flex-wrap gap-10'>
+          <CollectionCard />
+        </ul>
+      </div>
     </section>
   );
 };

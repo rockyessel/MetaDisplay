@@ -8,11 +8,9 @@ import {
   useDisconnect,
   SmartContract,
 } from '@thirdweb-dev/react';
-import { BigNumber, ethers, utils } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { AssetsDisplayProps, FormProps } from '../interface';
 import { AssetsDisplayDefault } from '../utils/constant';
-import { ThirdwebSDK } from '@thirdweb-dev/sdk';
-// import Web3 from 'web3';
 
 interface ContextProps {
   address?: string | undefined;
@@ -29,6 +27,8 @@ interface ContextProps {
   getAppreciators: (_id: string) => Promise<any>;
   getAssetDisplay: (_id: string) => Promise<any>;
   contract: SmartContract<ethers.BaseContract> | undefined;
+  getAssetWithId: (_id: string) => Promise<any>;
+  AddCollection: (form: any) => Promise<void>;
 }
 
 const ThirdWebContext = React.createContext<ContextProps>({
@@ -45,22 +45,19 @@ const ThirdWebContext = React.createContext<ContextProps>({
   getAppreciators: (_id: string) => Promise.resolve(),
   getAssetDisplay: (_id: string) => Promise.resolve(),
   contract: undefined,
+  getAssetWithId: (_id: string) => Promise.resolve(),
+  AddCollection: (form: any) => Promise.resolve(),
 });
 
 export const ThirdWebContextProvider = (props: any) => {
   const { contract } = useContract(`${process.env.VITE_META_DISPLAY_WALLET}`);
   const { data: assetsDisplay } = useContractRead(contract, 'getAllAssets');
-  const { mutateAsync: createAssetDisplay } = useContractWrite(
-    contract,
-    'createAsset'
-  );
-  const { mutateAsync: appreciateAsset, error: appreciateError } =
-    useContractWrite(contract, 'appreciateAssetById');
+  const { mutateAsync: createAssetDisplay } = useContractWrite(contract, 'createAsset');
+  const { mutateAsync: createCollection } = useContractWrite(contract, 'createCollection');
+  const { mutateAsync: appreciateAsset } = useContractWrite(contract, 'appreciateAssetById');
   const [getAssets, setGetAsset] = React.useState<AssetsDisplayProps[]>([]);
-  const [assetToBeAppreciated, setAssetToBeAppreciated] =
-    React.useState<AssetsDisplayProps>(AssetsDisplayDefault);
-  const [assetToBeAppreciatedState, setAssetToBeAppreciatedState] =
-    React.useState<boolean>(false);
+  const [assetToBeAppreciated, setAssetToBeAppreciated] = React.useState<AssetsDisplayProps>(AssetsDisplayDefault);
+  const [assetToBeAppreciatedState, setAssetToBeAppreciatedState] = React.useState<boolean>(false);
   const [arrAppreciators, setArrAppreciators] = React.useState<any[]>([]);
 
   const address = useAddress();
@@ -143,6 +140,43 @@ export const ThirdWebContextProvider = (props: any) => {
     }
   };
 
+  const AddCollection = async (form: any) => {
+
+    console.log('AddCollection', form);
+    const data = await createCollection({
+      args: [
+        form._id,
+        address,
+        form.profile,
+        form.cover,
+        form.title,
+        form.description,
+        form.date,
+        form.category,
+      ],
+    });
+
+    console.log('Collected has been created', data)
+  }
+
+  const getAssetWithId = async (_id: string) => {
+    const data = await contract?.call('getAssetById', [`${_id}`]);
+
+
+    const asset = {
+      owner: data?.owner,
+      appreciators: data?.appreciators,
+      title: data?.title,
+      description: data?.description,
+      image: data?.image,
+      category: data?.category,
+      date: data?.date,
+      _id: data?._id,
+    };
+
+    return asset;
+  };
+
   const getAppreciators = async (_id: string) => {
     try {
       if (contract) {
@@ -161,7 +195,6 @@ export const ThirdWebContextProvider = (props: any) => {
         }));
 
         setArrAppreciators(appreciators);
-        console.log('appreciators', appreciators);
 
         return appreciators;
       }
@@ -188,6 +221,8 @@ export const ThirdWebContextProvider = (props: any) => {
     getAppreciators,
     getAssetDisplay,
     contract,
+    getAssetWithId,
+    AddCollection,
   };
   return (
     <ThirdWebContext.Provider value={value}>

@@ -10,7 +10,7 @@ const ProfileImage = (props: Props) => {
 
   return (
     <img
-      className={`w-10 object-contain h-10 border-[1.5px] border-gray-50/60 rounded-full ${props?.styles}`}
+      className={`shadow-md shadow-violet-800 w-10 object-contain h-10 border-[1.5px] border-gray-50/60 rounded-full ${props?.styles}`}
       src={
         props?.data?.profile
           ? props?.data.profile
