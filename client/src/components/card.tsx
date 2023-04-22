@@ -13,6 +13,8 @@ import { userDataDefault } from '../utils/constant';
 import { ethers } from 'ethers';
 import { Summation } from '../utils/services';
 import MoreButton from './more-button';
+import ShareIcons from './share-icons';
+import ReusableModal from './reusable-modal';
 
 interface Props {
   asset: AssetsDisplayProps;
@@ -30,7 +32,12 @@ const Card = (props: Props) => {
 
   // Context
   const { handleAddAsset, address } = useThirdWebContext();
-  const { getAllUsers, FindUserWithAddress } = useUserContext();
+  const {
+    getAllUsers,
+    FindUserWithAddress,
+    reusableModalState,
+    reusableModalValue,
+  } = useUserContext();
 
   const getAddressFromProps = props?.asset?.appreciators?.map(
     (address) => address.appreciator
@@ -53,6 +60,16 @@ const Card = (props: Props) => {
 
   return (
     <li className='w-full sm:w-[288px]'>
+      {reusableModalState && reusableModalValue === 'card' && (
+        <ReusableModal title={`layout`}>
+          <ShareIcons
+            slug={props?.asset?._id}
+            baseURL='http://localhost:5173'
+            title={props.asset?.title}
+            body={props?.asset?.description}
+          />
+        </ReusableModal>
+      )}
       <header className='w-full flex items-center rounded-t-lg bg-[#141414] px-4 py-2 justify-between'>
         <div className='flex mb-3 -space-x-3'>
           {matchingUsers.length > 0 ? (

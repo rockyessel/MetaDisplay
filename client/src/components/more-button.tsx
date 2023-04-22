@@ -6,6 +6,8 @@ import { AiOutlineMore } from 'react-icons/ai';
 import { AssetsDisplayProps } from '../interface';
 import { useThirdWebContext } from '../contexts/thirdweb';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import ReusableModal from './reusable-modal';
+import { useUserContext } from '../contexts/user-context';
 
 interface Props {
   position: string;
@@ -14,10 +16,12 @@ interface Props {
 
 const MoreButton = (props: Props) => {
   const { address } = useThirdWebContext();
+  const { handleReusableModalToggle } = useUserContext();
 
   const { assetId } = useParams();
-  console.log('location', location);
   const navigate = useNavigate();
+
+
   return (
     <div
       className={`dropdown dropdown-hover ${props.position} shadow-md shadow-violet-800 rounded-lg`}
@@ -46,9 +50,18 @@ const MoreButton = (props: Props) => {
             <a>Add to collection</a>
           </li>
         )}
-        <li>
-          <a>Share</a>
-        </li>
+
+        {assetId ? (
+          <li onClick={() => handleReusableModalToggle('card')}>
+            
+            <a>Share</a>
+          </li>
+        ) : (
+            <li onClick={() => handleReusableModalToggle('card')}>
+              
+            <a>Share</a>
+          </li>
+        )}
         <li>
           <a>Follow Creator</a>
         </li>

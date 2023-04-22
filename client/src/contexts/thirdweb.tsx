@@ -64,12 +64,9 @@ export const ThirdWebContextProvider = (props: any) => {
   const connect = useMetamask();
   const disconnect = useDisconnect();
 
-  // console.log('getAssets', getAssets);
-  // console.log('ABIs', contract?.abi);
 
   const uploadAsset = async (form: FormProps) => {
     try {
-      console.log('AddAsset', form);
       const data = await createAssetDisplay({
         args: [
           form._id,
@@ -80,7 +77,6 @@ export const ThirdWebContextProvider = (props: any) => {
           form.date,
         ],
       });
-      console.log('contract call success', data);
     } catch (error) {
       console.log(error);
     }
@@ -122,8 +118,6 @@ export const ThirdWebContextProvider = (props: any) => {
         _id: asset._id,
       })
     );
-
-    console.log('allAssetsDisplay', allAssetsDisplay);
     setGetAsset(allAssetsDisplay);
   };
 
@@ -131,7 +125,6 @@ export const ThirdWebContextProvider = (props: any) => {
     try {
       if (contract) {
         const data = await contract.call('getAsset', [`${_id}`]);
-        // console.log('getAssetDisplay', data);
 
         return data;
       }
@@ -142,7 +135,6 @@ export const ThirdWebContextProvider = (props: any) => {
 
   const AddCollection = async (form: any) => {
 
-    console.log('AddCollection', form);
     const data = await createCollection({
       args: [
         form._id,
@@ -156,7 +148,6 @@ export const ThirdWebContextProvider = (props: any) => {
       ],
     });
 
-    console.log('Collected has been created', data)
   }
 
   const getAssetWithId = async (_id: string) => {
@@ -199,7 +190,6 @@ export const ThirdWebContextProvider = (props: any) => {
         return appreciators;
       }
     } catch (error) {
-      console.log('getAppreciators from ThirdWebContext', error);
       return error;
     }
   };

@@ -18,7 +18,10 @@ const CreateCollection = () => {
   const [profileFile, setProfileFile] = React.useState<string | Blob>('');
   const [coverFile, setCoverFile] = React.useState<string | Blob>('');
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: string) => {
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: string
+  ) => {
     const { target } = event;
     switch (type) {
       case 'profile':
@@ -66,13 +69,8 @@ const CreateCollection = () => {
       cover: coverImage.asset_url,
     };
 
-    console.log('formData', formData);
     AddCollection(formData);
   };
-
-  console.log('form', form);
-  console.log('profileFile', profileFile);
-  console.log('coverFile', coverFile);
 
   return (
     <main className='flex flex-col gap-5'>

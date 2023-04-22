@@ -47,6 +47,7 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden !important;
+  z-index: 100;
 }
 
 .row {

@@ -55,3 +55,16 @@ export const AssetDetailsDefault = {
   },
   success: false,
 };
+
+export const defaultMetaData = {
+  description: `description`,
+  title: `title`,
+  image: `image`,
+  alt: 'alt',
+  keywords: 'keywords',
+  type: `type`,
+  publishedAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  author_name: 'Rocky Essel',
+  MIME: 'png',
+};

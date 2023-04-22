@@ -24,6 +24,9 @@ interface UserContextProviderProps {
   AssetViewCounts: (assetId: string) => Promise<void>;
   AssetSave: (assetId: string) => Promise<void>;
   GetAsset: (_id: string) => Promise<AssetDetailsProps>;
+  handleReusableModalToggle: (place: string) => void;
+  reusableModalState: boolean;
+  reusableModalValue: string;
 }
 
 type Props = {
@@ -43,6 +46,9 @@ const UserContext = React.createContext({
   AssetViewCounts: (assetId: string) => Promise.resolve(),
   AssetSave: (assetId: string) => Promise.resolve(),
   GetAsset: (_id: string) => Promise.resolve(AssetDetailsDefault),
+  handleReusableModalToggle: (place: string) => {},
+  reusableModalState: false,
+  reusableModalValue: '',
 });
 
 export const UserContextProvider = (props: Props) => {
@@ -50,6 +56,8 @@ export const UserContextProvider = (props: Props) => {
   const [showLoginModal, setShowLoginModal] = React.useState(false);
   const [userLogState, setUserLogState] = React.useState(false);
   const [hasAllUsersLoaded, setHasAllUsersLoaded] = React.useState(false);
+  const [reusableModalState, setReusableModalState] = React.useState(false);
+  const [reusableModalValue, setReusableModalValue] = React.useState('');
   const [userData, setUserData] =
     React.useState<UserDataProps>(userDataDefault);
   const address = useAddress();
@@ -72,6 +80,25 @@ export const UserContextProvider = (props: Props) => {
     if (response.data) {
       localStorage.setItem('user', JSON.stringify(response.data));
       setUserLogState(true);
+    }
+  };
+
+  const handleReusableModalToggle = (place: string) => {
+    switch (place) {
+      case 'card':
+        setReusableModalValue(place)
+        setReusableModalState((prev) => !prev);
+        break;
+        
+        case 'explore-details':
+        setReusableModalValue(place)
+        setReusableModalState((prev) => !prev);
+        break;
+
+        default:
+        setReusableModalValue('')
+        setReusableModalState(false);
+        break;
     }
   };
 
@@ -110,15 +137,12 @@ export const UserContextProvider = (props: Props) => {
 
   const AssetViewCounts = async (_id: string) => {
     try {
-      console.log('AssetViewCounts', _id);
       const data = await axios({
         method: 'PUT',
         baseURL: `${baseURL}v1/assets/views/${_id}`,
         xsrfCookieName: 'XSRF-TOKEN',
         xsrfHeaderName: 'X-XSRF-TOKEN',
       });
-
-      console.log('views', data);
     } catch (error) {
       console.log(error);
     }
@@ -226,6 +250,9 @@ export const UserContextProvider = (props: Props) => {
     AssetViewCounts,
     AssetSave,
     GetAsset,
+    handleReusableModalToggle,
+    reusableModalState,
+    reusableModalValue,
   };
   return (
     <UserContext.Provider value={value}>{props.children}</UserContext.Provider>

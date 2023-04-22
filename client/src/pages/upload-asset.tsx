@@ -48,8 +48,6 @@ const UploadAsset = () => {
     [inputFile]
   );
 
-  console.log('getAssetData', getAssetData);
-
   const handleUpdates = (
     event:
       | React.ChangeEvent<HTMLInputElement>
@@ -79,7 +77,6 @@ const UploadAsset = () => {
     form._id = getAssetData?._id;
     form.image = getAssetData?.asset_url ? getAssetData?.asset_url : '';
     form.date = new Date().toISOString();
-    console.log('form', form);
     const { title, description, image } = form;
     if (!title || !description || !image) return;
     await uploadAsset(form);
