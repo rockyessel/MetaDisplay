@@ -95,6 +95,11 @@ export const UserContextProvider = (props: Props) => {
         setReusableModalState((prev) => !prev);
         break;
 
+      case 'select-collection':
+        setReusableModalValue(place);
+        setReusableModalState((prev) => !prev);
+        break;
+
       default:
         setReusableModalValue('');
         setReusableModalState(false);
@@ -137,12 +142,14 @@ export const UserContextProvider = (props: Props) => {
 
   const AssetViewCounts = async (_id: string) => {
     try {
-      const data = await axios({
+      const response = await axios({
         method: 'PUT',
         baseURL: `${baseURL}v1/assets/views/${_id}`,
         xsrfCookieName: 'XSRF-TOKEN',
         xsrfHeaderName: 'X-XSRF-TOKEN',
       });
+
+      return response.data
     } catch (error) {
       console.log(error);
     }

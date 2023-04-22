@@ -46,7 +46,7 @@ const MoreButton = (props: Props) => {
           </a>
         </li>
         {address && address === props?.asset?.owner && (
-          <li>
+          <li onClick={() => handleReusableModalToggle('select-collection')}>
             <a>Add to collection</a>
           </li>
         )}

@@ -6,3 +6,4 @@ export { default as User } from './user';
 export { default as UploadAsset } from './upload-asset';
 export { default as CreateCollection } from './dashboard/create-collection';
 export { default as All } from './dashboard/all';
+export { default as Collection } from './collection';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Head, Navbar, Footer, ReusableModal, ShareIcons } from './index';
-import { useUserContext } from '../contexts/user-context';
+import { Head, Navbar, Footer } from './index';
+import { useParams } from 'react-router-dom';
 
 interface Props {
   children: React.ReactNode;
@@ -18,7 +18,8 @@ interface Props {
 }
 
 const Layout = (props: Props) => {
-  const { reusableModalState, reusableModalValue } = useUserContext();
+  const { collectionId } = useParams();
+
   return (
     <React.Fragment>
       <Head
@@ -33,9 +34,11 @@ const Layout = (props: Props) => {
         author_name={props.author_name}
         MIME={props.MIME}
       />
-   
+
       <Navbar />
-      <main className='px-4 lg:px-20 relative'>{props.children}</main>
+      <main className={`${collectionId ? null : 'px-4 lg:px-20 relative'}`}>
+        {props.children}
+      </main>
       <Footer />
     </React.Fragment>
   );

@@ -78,20 +78,21 @@ contract MetaDisplay {
         return collections[collectionId];
     }
 
-    function addAssetToCollection(bytes32 _collectionId, string memory _assetId) public {
+    function addAssetToCollection(string memory _id, string memory _assetId) public {
+         bytes32 collectionId = keccak256(abi.encodePacked(_id));
         // Get the collection from the global collections mapping
-        Collections storage collection = collections[_collectionId];
+        Collections storage collection = collections[collectionId];
 
         // Add the asset ID to the collection's assetId array
         collection.assetId.push(_assetId);
 
         // Update the collection's assetId field
-        collections[_collectionId].assetId = collection.assetId;
+        collections[collectionId].assetId = collection.assetId;
 
         bytes32 assetId = keccak256(abi.encodePacked(_assetId));
-        emit AssetAdded(_collectionId, assetId);
+        emit AssetAdded(collectionId, assetId);
         // Emit an AssetAdded event
-        emit AssetAdded(_collectionId, assetId);
+        emit AssetAdded(collectionId, assetId);
     }
 
     function getAllCollections() public view returns (Collections[] memory) {

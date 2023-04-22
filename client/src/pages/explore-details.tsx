@@ -58,7 +58,7 @@ const ExploreDetails = () => {
   const totalAppreciation = Summation(currentAsset?.appreciators);
 
   const getAllData = async () => {
-    if (assetId && currentAsset) {
+    if (assetId) {
       const asset_info = await GetAsset(assetId);
       setAssetDetails(asset_info);
     }

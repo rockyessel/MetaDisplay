@@ -8,7 +8,7 @@ export default defineConfig({
   define: {
     'process.env': {
       VITE_BACKEND_API_BASE_URL: 'https://metadisplay.up.railway.app/',
-      VITE_META_DISPLAY_WALLET: '0xAc2364e28F1786533f36b4608E9f9B541fEb6f27',
+      VITE_META_DISPLAY_WALLET: '0x86A85e145ed21247633AdBC545DC30f4eD0E9916',
     },
   },
   build: {
@@ -38,3 +38,4 @@ export default defineConfig({
 // 0x41F606D73fa1D9BE4f15E03DBf8d0FAE145AFeE4
 // 0x8e1bAB4E2D4f2A5996412A269D673710e429f5F6
 // 0xAc2364e28F1786533f36b4608E9f9B541fEb6f27
+// 0x86A85e145ed21247633AdBC545DC30f4eD0E9916

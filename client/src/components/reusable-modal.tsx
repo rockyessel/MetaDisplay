@@ -6,6 +6,8 @@ interface Props {
   title: string;
   description?: string;
   children?: React.ReactNode;
+  buttonElement?: JSX.Element;
+  data?: any;
 }
 
 const ReusableModal = (props: Props) => {
@@ -20,14 +22,18 @@ const ReusableModal = (props: Props) => {
           <div>{props?.children}</div>
         )}
 
-        <Button
-          handleClick={() => handleReusableModalToggle(reusableModalValue)}
-          title='Close'
-          type='button'
-          styles='w-full'
-        >
-          Close
-        </Button>
+        <div className='flex items-center gap-2'>
+          {props?.buttonElement}
+
+          <Button
+            handleClick={() => handleReusableModalToggle(reusableModalValue)}
+            title='Close'
+            type='button'
+            styles='w-full'
+          >
+            Close
+          </Button>
+        </div>
       </div>
     </div>
   );

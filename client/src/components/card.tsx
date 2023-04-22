@@ -15,6 +15,7 @@ import { Summation } from '../utils/services';
 import MoreButton from './more-button';
 import ShareIcons from './share-icons';
 import ReusableModal from './reusable-modal';
+import Button from './button';
 
 interface Props {
   asset: AssetsDisplayProps;
@@ -31,7 +32,8 @@ const Card = (props: Props) => {
     React.useState<UserDataProps>(userDataDefault);
 
   // Context
-  const { handleAddAsset, address } = useThirdWebContext();
+  const { handleAddAsset, address, collections, AddAssetToCollection } =
+    useThirdWebContext();
   const {
     getAllUsers,
     FindUserWithAddress,
@@ -39,6 +41,7 @@ const Card = (props: Props) => {
     reusableModalValue,
   } = useUserContext();
 
+  const [selectedCollection, setSelectedCollection] = React.useState('');
   const getAddressFromProps = props?.asset?.appreciators?.map(
     (address) => address.appreciator
   );
@@ -46,6 +49,12 @@ const Card = (props: Props) => {
     getAddressFromProps.includes(user.address)
   );
   const formattedTotal = Summation(props?.asset?.appreciators);
+
+  const assetOwnersCollection: any[] =
+    address &&
+    collections?.filter((collection) => collection.owner === address);
+
+  console.log('assetOwnersCollection', assetOwnersCollection);
 
   const getUserWithAddress = async () => {
     const data = (await FindUserWithAddress(
@@ -68,6 +77,38 @@ const Card = (props: Props) => {
             title={props.asset?.title}
             body={props?.asset?.description}
           />
+        </ReusableModal>
+      )}
+      {reusableModalState && reusableModalValue === 'select-collection' && (
+        <ReusableModal
+          buttonElement={
+            <Button
+              handleClick={() =>
+                AddAssetToCollection({
+                  assetId: props?.asset?._id,
+                  collectionId: selectedCollection,
+                })
+              }
+              type='button'
+              styles='w-full'
+              title='Add'
+            >
+              Add
+            </Button>
+          }
+          title={`select-collection`}
+        >
+          <ul>
+            {assetOwnersCollection?.map((collection, index) => (
+              <li
+                onClick={() => setSelectedCollection(collection?._id)}
+                className='px-4 py-2 rounded-md bg-[#141414]'
+                key={index}
+              >
+                {collection?.title}
+              </li>
+            ))}
+          </ul>
         </ReusableModal>
       )}
       <header className='w-full flex items-center rounded-t-lg bg-[#141414] px-4 py-2 justify-between'>
@@ -107,8 +148,8 @@ const Card = (props: Props) => {
       </Link>
 
       <footer className='w-full flex flex-col gap-2 bg-[#141414] rounded-b-3xl px-4 py-2'>
-        <div className='w-full inline-flex items-center justify-between'>
-          <span>{props?.asset?.title}</span>
+        <div className='w-full inline-flex gap-5 items-center justify-between'>
+          <span className='truncate'>{props?.asset?.title}</span>
           <span className='inline-flex items-center gap-1'>
             <AiOutlineHeart /> 54
           </span>
