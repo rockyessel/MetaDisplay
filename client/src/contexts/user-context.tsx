@@ -86,17 +86,17 @@ export const UserContextProvider = (props: Props) => {
   const handleReusableModalToggle = (place: string) => {
     switch (place) {
       case 'card':
-        setReusableModalValue(place)
-        setReusableModalState((prev) => !prev);
-        break;
-        
-        case 'explore-details':
-        setReusableModalValue(place)
+        setReusableModalValue(place);
         setReusableModalState((prev) => !prev);
         break;
 
-        default:
-        setReusableModalValue('')
+      case 'explore-details':
+        setReusableModalValue(place);
+        setReusableModalState((prev) => !prev);
+        break;
+
+      default:
+        setReusableModalValue('');
         setReusableModalState(false);
         break;
     }

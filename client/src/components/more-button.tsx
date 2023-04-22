@@ -52,7 +52,7 @@ const MoreButton = (props: Props) => {
         )}
 
         {assetId ? (
-          <li onClick={() => handleReusableModalToggle('card')}>
+          <li onClick={() => handleReusableModalToggle('explore-details')}>
             
             <a>Share</a>
           </li>
