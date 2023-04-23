@@ -73,7 +73,7 @@ const Card = (props: Props) => {
         <ReusableModal title={`layout`}>
           <ShareIcons
             slug={props?.asset?._id}
-            baseURL='http://localhost:5173'
+            baseURL='https://metadisplay.vercel.app'
             title={props.asset?.title}
             body={props?.asset?.description}
           />
@@ -96,16 +96,30 @@ const Card = (props: Props) => {
               Add
             </Button>
           }
-          title={`select-collection`}
+          title={`Add Asset to Collection.`}
         >
-          <ul>
+          <ul className='flex flex-col gap-2 divide-y-2 divide-gray-50/70'>
             {assetOwnersCollection?.map((collection, index) => (
               <li
                 onClick={() => setSelectedCollection(collection?._id)}
-                className='px-4 py-2 rounded-md bg-[#141414]'
+                className={`truncate px-4 cursor-pointer hover:bg-violet-500 hover:text-black py-2 rounded-md ${
+                  selectedCollection === collection?._id ? 'bg-violet-800 text-black font-bold' : ''
+                }`}
                 key={index}
               >
-                {collection?.title}
+                <span className='flex items-center gap-2'>
+                  <img
+                    className='w-10 h-10 rounded-md'
+                    src={collection?.profile}
+                    alt=''
+                  />
+                  <span>
+                    <span className='flex flex-col gap-1'>
+                      <span> {collection?.title}</span>
+                      <span>{collection?.description}</span>
+                    </span>
+                  </span>
+                </span>
               </li>
             ))}
           </ul>

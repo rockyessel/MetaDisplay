@@ -217,6 +217,8 @@ export const ThirdWebContextProvider = (props: any) => {
     }
   };
 
+  console.log('collections',collections)
+
   React.useEffect(() => {
     if (contract) getAssetsDisplay();
     if (contract) getAllCollection();

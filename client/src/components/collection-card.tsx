@@ -1,10 +1,18 @@
 import React from 'react';
 import { AiOutlineHeart } from 'react-icons/ai';
 import { RxExternalLink } from 'react-icons/rx';
+import { useThirdWebContext } from '../contexts/thirdweb';
 
 interface Props {}
 
 const CollectionCard = () => {
+  const { getAssets, collections } = useThirdWebContext();
+
+  const arrAssets = collections?.map((assetId) => assetId.assetId)
+  console.log('arrAssets', arrAssets[1]);
+
+  const data = getAssets.filter((assetId) => arrAssets[1].includes(assetId._id));
+  console.log('data', data);
   return (
     <div className='w-full sm:w-[25rem] border-[1px] border-gray-50/60 rounded-t-md divide-y-[1px] divide-gray-50/60 shadow-md'>
       <div className='grid grid-cols-4 gap-1'>
