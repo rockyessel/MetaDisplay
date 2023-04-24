@@ -1,6 +1,6 @@
 import React from 'react';
 import { RiMoreFill } from 'react-icons/ri';
-import { AiOutlineHeart, AiOutlineMore } from 'react-icons/ai';
+import { AiFillEye, AiOutlineEye, AiOutlineHeart, AiOutlineMore } from 'react-icons/ai';
 import ProfileImage from './profile-image';
 import UserTooltip from './user-tooltip';
 import { Link } from 'react-router-dom';
@@ -9,13 +9,14 @@ import { useThirdWebContext } from '../contexts/thirdweb';
 import { FaEthereum } from 'react-icons/fa';
 import { useUserContext } from '../contexts/user-context';
 import { SiHiveBlockchain } from 'react-icons/si';
-import { userDataDefault } from '../utils/constant';
+import { AssetDetailsDefault, userDataDefault } from '../utils/constant';
 import { ethers } from 'ethers';
 import { Summation } from '../utils/services';
 import MoreButton from './more-button';
 import ShareIcons from './share-icons';
 import ReusableModal from './reusable-modal';
 import Button from './button';
+import { AssetDetailsProps } from '../pages/explore-details';
 
 interface Props {
   asset: AssetsDisplayProps;
@@ -28,103 +29,35 @@ export interface GetAllAppreciatorsProps {
 }
 
 const Card = (props: Props) => {
-  const [assetOwner, setAssetOwner] =
-    React.useState<UserDataProps>(userDataDefault);
+  const [assetOwner, setAssetOwner] = React.useState<UserDataProps>(userDataDefault);
+  const [assetDetails, setAssetDetails] = React.useState<AssetDetailsProps>(AssetDetailsDefault);
 
   // Context
-  const { handleAddAsset, address, collections, AddAssetToCollection } =
-    useThirdWebContext();
-  const {
-    getAllUsers,
-    FindUserWithAddress,
-    reusableModalState,
-    reusableModalValue,
-  } = useUserContext();
+  const { handleAddAsset, address } = useThirdWebContext();
+  const { getAllUsers, FindUserWithAddress, GetAsset} = useUserContext();
 
-  const [selectedCollection, setSelectedCollection] = React.useState('');
-  const getAddressFromProps = props?.asset?.appreciators?.map(
-    (address) => address.appreciator
-  );
-  const matchingUsers = getAllUsers.filter((user) =>
-    getAddressFromProps.includes(user.address)
-  );
+  const getAddressFromProps = props?.asset?.appreciators?.map((address) => address.appreciator);
+  const matchingUsers = getAllUsers.filter((user) =>getAddressFromProps.includes(user.address));
   const formattedTotal = Summation(props?.asset?.appreciators);
 
-  const assetOwnersCollection: any[] =
-    address &&
-    collections?.filter((collection) => collection.owner === address);
 
-  console.log('assetOwnersCollection', assetOwnersCollection);
+ 
 
-  const getUserWithAddress = async () => {
-    const data = (await FindUserWithAddress(
-      props?.asset?.owner
-    )) as unknown as UserDataProps;
+  const getData = async () => {
+    const data = (await FindUserWithAddress(props?.asset?.owner)) as unknown as UserDataProps;
     setAssetOwner(data);
+
+    const asset_info = await GetAsset(props?.asset?._id);
+          setAssetDetails(asset_info);
   };
 
   React.useEffect(() => {
-    getUserWithAddress();
+    
+    getData();
   }, []);
 
   return (
     <li className='w-full sm:w-[288px]'>
-      {reusableModalState && reusableModalValue === 'card' && (
-        <ReusableModal title={`layout`}>
-          <ShareIcons
-            slug={props?.asset?._id}
-            baseURL='https://metadisplay.vercel.app'
-            title={props.asset?.title}
-            body={props?.asset?.description}
-          />
-        </ReusableModal>
-      )}
-      {reusableModalState && reusableModalValue === 'select-collection' && (
-        <ReusableModal
-          buttonElement={
-            <Button
-              handleClick={() =>
-                AddAssetToCollection({
-                  assetId: props?.asset?._id,
-                  collectionId: selectedCollection,
-                })
-              }
-              type='button'
-              styles='w-full'
-              title='Add'
-            >
-              Add
-            </Button>
-          }
-          title={`Add Asset to Collection.`}
-        >
-          <ul className='flex flex-col gap-2 divide-y-2 divide-gray-50/70'>
-            {assetOwnersCollection?.map((collection, index) => (
-              <li
-                onClick={() => setSelectedCollection(collection?._id)}
-                className={`truncate px-4 cursor-pointer hover:bg-violet-500 hover:text-black py-2 rounded-md ${
-                  selectedCollection === collection?._id ? 'bg-violet-800 text-black font-bold' : ''
-                }`}
-                key={index}
-              >
-                <span className='flex items-center gap-2'>
-                  <img
-                    className='w-10 h-10 rounded-md'
-                    src={collection?.profile}
-                    alt=''
-                  />
-                  <span>
-                    <span className='flex flex-col gap-1'>
-                      <span> {collection?.title}</span>
-                      <span>{collection?.description}</span>
-                    </span>
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </ReusableModal>
-      )}
       <header className='w-full flex items-center rounded-t-lg bg-[#141414] px-4 py-2 justify-between'>
         <div className='flex mb-3 -space-x-3'>
           {matchingUsers.length > 0 ? (
@@ -165,7 +98,7 @@ const Card = (props: Props) => {
         <div className='w-full inline-flex gap-5 items-center justify-between'>
           <span className='truncate'>{props?.asset?.title}</span>
           <span className='inline-flex items-center gap-1'>
-            <AiOutlineHeart /> 54
+            <AiFillEye /> {assetDetails?.found?.views}
           </span>
         </div>
         <div className='w-full inline-flex items-center justify-between'>

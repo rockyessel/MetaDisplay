@@ -50,21 +50,15 @@ const MoreButton = (props: Props) => {
             <a>Add to collection</a>
           </li>
         )}
-
         {assetId ? (
           <li onClick={() => handleReusableModalToggle('explore-details')}>
-            
             <a>Share</a>
           </li>
         ) : (
-            <li onClick={() => handleReusableModalToggle('card')}>
-              
+          <li onClick={() => handleReusableModalToggle('card')}>
             <a>Share</a>
           </li>
         )}
-        <li>
-          <a>Follow Creator</a>
-        </li>
         {address && address === props?.asset?.owner && (
           <li>
             <a>Delete</a>

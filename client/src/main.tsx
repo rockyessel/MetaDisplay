@@ -16,7 +16,7 @@ const activeChain = 'ethereum';
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
+  
     <ThirdwebProvider activeChain={ Sepolia }>
       <ThirdWebContextProvider>
         <UserContextProvider>
@@ -26,5 +26,5 @@ root.render(
         </UserContextProvider>
       </ThirdWebContextProvider>
     </ThirdwebProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

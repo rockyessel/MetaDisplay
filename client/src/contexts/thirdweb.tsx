@@ -1,3 +1,4 @@
+  
 import React from 'react';
 import {
   useAddress,
@@ -8,9 +9,11 @@ import {
   useDisconnect,
   SmartContract,
 } from '@thirdweb-dev/react';
-import { ethers, utils } from 'ethers';
+import { ethers, utils,BigNumber } from 'ethers';
 import { AssetsDisplayProps, FormProps } from '../interface';
 import { AssetsDisplayDefault } from '../utils/constant';
+import { Appreciation, summarizeAppreciations } from '../utils/services';
+
 
 interface ContextProps {
   address?: string | undefined;
@@ -31,6 +34,7 @@ interface ContextProps {
   AddCollection: (form: any) => Promise<void>;
   AddAssetToCollection: (form: any) => Promise<void>;
   collections: any[];
+  allAppreciators: Appreciation[];
 }
 
 const ThirdWebContext = React.createContext<ContextProps>({
@@ -50,13 +54,15 @@ const ThirdWebContext = React.createContext<ContextProps>({
   getAssetWithId: (_id: string) => Promise.resolve(),
   AddCollection: (form: any) => Promise.resolve(),
   AddAssetToCollection: (form: any) => Promise.resolve(),
-  collections:[]
+  collections:[],
+  allAppreciators:[]
 });
 
 export const ThirdWebContextProvider = (props: any) => {
   const { contract } = useContract(`${process.env.VITE_META_DISPLAY_WALLET}`);
   const { data: assetsDisplay } = useContractRead(contract, 'getAllAssets');
   const { data: getAllCollections } = useContractRead(contract, 'getAllCollections');
+  const { data: getAllAppreciators } = useContractRead(contract, 'getAllAppreciators');
   const { mutateAsync: createAssetDisplay } = useContractWrite(contract, 'createAsset');
   const { mutateAsync: createCollection } = useContractWrite(contract, 'createCollection');
   const { mutateAsync: appreciateAsset } = useContractWrite(contract, 'appreciateAssetById');
@@ -66,6 +72,7 @@ export const ThirdWebContextProvider = (props: any) => {
   const [assetToBeAppreciatedState, setAssetToBeAppreciatedState] = React.useState<boolean>(false);
   const [arrAppreciators, setArrAppreciators] = React.useState<any[]>([]);
   const [collections, setCollections] = React.useState<any[]>([]);
+  const [allAppreciators, setAllAppreciators] = React.useState<any[]>([]);
 
   const address = useAddress();
   const connect = useMetamask();
@@ -74,7 +81,7 @@ export const ThirdWebContextProvider = (props: any) => {
 
   const uploadAsset = async (form: FormProps) => {
     try {
-      const data = await createAssetDisplay({
+       await createAssetDisplay({
         args: [
           form._id,
           form.title,
@@ -101,7 +108,7 @@ export const ThirdWebContextProvider = (props: any) => {
         args: [appreciateData.address, appreciateData._id],
         overrides: { value: amount },
       });
-      return { success: true, data };
+      return data 
     } catch (error) {
       console.log(error);
       return {
@@ -127,7 +134,6 @@ export const ThirdWebContextProvider = (props: any) => {
     );
     setGetAsset(allAssetsDisplay);
   };
-
 
   const getAssetDisplay = async (_id: string): Promise<void> => {
     try {
@@ -160,16 +166,26 @@ export const ThirdWebContextProvider = (props: any) => {
 
     const AddAssetToCollection = async (form: any) => {
 
-      console.log('form', form);
+      console.log('AddAssetToCollection Context:', form);
       const data = await addAssetToCollection({
         args: [form.collectionId, form.assetId],
       });
 
-      console.log('Asset added to collection successfully', data);
+      // console.log('Asset added to collection successfully', data);
     };
 
   const getAllCollection = async () => {
     setCollections(getAllCollections);
+  }
+
+  const getEveryAppreciators =  () => {
+    const appreciators = getAllAppreciators?.map((appreciator:Appreciation) => ({
+      appreciator: appreciator?.appreciator,
+      amountAppreciated: ethers.utils.formatEther(appreciator?.amountAppreciated.toString()),
+      appreciationQuantity: appreciator?.appreciationQuantity
+    }) )
+    const data = summarizeAppreciations(appreciators);
+    setAllAppreciators(data);
   }
 
 
@@ -217,11 +233,11 @@ export const ThirdWebContextProvider = (props: any) => {
     }
   };
 
-  console.log('collections',collections)
 
   React.useEffect(() => {
     if (contract) getAssetsDisplay();
     if (contract) getAllCollection();
+    if (contract) getEveryAppreciators();
   }, [assetsDisplay]);
 
   const value = {
@@ -240,7 +256,7 @@ export const ThirdWebContextProvider = (props: any) => {
     getAssetWithId,
     AddCollection,
     AddAssetToCollection,
-    collections,
+    collections,allAppreciators
   };
 
   return (

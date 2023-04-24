@@ -1,5 +1,4 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import Input from './input';
 import Button from './button';
 import { useThirdWebContext } from '../contexts/thirdweb';
@@ -13,11 +12,9 @@ interface appreciateProps {
 }
 
 const AppreciateAssetModal = () => {
-  const { assetToBeAppreciated, handleAddAsset, userAppreciation } =
-    useThirdWebContext();
+  const { assetToBeAppreciated, handleAddAsset, userAppreciation } = useThirdWebContext();
   const [appreciate, setAppreciate] = React.useState<string>('');
-  const [appreciateStateValue, setAppreciateStateValue] =
-    React.useState<string>('Appreciate');
+  const [appreciateStateValue, setAppreciateStateValue] = React.useState<string>('Appreciate');
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [isSuccess, setLoadingIsSuccess] = React.useState<boolean>(false);
   const [buttonDisable, setButtonDisable] = React.useState<boolean>(false);
@@ -36,7 +33,9 @@ const AppreciateAssetModal = () => {
 
     const receipt = await userAppreciation(data);
 
-    if (receipt?.receipt?.status === 1) {
+    console.log('receipt', receipt.receipt);
+
+    if (receipt?.receipt?.status !== 1) {
       setError(true);
       setAppreciateStateValue(`${receipt.error_obj.info.reason}`);
       setTitle(`${receipt.error_obj.info.reason}`);
@@ -49,7 +48,7 @@ const AppreciateAssetModal = () => {
       return () => clearTimeout(time);
     }
 
-    if (receipt.success) {
+    if (receipt?.receipt?.confirmations === 1) {
       setAppreciateStateValue(`Asset appreciated successfully`);
       setTitle(`Asset appreciated successfully`);
       const time = setTimeout(() => {

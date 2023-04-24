@@ -26,6 +26,7 @@ body {
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
+  
 }
 
 /* Track */
@@ -70,6 +71,12 @@ body {
   margin-top: 8px;
   vertical-align: middle;
   width: 100%;
+}
+
+.bg-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 /* Responsive layout - makes a two column-layout instead of four columns */
 @media screen and (max-width: 800px) {

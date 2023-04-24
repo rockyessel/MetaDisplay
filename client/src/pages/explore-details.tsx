@@ -37,24 +37,17 @@ interface CurrentAssetProps {}
 
 const ExploreDetails = () => {
   const { assetId } = useParams();
-  const [assetUserFromDB, setAssetUserFromDB] = React.useState({
-    username: '',
-  });
-  const { getAssets, handleAddAsset, getAssetWithId, address } =
-    useThirdWebContext();
-  const { getAllUsers, FindUserWithAddress, AssetViewCounts, GetAsset,reusableModalState, reusableModalValue } =
-    useUserContext();
-  const [assetDetails, setAssetDetails] =
-    React.useState<AssetDetailsProps>(AssetDetailsDefault);
+  const [assetUserFromDB, setAssetUserFromDB] = React.useState({username: ''});
+  const { getAssets, handleAddAsset, getAssetWithId, address } = useThirdWebContext();
+  const { getAllUsers, FindUserWithAddress, AssetViewCounts, GetAsset,reusableModalState, reusableModalValue } = useUserContext();
+  const [assetDetails, setAssetDetails] = React.useState<AssetDetailsProps>(AssetDetailsDefault);
   const [hasIncremented, setHasIncremented] = React.useState<boolean>(false);
   const [currentAsset, setCurrentAsset] = React.useState<AssetsDisplayProps>();
   const [totalAssets, setTotalAssets] = React.useState<number>();
 
 
   const getAddressFromProps = currentAsset?.appreciators?.map((address) => address.appreciator);
-
   const matchingUsers = getAllUsers?.filter((user) => getAddressFromProps?.includes(user?.address));
-
   const totalAppreciation = Summation(currentAsset?.appreciators);
 
   const getAllData = async () => {
@@ -63,10 +56,7 @@ const ExploreDetails = () => {
       setAssetDetails(asset_info);
     }
 
-    if (currentAsset) {
-      const data = await FindUserWithAddress(currentAsset?.owner);
-      setAssetUserFromDB(data);
-    }
+
   };
   React.useEffect(() => {
     if (!hasIncremented) {
@@ -75,7 +65,7 @@ const ExploreDetails = () => {
           AssetViewCounts(assetId).then(() => {
             setHasIncremented(true);
           });
-      }, 10000);
+      }, 5000);
 
       return () => clearTimeout(time);
     }
@@ -88,6 +78,17 @@ const ExploreDetails = () => {
       });
     getAllData();
   }, [assetId]);
+
+  React.useEffect(()=>{
+const getData = async () => {
+   if (currentAsset) {
+     const data = await FindUserWithAddress(currentAsset?.owner);
+     setAssetUserFromDB(data);
+   }
+}
+
+getData()
+  }, [currentAsset])
 
   React.useEffect(() => {
     const totalAssetsUploads = getAssets?.filter(
@@ -105,7 +106,7 @@ const ExploreDetails = () => {
       image={currentAsset?.image}
       alt={currentAsset?.title}
       keywords={`asset, ${currentAsset?.title}`}
-      type={'Website'}
+      type={'Asset Page'}
       publishedAt={currentAsset?.date}
       updatedAt={''}
       author_name={assetUserFromDB?.username}
@@ -113,10 +114,10 @@ const ExploreDetails = () => {
       slug={assetId && assetId}
     >
       {reusableModalState && reusableModalValue === 'explore-details' && (
-        <ReusableModal title={`layout`}>
+        <ReusableModal title={`Share with others`}>
           <ShareIcons
             slug={currentAsset?._id}
-            baseURL='http://localhost:5173'
+            baseURL='https://metadisplay.vercel.app'
             title={currentAsset?.title}
           />
         </ReusableModal>

@@ -51,6 +51,13 @@ const Sidebar = () => {
         >
           <VscAccount className='text-2xl text-white' />
         </IconItem>
+        <IconItem
+          title='Add Asset to Collection'
+          handleClick={() => navigate('/dashboard/add-asset-to-collection')}
+          styles='flex items-center gap-1 bg-[#252525] rounded-md hover:text-violet-800 hover:bg-violet-400'
+        >
+          <VscAccount className='text-2xl text-white' />
+        </IconItem>
       </div>
 
       <IconItem
