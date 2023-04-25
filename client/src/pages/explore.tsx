@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CollectionCard, Loader, Layout, CollectionList, AppreciatorList } from '../components';
 import { useThirdWebContext } from '../contexts/thirdweb';
+import SearchData from '../components/search/search-data';
 
 interface Props {}
 
@@ -23,6 +24,7 @@ const Explore = () => {
       author_name={'Rocky Essel'}
       MIME={'png'}
     >
+      <SearchData />
       <section className='flex flex-col gap-10 min-h-screen'>
         <div className='w-full overflow-x-auto flex flex-col gap-8'>
           <h1 className='font-bold text-4xl text-white underline underline-offset-8 decoration-violet-700'>
@@ -63,15 +65,12 @@ const Explore = () => {
             <CollectionCard />
             <CollectionCard />
             <CollectionCard />
-            <CollectionCard />
-            <CollectionCard />
-            <CollectionCard />
           </ul>
         </div>
 
         <div className='flex flex-col gap-10'>
           <h1 className='font-bold text-4xl text-white underline underline-offset-8 decoration-violet-700'>
-            Appreciators
+            Top Appreciators
           </h1>
 
           <ul className='flex flex-wrap gap-10'>

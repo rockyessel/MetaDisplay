@@ -6,15 +6,23 @@ interface Props {
   appreciator: Appreciation;
 }
 
+interface AssetUserFromDB {
+  profile:string
+  name:string
+  username:string
+}
+
+
+
 const AppreciatorList = (props: Props) => {
-  const [assetUserFromDB, setAssetUserFromDB] = React.useState({});
+  const [assetUserFromDB, setAssetUserFromDB] = React.useState<AssetUserFromDB>();
   const { FindUserWithAddress } = useUserContext();
 
   React.useEffect(() => {
     const getData = async () => {
       if (props.appreciator) {
         const data = await FindUserWithAddress(props?.appreciator?.appreciator);
-        console.log('data', data);
+        // console.log('data', data);
         setAssetUserFromDB(data);
       }
     };

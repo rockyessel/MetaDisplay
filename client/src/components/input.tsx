@@ -7,7 +7,7 @@ interface Props {
   placeholder?: string;
   styles?: string;
   type?: string;
-  label: string;
+  label?: string;
   elementType: string;
   disabled?: boolean | undefined;
   step?: number | string | undefined
