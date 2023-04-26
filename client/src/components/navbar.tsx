@@ -7,6 +7,7 @@ import Loader from './loader';
 import { useUserContext } from '../contexts/user-context';
 import Button from './button';
 import Search from './search';
+import SearchData from './search/search-data';
 
 interface Props {}
 
@@ -67,8 +68,10 @@ const Navbar = () => {
               <span className='font-extrabold'>MetaDisplay</span>
             </span>
           </Link>
-
-          <Search />
+          <div className='hidden sm:block'>
+            
+          <SearchData />
+</div>
         </div>
 
         <div className='block md:hidden'>
@@ -117,13 +120,9 @@ const Navbar = () => {
           </ul>
         </nav>
       </section>
-      <div className='flex-1 flex items-center border-[1px] border-gray-50/60 md:hidden  gap-3 px-3 py-1.5 rounded-3xl'>
-        <BsSearch />
-        <input
-          type='text'
-          className='bg-transparent outline-none w-full'
-          placeholder='Search items, collection, accounts'
-        />
+      <div className='sm:hidden'>
+
+      <SearchData />
       </div>
     </header>
   );

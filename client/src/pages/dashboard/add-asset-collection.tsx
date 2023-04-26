@@ -14,9 +14,7 @@ const AddAssetCollection = () => {
     getAssets,
     contract,
   } = useThirdWebContext();
-  const assetOwnersCollection: any[] =
-    address &&
-    collections?.filter((collection) => collection.owner === address);
+  const assetOwnersCollection: any[] = collections?.filter((collection) => collection.owner ===  address && address);
   const [selectedCollection, setSelectedCollection] = React.useState('');
   const [selectedAsset, setSelectedAsset] = React.useState('');
   const [userOwnAssets, setUserOwnAssets] = React.useState<

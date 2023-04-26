@@ -6,7 +6,7 @@ interface Props {
   appreciator: Appreciation;
 }
 
-interface AssetUserFromDB {
+export interface AssetUserFromDB {
   profile:string
   name:string
   username:string
