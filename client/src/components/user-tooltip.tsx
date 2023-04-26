@@ -10,7 +10,7 @@ interface Props {
 const UserTooltip = (props: Props) => {
   return (
     <div
-      className={`z-10 w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm ${props?.styles}`}
+      className={`z-[100] w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm ${props?.styles}`}
     >
       <div className='p-3'>
         <div className='flex items-center justify-between mb-2'>

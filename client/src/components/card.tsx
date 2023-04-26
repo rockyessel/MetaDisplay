@@ -57,7 +57,7 @@ const Card = (props: Props) => {
   }, []);
 
   return (
-    <li className='w-full sm:w-[288px]'>
+    <li className='w-full sm:w-[288px] hover:shadow-lg hover:shadow-violet-500 rounded-b-3xl'>
       <header className='w-full flex items-center rounded-t-lg bg-[#141414] px-4 py-2 justify-between'>
         <div className='flex mb-3 -space-x-3'>
           {matchingUsers.length > 0 ? (

@@ -36,7 +36,7 @@ const Layout = (props: Props) => {
       />
 
       <Navbar />
-      <main className={`${collectionId ? null : 'px-4 lg:px-20 relative'}`}>
+      <main className={`${collectionId ? null : 'w-full h-full px-4 lg:px-20 relative'}`}>
         {props.children}
       </main>
       <Footer />

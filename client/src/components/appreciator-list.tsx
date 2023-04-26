@@ -7,12 +7,13 @@ interface Props {
 }
 
 export interface AssetUserFromDB {
-  profile:string
-  name:string
-  username:string
+  profile: string;
+  name: string;
+  username: string;
+  address: string;
+  followers: string[];
+  following: string[];
 }
-
-
 
 const AppreciatorList = (props: Props) => {
   const [assetUserFromDB, setAssetUserFromDB] = React.useState<AssetUserFromDB>();
@@ -31,21 +32,26 @@ const AppreciatorList = (props: Props) => {
   }, [props.appreciator]);
 
   return (
-    <li>
-      <div className='w-[15rem]  bg-[#141414]rounded-lg shadow'>
-        <img
-          className='rounded-t-lg w-full object-cover h-40'
-          src={assetUserFromDB?.profile}
-          alt={assetUserFromDB?.name}
-        />
+    <li className='w-[15rem] bg-[#141414] rounded-lg'>
+      <img
+        className='w-full object-cover h-40'
+        src={assetUserFromDB?.profile}
+        alt={assetUserFromDB?.name}
+      />
 
-        <div className='p-5 border border-gray-200'>
-          <p className='mb-2 font-bold tracking-tight'>
-            <span>{assetUserFromDB?.name}</span>{' '}
-            <span className='text-gray-400 text-sm'>
+      <div className='p-2 flex flex-col gap-2'>
+        <p className='truncate'>{assetUserFromDB?.address}</p>
+        <div className='flex justify-between'>
+          <div className='flex flex-col truncate'>
+            <p className='truncate'>{assetUserFromDB?.name}</p>
+            <p className='text-white/60 text-sm'>
               @{assetUserFromDB?.username}
-            </span>
-          </p>
+            </p>
+          </div>
+          <div className='flex flex-col'>
+            <p>followers: {assetUserFromDB?.followers.length}</p>
+            <p>following: {assetUserFromDB?.following.length}</p>
+          </div>
         </div>
       </div>
     </li>
