@@ -101,7 +101,7 @@ React.useEffect(() => {
               placeholder='Search for an asset...'
             />
           </div>
-          <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1'>
+          <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1 z-[100] '>
             {filterData?.map((asset, index) => (
               <li className='truncate inline-flex items-end gap-1 py-2' key={index}>
                 <img
@@ -132,7 +132,7 @@ React.useEffect(() => {
               placeholder='Search for a collection...'
             />
           </div>
-          <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1'>
+          <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1 z-[100]'>
             {filterData?.map((collection, index) => (
               <li className='truncate inline-flex items-end gap-1 py-2' key={index}>
                 <img
@@ -167,9 +167,12 @@ React.useEffect(() => {
               placeholder='Search for an appreciator...'
             />
           </div>
-          <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1'>
+          <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1 z-[100]'>
             {filterData?.map((appreciator, index) => (
-              <li className='truncate inline-flex items-end gap-1 py-2' key={index}>
+              <li
+                className='truncate inline-flex items-end gap-1 py-2'
+                key={index}
+              >
                 <img
                   className='w-10 h-10 rounded-md'
                   src={appreciator?.profile}
