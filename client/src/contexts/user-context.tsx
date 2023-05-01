@@ -3,24 +3,25 @@ import React from 'react';
 import { useAddress } from '@thirdweb-dev/react';
 import {
   AssetDetailsDefault,
+  AssetUserFromDBDefault,
   formDataInitialValue,
   loginDefaultValue,
-  userDataDefault,
 } from '../utils/constant';
-import { UserDataProps } from '../interface';
+import { AssetUserFromDB } from '../interface';
 import { AssetDetailsProps } from '../pages/explore-details';
 
+
 interface UserContextProviderProps {
-  RegisterUser: (formData: any) => Promise<void>;
+  RegisterUser: (formData: typeof formDataInitialValue) => Promise<void>;
   showRegisterModal: boolean;
   showLoginModal: boolean;
   LoginUserWithAddress: (form: any) => Promise<void>;
-  userData: UserDataProps;
+  userData: AssetUserFromDB;
   handleRegisterToggle: () => void;
   handleLoginToggle: () => void;
   userLogState: boolean;
-  getAllUsers: UserDataProps[];
-  FindUserWithAddress: (address: string) => Promise<UserDataProps>;
+  getAllUsers: AssetUserFromDB[];
+  FindUserWithAddress: (address: string) => Promise<AssetUserFromDB>;
   AssetViewCounts: (assetId: string) => Promise<void>;
   AssetSave: (assetId: string) => Promise<void>;
   GetAsset: (_id: string) => Promise<AssetDetailsProps>;
@@ -33,16 +34,17 @@ type Props = {
   children: React.ReactNode;
 };
 const UserContext = React.createContext({
-  RegisterUser: (formData: any) => Promise.resolve(),
+  RegisterUser: (formData: typeof formDataInitialValue) => Promise.resolve(),
   showRegisterModal: false,
   showLoginModal: false,
   LoginUserWithAddress: (form: any) => Promise.resolve(),
-  userData: userDataDefault,
+  userData: AssetUserFromDBDefault,
   handleRegisterToggle: () => {},
   handleLoginToggle: () => {},
   userLogState: false,
-  getAllUsers: [userDataDefault],
-  FindUserWithAddress: (address: string) => Promise.resolve(userDataDefault),
+  getAllUsers: [AssetUserFromDBDefault],
+  FindUserWithAddress: (address: string) =>
+    Promise.resolve(AssetUserFromDBDefault),
   AssetViewCounts: (assetId: string) => Promise.resolve(),
   AssetSave: (assetId: string) => Promise.resolve(),
   GetAsset: (_id: string) => Promise.resolve(AssetDetailsDefault),
@@ -58,10 +60,9 @@ export const UserContextProvider = (props: Props) => {
   const [hasAllUsersLoaded, setHasAllUsersLoaded] = React.useState(false);
   const [reusableModalState, setReusableModalState] = React.useState(false);
   const [reusableModalValue, setReusableModalValue] = React.useState('');
-  const [userData, setUserData] =
-    React.useState<UserDataProps>(userDataDefault);
+  const [userData, setUserData] = React.useState<typeof AssetUserFromDBDefault>(AssetUserFromDBDefault);
   const address = useAddress();
-  const [getAllUsers, setGetAllUsers] = React.useState<UserDataProps[]>([]);
+  const [getAllUsers, setGetAllUsers] = React.useState<typeof AssetUserFromDBDefault[]>([]);
 
   const baseURL = process.env.VITE_BACKEND_API_BASE_URL;
   // const baseURL = `http://localhost:4000/`;
@@ -195,9 +196,7 @@ export const UserContextProvider = (props: Props) => {
     }
   };
 
-  const FindUserWithAddress = async (
-    address: string
-  ): Promise<UserDataProps> => {
+  const FindUserWithAddress = async (address: string): Promise<typeof AssetUserFromDBDefault> => {
     const response = await axios({
       method: 'GET',
       baseURL: `${baseURL}v1/users/find/${address}`,

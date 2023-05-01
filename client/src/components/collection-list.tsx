@@ -16,7 +16,7 @@ const CollectionList = (props: Props) => {
         <div className='hero-overlay absolute bg-black/40 backdrop-blur-sm flex items-end p-2 sm:p-5'>
           <div className='flex items-end gap-2'>
             <img
-              className='w-28 h-28 rounded-lg border-4 border-[#14141414]/60'
+              className='w-40 h-40 rounded-lg border-4 border-[#14141414]/60'
               src={props?.collection?.profile}
               alt={props?.collection?.title}
             />

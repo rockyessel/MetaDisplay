@@ -36,3 +36,14 @@ interface Appreciator {
   appreciationQuantity:BigNumber;
   appreciator:string;
 }
+
+export interface AssetUserFromDB {
+  email:string;
+  profile: string;
+  name: string;
+  username: string;
+  token: string;
+  address: string;
+  followers: string[] | never[];
+  following: string[] | never[];
+}

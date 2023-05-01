@@ -3,6 +3,8 @@ import { MdOutlineVerified } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { useUserContext } from '../contexts/user-context';
 import CollectionList from './collection-list';
+import { useThirdWebContext } from '../contexts/thirdweb';
+import CollectionLoadingCard from './loading/collection-loading-card';
 
 interface Props {
   collections: any[];
@@ -10,6 +12,9 @@ interface Props {
 
 const Hero = (props: Props) => {
   const [currentSlider, setCurrentSlider] = React.useState(0);
+
+  
+  const {  loadingCollection } = useThirdWebContext();
   const collectionLength = props?.collections?.length - 1;
   const repeat = currentSlider === collectionLength ? 0 : currentSlider + 1;
 
@@ -27,6 +32,10 @@ const Hero = (props: Props) => {
           index === currentSlider && (
             <CollectionList key={index} collection={collection} />
           )
+      )}
+
+      {loadingCollection && (
+        <CollectionLoadingCard />
       )}
     </React.Fragment>
   );

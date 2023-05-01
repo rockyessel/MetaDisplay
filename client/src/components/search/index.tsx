@@ -21,7 +21,7 @@ interface FilterDataProps {
 const Search = (props: Props): JSX.Element => {
   const [filterData, setFilterData] = React.useState<any[] | AssetUserFromDB[] | undefined>([]);
   const [searchedValue, setSearchedValue] = React.useState('');
-  const [assetUserFromDB, setAssetUserFromDB] = React.useState<AssetUserFromDB[]>();
+  const [assetUserFromDB, setAssetUserFromDB] = React.useState<any[]>();
   const { FindUserWithAddress } = useUserContext();
 
   console.log('filterData', filterData); 
@@ -37,8 +37,8 @@ React.useEffect(() => {
           const promise = FindUserWithAddress(appreciator.appreciator);
           return promise;
         });
-        const assetUserFromDB = await Promise.all(data);
-        setAssetUserFromDB(assetUserFromDB);
+        const appreciatorDBInformation = await Promise.all(data);
+        setAssetUserFromDB(appreciatorDBInformation);
       } catch (error) {
         console.log(error);
       }

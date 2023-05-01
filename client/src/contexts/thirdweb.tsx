@@ -35,6 +35,8 @@ interface ContextProps {
   AddAssetToCollection: (form: any) => Promise<void>;
   collections: any[];
   allAppreciators: Appreciation[];
+  loadingAssets: boolean;
+  loadingCollection: boolean;
 }
 
 const ThirdWebContext = React.createContext<ContextProps>({
@@ -54,8 +56,10 @@ const ThirdWebContext = React.createContext<ContextProps>({
   getAssetWithId: (_id: string) => Promise.resolve(),
   AddCollection: (form: any) => Promise.resolve(),
   AddAssetToCollection: (form: any) => Promise.resolve(),
-  collections:[],
-  allAppreciators:[]
+  collections: [],
+  allAppreciators: [],
+  loadingAssets: true,
+  loadingCollection: true,
 });
 
 export const ThirdWebContextProvider = (props: any) => {
@@ -73,6 +77,8 @@ export const ThirdWebContextProvider = (props: any) => {
   const [arrAppreciators, setArrAppreciators] = React.useState<any[]>([]);
   const [collections, setCollections] = React.useState<any[]>([]);
   const [allAppreciators, setAllAppreciators] = React.useState<any[]>([]);
+  const [loadingAssets, setLoadingAssets] = React.useState<boolean>(true);
+  const [loadingCollection, setLoadingCollection] = React.useState<boolean>(true);
 
   const address = useAddress();
   const connect = useMetamask();
@@ -132,7 +138,9 @@ export const ThirdWebContextProvider = (props: any) => {
         _id: asset._id,
       })
     );
+
     setGetAsset(allAssetsDisplay);
+    setLoadingAssets(false)
   };
 
   const getAssetDisplay = async (_id: string): Promise<void> => {
@@ -176,6 +184,7 @@ export const ThirdWebContextProvider = (props: any) => {
 
   const getAllCollection = async () => {
     setCollections(getAllCollections);
+    setLoadingCollection(false)
   }
 
   const getEveryAppreciators =  () => {
@@ -256,7 +265,10 @@ export const ThirdWebContextProvider = (props: any) => {
     getAssetWithId,
     AddCollection,
     AddAssetToCollection,
-    collections,allAppreciators
+    collections,
+    allAppreciators,
+    loadingAssets,
+    loadingCollection,
   };
 
   return (

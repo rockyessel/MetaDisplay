@@ -24,13 +24,16 @@ export const loginDefaultValue = {
 }
 
 
-export const userDataDefault = {
+
+export const AssetUserFromDBDefault = {
   address: '',
   username: '',
   name: '',
   token: '',
   email: '',
   profile: '',
+  followers: [],
+  following: []
 }
 
 export const AssetsDisplayDefault = {

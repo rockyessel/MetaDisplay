@@ -1,18 +1,10 @@
 import React from 'react';
 import { Appreciation } from '../utils/services';
 import { useUserContext } from '../contexts/user-context';
+import { AssetUserFromDB } from '../interface';
 
 interface Props {
   appreciator: Appreciation;
-}
-
-export interface AssetUserFromDB {
-  profile: string;
-  name: string;
-  username: string;
-  address: string;
-  followers: string[];
-  following: string[];
 }
 
 const AppreciatorList = (props: Props) => {

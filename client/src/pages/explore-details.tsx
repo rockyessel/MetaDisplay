@@ -18,7 +18,7 @@ import { useUserContext } from '../contexts/user-context';
 import { SiHiveBlockchain } from 'react-icons/si';
 import { ethers } from 'ethers';
 import { AssetDetailsDefault } from '../utils/constant';
-import { AssetsDisplayProps } from '../interface';
+import { AssetUserFromDB, AssetsDisplayProps } from '../interface';
 import moment from 'moment';
 
 interface Props {}
@@ -37,7 +37,7 @@ interface CurrentAssetProps {}
 
 const ExploreDetails = () => {
   const { assetId } = useParams();
-  const [assetUserFromDB, setAssetUserFromDB] = React.useState({username: ''});
+  const [assetUserFromDB, setAssetUserFromDB] = React.useState<AssetUserFromDB>();
   const { getAssets, handleAddAsset, getAssetWithId, address } = useThirdWebContext();
   const { getAllUsers, FindUserWithAddress, AssetViewCounts, GetAsset,reusableModalState, reusableModalValue } = useUserContext();
   const [assetDetails, setAssetDetails] = React.useState<AssetDetailsProps>(AssetDetailsDefault);
