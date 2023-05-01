@@ -35,11 +35,11 @@ const Layout = (props: Props) => {
         MIME={props.MIME}
       />
 
-      <Navbar />
       <main className={`${collectionId ? null : 'w-full h-full px-4 lg:px-20 relative'}`}>
+      <Navbar />
         {props.children}
-      </main>
       <Footer />
+      </main>
     </React.Fragment>
   );
 };
