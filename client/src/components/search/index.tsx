@@ -1,9 +1,8 @@
 import React from 'react';
 import { Appreciation } from '../../utils/services';
-import { AssetsDisplayProps } from '../../interface';
+import { AssetUserFromDB, AssetsDisplayProps } from '../../interface';
 import Input from '../input';
 import { useUserContext } from '../../contexts/user-context';
-import { AssetUserFromDB } from '../appreciator-list';
 
 interface Props {
   valueSelected: string;

@@ -1,18 +1,13 @@
 import axios from 'axios';
 import React from 'react';
 import { useAddress } from '@thirdweb-dev/react';
-import {
-  AssetDetailsDefault,
-  AssetUserFromDBDefault,
-  formDataInitialValue,
-  loginDefaultValue,
-} from '../utils/constant';
+import { AssetDetailsDefault, AssetUserFromDBDefault, formDataInitialValue, loginDefaultValue } from '../utils/constant';
 import { AssetUserFromDB } from '../interface';
 import { AssetDetailsProps } from '../pages/explore-details';
 
 
 interface UserContextProviderProps {
-  RegisterUser: (formData: typeof formDataInitialValue) => Promise<void>;
+  RegisterUser: (formData: any) => Promise<void>;
   showRegisterModal: boolean;
   showLoginModal: boolean;
   LoginUserWithAddress: (form: any) => Promise<void>;
@@ -33,8 +28,9 @@ interface UserContextProviderProps {
 type Props = {
   children: React.ReactNode;
 };
+
 const UserContext = React.createContext({
-  RegisterUser: (formData: typeof formDataInitialValue) => Promise.resolve(),
+  RegisterUser: (formData: any) => Promise.resolve(),
   showRegisterModal: false,
   showLoginModal: false,
   LoginUserWithAddress: (form: any) => Promise.resolve(),
@@ -43,8 +39,7 @@ const UserContext = React.createContext({
   handleLoginToggle: () => {},
   userLogState: false,
   getAllUsers: [AssetUserFromDBDefault],
-  FindUserWithAddress: (address: string) =>
-    Promise.resolve(AssetUserFromDBDefault),
+  FindUserWithAddress: (address: string) => Promise.resolve(AssetUserFromDBDefault),
   AssetViewCounts: (assetId: string) => Promise.resolve(),
   AssetSave: (assetId: string) => Promise.resolve(),
   GetAsset: (_id: string) => Promise.resolve(AssetDetailsDefault),
@@ -124,7 +119,7 @@ export const UserContextProvider = (props: Props) => {
     }
   };
 
-  const RegisterUser = async (formData: typeof formDataInitialValue) => {
+  const RegisterUser = async (formData: any) => {
     const response = await axios({
       method: 'POST',
       baseURL: `${baseURL}v1/users/register`,
