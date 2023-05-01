@@ -9,7 +9,7 @@ import { useThirdWebContext } from '../contexts/thirdweb';
 import { FaEthereum } from 'react-icons/fa';
 import { useUserContext } from '../contexts/user-context';
 import { SiHiveBlockchain } from 'react-icons/si';
-import { AssetDetailsDefault, userDataDefault } from '../utils/constant';
+import { AssetDetailsDefault, AssetUserFromDBDefault } from '../utils/constant';
 import { ethers } from 'ethers';
 import { Summation } from '../utils/services';
 import MoreButton from './more-button';
@@ -29,7 +29,7 @@ export interface GetAllAppreciatorsProps {
 }
 
 const Card = (props: Props) => {
-  const [assetOwner, setAssetOwner] = React.useState<UserDataProps>(userDataDefault);
+  const [assetOwner, setAssetOwner] = React.useState<UserDataProps>(AssetUserFromDBDefault);
   const [assetDetails, setAssetDetails] = React.useState<AssetDetailsProps>(AssetDetailsDefault);
 
   // Context
