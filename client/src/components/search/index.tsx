@@ -3,6 +3,7 @@ import { Appreciation } from '../../utils/services';
 import { AssetUserFromDB, AssetsDisplayProps } from '../../interface';
 import Input from '../input';
 import { useUserContext } from '../../contexts/user-context';
+import SearchList from './search-list';
 
 interface Props {
   valueSelected: string;
@@ -13,38 +14,35 @@ interface Props {
   };
 }
 
-interface FilterDataProps {
-
-}
-
 const Search = (props: Props): JSX.Element => {
-  const [filterData, setFilterData] = React.useState<any[] | AssetUserFromDB[] | undefined>([]);
+  const [filterData, setFilterData] = React.useState<AssetUserFromDB[] | AssetUserFromDB[] | any[]>([]);
   const [searchedValue, setSearchedValue] = React.useState('');
-  const [assetUserFromDB, setAssetUserFromDB] = React.useState<any[]>();
+  const [assetUserFromDB, setAssetUserFromDB] = React.useState<AssetUserFromDB[]>();
   const { FindUserWithAddress } = useUserContext();
 
-  console.log('filterData', filterData); 
-  console.log('assetUserFromDB', assetUserFromDB); 
-
-
-
-React.useEffect(() => {
-  const getData = async () => {
-    if (props.data.allAppreciators) {
-      try {
-        const data = props.data.allAppreciators.map((appreciator) => {
-          const promise = FindUserWithAddress(appreciator.appreciator);
-          return promise;
-        });
-        const appreciatorDBInformation = await Promise.all(data);
-        setAssetUserFromDB(appreciatorDBInformation);
-      } catch (error) {
-        console.log(error);
+  React.useEffect(() => {
+    const getData = async () => {
+      if (props.data.allAppreciators) {
+        try {
+          const data = props.data.allAppreciators.map((appreciator) => {
+            const promise = FindUserWithAddress(appreciator.appreciator);
+            return promise;
+          });
+          const appreciatorDBInformation = await Promise.all(data);
+          setAssetUserFromDB(appreciatorDBInformation);
+        } catch (error) {
+          console.log(error);
+        }
       }
+    };
+    getData();
+  }, [props.data.allAppreciators]);
+
+  React.useEffect(() => {
+    if (searchedValue.length === 0) {
+      setFilterData([]);
     }
-  };
-  getData();
-}, [props.data.allAppreciators]);
+  }, [searchedValue, props.valueSelected]);
 
   const handleSearches = (event: any) => {
     switch (props.valueSelected) {
@@ -62,8 +60,8 @@ React.useEffect(() => {
         const collectionData = () => {
           const typedValue = event.target.value.toLowerCase();
           setSearchedValue(typedValue);
-          const findTypedValue = props?.data?.allCollections?.filter((collection) =>
-            collection?.title.toLowerCase().includes(typedValue)
+          const findTypedValue = props?.data?.allCollections?.filter(
+            (collection) => collection?.title.toLowerCase().includes(typedValue)
           );
           setFilterData(findTypedValue);
         };
@@ -75,7 +73,7 @@ React.useEffect(() => {
           const findTypedValue = assetUserFromDB?.filter((appreciator) =>
             appreciator?.username.toLowerCase().includes(typedValue)
           );
-          setFilterData(findTypedValue);
+          findTypedValue && setFilterData(findTypedValue);
         };
 
         return appreciatorsData();
@@ -88,11 +86,11 @@ React.useEffect(() => {
   switch (props.valueSelected) {
     case 'Assets':
       return (
-        <div className='relative'>
+        <div className='relative w-full'>
           <div>
             <Input
               elementType='input'
-              styles=''
+              styles='w-full max-w-sm lg:max-w-lg'
               value={searchedValue}
               onChange={handleSearches}
               type='text'
@@ -100,30 +98,31 @@ React.useEffect(() => {
               placeholder='Search for an asset...'
             />
           </div>
-          <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1 z-[100] '>
-            {filterData?.map((asset, index) => (
-              <li className='truncate inline-flex items-end gap-1 py-2' key={index}>
-                <img
-                  className='w-10 h-10 rounded-md'
-                  src={asset?.image}
-                  alt={asset?.title}
+          {filterData?.length > 0 && (
+            <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1 z-[100] shadow-lg shadow-violet-500'>
+              {filterData?.map((asset, index) => (
+                <SearchList
+                  to={`/explore/${asset?._id}`}
+                  key={index}
+                  image={asset?.image}
+                  title={asset?.title}
+                  description={asset?.description}
                 />
-                <span className='inline-flex flex-col leading-none truncate'>
-                  <span className='truncate font-bold'>{asset?.title}</span>
-                  <span className='truncate text-xs'>{asset?.description}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
+              ))}
+              {searchedValue.length > 0 && filterData?.length === 0 && (
+                <li>No asset found</li>
+              )}
+            </ul>
+          )}
         </div>
       );
     case 'Collections':
       return (
-        <div className='relative'>
+        <div className='relative w-full'>
           <div>
             <Input
               elementType='input'
-              styles=''
+              styles='w-full max-w-sm lg:max-w-lg'
               value={searchedValue}
               onChange={handleSearches}
               type='text'
@@ -131,34 +130,31 @@ React.useEffect(() => {
               placeholder='Search for a collection...'
             />
           </div>
-          <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1 z-[100]'>
-            {filterData?.map((collection, index) => (
-              <li className='truncate inline-flex items-end gap-1 py-2' key={index}>
-                <img
-                  className='w-10 h-10 rounded-md'
-                  src={collection?.profile}
-                  alt={collection?.title}
+          {filterData?.length > 0 && (
+            <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1 z-[100] shadow-lg shadow-violet-500'>
+              {filterData?.map((collection, index) => (
+                <SearchList
+                  to={`/collections/${collection?._id}`}
+                  key={index}
+                  image={collection?.profile}
+                  title={collection?.title}
+                  description={collection?.description}
                 />
-                <span className='inline-flex flex-col leading-none truncate'>
-                  <span className='truncate font-bold'>
-                    {collection?.title}
-                  </span>
-                  <span className='truncate text-xs'>
-                    {collection?.description}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
+              ))}
+              {searchedValue.length > 0 && filterData?.length === 0 && (
+                <li>No Collection found</li>
+              )}
+            </ul>
+          )}
         </div>
       );
     case 'Appreciators':
       return (
-        <div className='relative'>
+        <div className='relative w-full'>
           <div>
             <Input
               elementType='input'
-              styles='w-full'
+              styles='w-full max-w-sm lg:max-w-lg'
               value={searchedValue}
               onChange={handleSearches}
               type='text'
@@ -166,28 +162,22 @@ React.useEffect(() => {
               placeholder='Search for an appreciator...'
             />
           </div>
-          <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1 z-[100]'>
-            {filterData?.map((appreciator, index) => (
-              <li
-                className='truncate inline-flex items-end gap-1 py-2'
-                key={index}
-              >
-                <img
-                  className='w-10 h-10 rounded-md'
-                  src={appreciator?.profile}
-                  alt={appreciator?.name}
+          {filterData?.length > 0 && (
+            <ul className='absolute bg-[#141414] px-4 py-2 rounded-md divide-y-[1px] divide-violet-500/20 mt-2 w-full flex flex-col gap-1 z-[100] shadow-lg shadow-violet-500'>
+              {filterData?.map((appreciator, index) => (
+                <SearchList
+                  to={`/users/${appreciator?.address}`}
+                  key={index}
+                  image={appreciator?.profile}
+                  title={appreciator?.name}
+                  description={`@${appreciator?.username}`}
                 />
-                <span className='inline-flex flex-col leading-none truncate'>
-                  <span className='truncate font-bold'>
-                    {appreciator?.name}
-                  </span>
-                  <span className='truncate text-xs'>
-                    @{appreciator?.username}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
+              ))}
+              {searchedValue.length > 0 && filterData?.length === 0 && (
+                <li>No Appreciators found</li>
+              )}
+            </ul>
+          )}
         </div>
       );
 

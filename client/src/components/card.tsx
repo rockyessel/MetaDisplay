@@ -1,6 +1,6 @@
 import React from 'react';
 import { RiMoreFill } from 'react-icons/ri';
-import { AiFillEye, AiOutlineEye, AiOutlineHeart, AiOutlineMore } from 'react-icons/ai';
+import { AiFillEye  } from 'react-icons/ai';
 import ProfileImage from './profile-image';
 import UserTooltip from './user-tooltip';
 import { Link } from 'react-router-dom';
@@ -13,9 +13,6 @@ import { AssetDetailsDefault, AssetUserFromDBDefault } from '../utils/constant';
 import { ethers } from 'ethers';
 import { Summation } from '../utils/services';
 import MoreButton from './more-button';
-import ShareIcons from './share-icons';
-import ReusableModal from './reusable-modal';
-import Button from './button';
 import { AssetDetailsProps } from '../pages/explore-details';
 
 interface Props {

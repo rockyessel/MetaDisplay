@@ -3,11 +3,10 @@ import { TfiThemifyFaviconAlt } from 'react-icons/tfi';
 import { BsSearch, BsSun, BsMoon } from 'react-icons/bs';
 import { Link, useNavigate } from 'react-router-dom';
 import { useThirdWebContext } from '../contexts/thirdweb';
-import Loader from './loader';
 import { useUserContext } from '../contexts/user-context';
-import Button from './button';
-import Search from './search';
 import SearchData from './search/search-data';
+import Button from './button';
+import Loader from './loader';
 
 interface Props {}
 
@@ -25,7 +24,6 @@ const Navbar = () => {
         await connect();
         setIsConnecting(false);
       }, 2000);
-
       return () => clearTimeout(time);
     }
   };
@@ -68,10 +66,9 @@ const Navbar = () => {
               <span className='font-extrabold'>MetaDisplay</span>
             </span>
           </Link>
-          <div className='hidden sm:block'>
-            
+          <div className='flex-1 hidden sm:block'>
           <SearchData />
-</div>
+            </div>
         </div>
 
         <div className='block md:hidden'>

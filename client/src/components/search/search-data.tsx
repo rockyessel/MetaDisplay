@@ -69,7 +69,7 @@ const SearchData = () => {
         )}
       </div>
 
-      <div className='w-full'>
+      <div className='w-full flex-1'>
         <Search valueSelected={valueSelected} data={data} />
       </div>
     </div>
